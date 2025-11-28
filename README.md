@@ -33,25 +33,26 @@
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### For Development
 
+**Prerequisites:**
 - Docker Engine 20.10+
 - Docker Compose 2.0+
 - Gemini API key ([Get it here](https://makersuite.google.com/app/apikey))
 
-### Installation
+**Installation:**
 
 ```bash
 # 1. Clone repository
 git clone <your-repo-url>
-cd S2RTool
+cd S2RTool-reborn
 
 # 2. Setup environment
-cp .env.example .env
+cp .env.production.template .env
 
 # 3. Add your Gemini API key to .env
 nano .env  # or use your preferred editor
-# Add: GEMINI_API_KEY=your_api_key_here
+# Set: GEMINI_API_KEY=your_api_key_here
 
 # 4. Start with Docker Compose
 docker-compose up -d
@@ -60,6 +61,21 @@ docker-compose up -d
 # Frontend: http://localhost:3001
 # Backend:  http://localhost:5001
 ```
+
+### For Production Deployment
+
+**Ready-to-deploy package with automation scripts:**
+
+```bash
+# On source machine:
+./build-and-push.sh -u YOUR_DOCKERHUB_USERNAME
+./package.sh -v 1.0.0
+
+# On target machine:
+./deploy.sh
+```
+
+See **[README.DEPLOY.md](README.DEPLOY.md)** for complete deployment guide.
 
 ### Verify Installation
 
@@ -370,7 +386,7 @@ lsof -i :5001
 # Or kill process
 ```
 
-See [DOCKER_README.md](DOCKER_README.md) for more troubleshooting.
+See [DEVELOPMENT.md](DEVELOPMENT.md) and [README.DEPLOY.md](README.DEPLOY.md) for more troubleshooting.
 
 ---
 
@@ -382,10 +398,17 @@ See [DOCKER_README.md](DOCKER_README.md) for more troubleshooting.
   - Prompt engineering strategies
   - API reference
 
-- **[DOCKER_README.md](DOCKER_README.md)** - Docker deployment guide
-  - Setup & configuration
+- **[README.DEPLOY.md](README.DEPLOY.md)** - Production deployment guide
+  - Build and push Docker images
+  - Create deployment packages
+  - Automated deployment
+  - Troubleshooting & FAQ
+
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Development guide
+  - Docker setup & configuration
   - Common commands
-  - Production deployment
+  - Development workflow
+  - Health checks
 
 - **[PLANNING_MODE_DESIGN.md](PLANNING_MODE_DESIGN.md)** - Planning mode architecture
 
