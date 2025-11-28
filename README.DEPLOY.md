@@ -7,12 +7,63 @@
 
 ## 📋 Mục Lục
 
-1. [Tổng Quan](#-tổng-quan)
-2. [Chuẩn Bị Trên Máy Gốc](#-chuẩn-bị-trên-máy-gốc-source-machine)
-3. [Triển Khai Trên Máy Đích](#-triển-khai-trên-máy-đích-target-machine)
-4. [Quản Lý & Vận Hành](#-quản-lý--vận-hành)
-5. [Troubleshooting](#-troubleshooting)
-6. [FAQ](#-faq)
+1. [⚡ Quick Start](#-quick-start)
+2. [Tổng Quan](#-tổng-quan)
+3. [Chuẩn Bị Trên Máy Gốc](#-chuẩn-bị-trên-máy-gốc-source-machine)
+4. [Triển Khai Trên Máy Đích](#-triển-khai-trên-máy-đích-target-machine)
+5. [Quản Lý & Vận Hành](#-quản-lý--vận-hành)
+6. [Troubleshooting](#-troubleshooting)
+7. [FAQ](#-faq)
+
+---
+
+## ⚡ Quick Start
+
+**Chỉ cần 3 lệnh để deploy trên máy đích!**
+
+### 📍 Tại Máy Gốc (Source Machine)
+
+**Option 1: Deploy Qua Docker Registry** ⭐ (Khuyến nghị)
+
+```bash
+# 1. Login Docker Hub
+docker login
+
+# 2. Build & Push Images
+./build-and-push.sh -u YOUR_DOCKERHUB_USERNAME -v 1.0.0
+
+# 3. Tạo Deployment Package
+./package.sh -v 1.0.0
+```
+**Output:** `dist/s2rtool-deploy-1.0.0.tar.gz` (~5-10 MB)
+
+**Option 2: Offline Package** (Không cần Registry)
+
+```bash
+# Tạo full package với source code
+./package.sh -v 1.0.0 --include-source
+```
+**Output:** `dist/s2rtool-deploy-1.0.0.tar.gz` (~50-100 MB)
+
+### 📍 Tại Máy Đích (Target Machine)
+
+```bash
+# 1. Cài Docker (nếu chưa có)
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+newgrp docker
+
+# 2. Transfer và giải nén package
+tar -xzf s2rtool-deploy-1.0.0.tar.gz
+cd s2rtool-deploy-1.0.0
+
+# 3. Deploy tự động
+./deploy.sh
+```
+
+**Truy cập:**
+- Frontend: http://localhost:3001
+- Backend: http://localhost:5001
 
 ---
 
