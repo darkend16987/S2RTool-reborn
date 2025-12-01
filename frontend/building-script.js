@@ -22,6 +22,110 @@ let isTranslating = false;
 let isRendering = false;
 let isInpainting = false;
 
+// ✅ NEW: Race condition prevention for render requests
+let currentRenderController = null;  // AbortController for canceling requests
+let currentRequestId = null;         // Track latest request ID
+
+// ============== IMAGE PREVIEW MODAL CLASS ==============
+class ImagePreviewModal {
+    constructor() {
+        this.modal = null;
+        this.img = null;
+        this.info = null;
+        this.closeBtn = null;
+        this.isActive = false;
+        this.init();
+    }
+
+    init() {
+        this.createModal();
+        this.bindEvents();
+    }
+
+    createModal() {
+        // Create modal structure
+        this.modal = document.createElement('div');
+        this.modal.className = 'image-preview-modal';
+        this.modal.innerHTML = `
+            <div class="image-preview-content">
+                <img class="image-preview-img" src="" alt="Preview">
+                <button class="image-preview-close" aria-label="Close preview">×</button>
+                <div class="image-preview-info"></div>
+            </div>
+        `;
+
+        // Get references
+        this.img = this.modal.querySelector('.image-preview-img');
+        this.closeBtn = this.modal.querySelector('.image-preview-close');
+        this.info = this.modal.querySelector('.image-preview-info');
+
+        // Append to body
+        document.body.appendChild(this.modal);
+    }
+
+    bindEvents() {
+        // Close button click
+        this.closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.hide();
+        });
+
+        // Click outside image to close
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal || e.target === this.img) {
+                this.hide();
+            }
+        });
+
+        // ESC key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isActive) {
+                this.hide();
+            }
+        });
+
+        // Load event to update info
+        this.img.addEventListener('load', () => {
+            const width = this.img.naturalWidth;
+            const height = this.img.naturalHeight;
+            this.info.textContent = `${width} × ${height}px`;
+        });
+    }
+
+    show(imageSrc) {
+        if (!imageSrc) {
+            console.warn('⚠️ No image source provided');
+            return;
+        }
+
+        this.img.src = imageSrc;
+        this.isActive = true;
+
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+
+        // Show modal with animation
+        requestAnimationFrame(() => {
+            this.modal.classList.add('active');
+        });
+
+        console.log('🖼️ Image preview opened');
+    }
+
+    hide() {
+        this.isActive = false;
+        this.modal.classList.remove('active');
+
+        // Restore body scroll
+        document.body.style.overflow = '';
+
+        console.log('✅ Image preview closed');
+    }
+}
+
+// Global instance (will be initialized in DOMContentLoaded)
+let imagePreviewModal = null;
+
 // ============== DOM ELEMENTS (Global References) ==============
 // Các biến này sẽ được gán giá trị khi DOM ready
 let uploadSketch, previewImage, uploadLabel, analyzeButton, generateButton;
@@ -31,7 +135,11 @@ let gallery, aspectRatioSelect, viewpointSelect;
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 S2R Tool v3.4 initialized');
 
-    // 1. Khởi tạo các DOM Elements an toàn
+    // 1. Khởi tạo Image Preview Modal
+    imagePreviewModal = new ImagePreviewModal();
+    console.log('✅ Image Preview Modal initialized');
+
+    // 2. Khởi tạo các DOM Elements an toàn
     uploadSketch = document.getElementById('uploadSketch');
     previewImage = document.getElementById('previewImage');
     uploadLabel = document.getElementById('uploadLabel');
@@ -41,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     aspectRatioSelect = document.getElementById('aspect_ratio');
     viewpointSelect = document.getElementById('viewpoint');
 
-    // 2. Chạy các hàm cài đặt
+    // 3. Chạy các hàm cài đặt
     loadAspectRatios();
     setupEventListeners();
     setupDynamicContainers();
@@ -221,6 +329,16 @@ async function handleImageUpload(event) {
             if (previewImage) {
                 previewImage.src = e.target.result;
                 previewImage.classList.remove('hidden');
+                previewImage.title = 'Click to view full size';
+
+                // ✅ NEW: Add click listener to preview sketch image
+                // Remove old listener if exists (to prevent duplicates)
+                previewImage.onclick = null;
+                previewImage.onclick = () => {
+                    if (imagePreviewModal) {
+                        imagePreviewModal.show(previewImage.src);
+                    }
+                };
             }
 
             if (uploadLabel) {
@@ -467,10 +585,22 @@ async function generateRender() {
         return;
     }
 
+    // ✅ FIX: Cancel previous request if still in progress
+    if (currentRenderController) {
+        console.log('⚠️ Canceling previous render request...');
+        currentRenderController.abort();
+        currentRenderController = null;
+    }
+
     if (isRendering) {
         console.warn('⚠️ Rendering already in progress');
         return;
     }
+
+    // ✅ FIX: Create new AbortController and request ID
+    currentRenderController = new AbortController();
+    currentRequestId = Date.now();
+    const thisRequestId = currentRequestId;
 
     isRendering = true;
     showSpinner('renderSpinner', true);
@@ -479,14 +609,15 @@ async function generateRender() {
     hideSuccess('renderSuccess');
 
     try {
-        console.log('🎨 Generating render...');
+        console.log(`🎨 Generating render... [Request ID: ${thisRequestId}]`);
         const form_data_vi = collectFormData();
 
         const requestData = {
             image_base64: currentSketchImage,
             form_data_vi: form_data_vi,
             aspect_ratio: aspectRatioSelect ? aspectRatioSelect.value : "16:9",
-            viewpoint: viewpointSelect ? viewpointSelect.value : "main_facade"
+            viewpoint: viewpointSelect ? viewpointSelect.value : "main_facade",
+            request_id: thisRequestId  // ✅ FIX: Include request ID
         };
 
         if (currentReferenceImage) {
@@ -497,7 +628,8 @@ async function generateRender() {
         const response = await fetch(`${API_BASE_URL}/render`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestData)
+            body: JSON.stringify(requestData),
+            signal: currentRenderController.signal  // ✅ FIX: Add abort signal
         });
 
         if (!response.ok) {
@@ -506,17 +638,33 @@ async function generateRender() {
         }
 
         const result = await response.json();
-        currentRenderedImage = result.generated_image_base64;
-        displayRenderedImage(result.generated_image_base64, result.mime_type);
-        showSuccess('renderSuccess', '🎉 Render hoàn tất!');
+
+        // ✅ FIX: Only process if this is still the latest request
+        if (thisRequestId === currentRequestId) {
+            currentRenderedImage = result.generated_image_base64;
+            displayRenderedImage(result.generated_image_base64, result.mime_type);
+            showSuccess('renderSuccess', '🎉 Render hoàn tất!');
+            console.log(`✅ Render completed [Request ID: ${thisRequestId}]`);
+        } else {
+            console.log(`⚠️ Ignoring stale response [Request ID: ${thisRequestId}] - Current: ${currentRequestId}`);
+        }
 
     } catch (error) {
-        console.error('❌ Render failed:', error);
-        showError('renderError', `Lỗi render: ${error.message}`);
+        // ✅ FIX: Don't show error if request was aborted intentionally
+        if (error.name === 'AbortError') {
+            console.log(`🚫 Render request cancelled [Request ID: ${thisRequestId}]`);
+        } else {
+            console.error('❌ Render failed:', error);
+            showError('renderError', `Lỗi render: ${error.message}`);
+        }
     } finally {
-        showSpinner('renderSpinner', false);
-        if (generateButton) generateButton.disabled = false;
-        isRendering = false;
+        // ✅ FIX: Only reset state if this was the latest request
+        if (thisRequestId === currentRequestId) {
+            showSpinner('renderSpinner', false);
+            if (generateButton) generateButton.disabled = false;
+            isRendering = false;
+            currentRenderController = null;
+        }
     }
 }
 
@@ -532,6 +680,14 @@ function displayRenderedImage(base64Data, mimeType) {
     img.style.width = '100%';
     img.style.height = '100%';
     img.style.objectFit = 'contain';
+    img.title = 'Click to view full size';
+
+    // ✅ NEW: Add click listener to open preview modal
+    img.addEventListener('click', () => {
+        if (imagePreviewModal) {
+            imagePreviewModal.show(img.src);
+        }
+    });
 
     gallery.appendChild(img);
 
@@ -656,7 +812,16 @@ function showReferencePreview(imageData) {
     const previewImg = document.getElementById('referencePreviewImage');
     if (preview && previewImg) {
         previewImg.src = imageData;
+        previewImg.title = 'Click to view full size';
         preview.classList.remove('hidden');
+
+        // ✅ NEW: Add click listener to preview reference image
+        previewImg.onclick = null;
+        previewImg.onclick = () => {
+            if (imagePreviewModal) {
+                imagePreviewModal.show(previewImg.src);
+            }
+        };
     }
 }
 
@@ -699,7 +864,18 @@ function handleMaskUpload(event) {
         const previewImg = document.getElementById('maskPreviewImage');
         const previewDiv = document.getElementById('maskPreview');
 
-        if (previewImg) previewImg.src = e.target.result;
+        if (previewImg) {
+            previewImg.src = e.target.result;
+            previewImg.title = 'Click to view full size';
+
+            // ✅ NEW: Add click listener to preview mask image
+            previewImg.onclick = null;
+            previewImg.onclick = () => {
+                if (imagePreviewModal) {
+                    imagePreviewModal.show(previewImg.src);
+                }
+            };
+        }
         if (previewDiv) previewDiv.classList.remove('hidden');
 
         const applyBtn = document.getElementById('applyInpaintBtn');
