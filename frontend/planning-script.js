@@ -12,6 +12,84 @@ let currentSitePlanImage = null;
 let currentLotMapImage = null;
 let isPlanningRendering = false;
 
+// ============== IMAGE PREVIEW MODAL CLASS ==============
+class ImagePreviewModal {
+    constructor() {
+        this.modal = null;
+        this.img = null;
+        this.info = null;
+        this.closeBtn = null;
+        this.isActive = false;
+        this.init();
+    }
+
+    init() {
+        this.createModal();
+        this.bindEvents();
+    }
+
+    createModal() {
+        this.modal = document.createElement('div');
+        this.modal.className = 'image-preview-modal';
+        this.modal.innerHTML = `
+            <div class="image-preview-content">
+                <img class="image-preview-img" src="" alt="Preview">
+                <button class="image-preview-close" aria-label="Close preview">×</button>
+                <div class="image-preview-info"></div>
+            </div>
+        `;
+        this.img = this.modal.querySelector('.image-preview-img');
+        this.closeBtn = this.modal.querySelector('.image-preview-close');
+        this.info = this.modal.querySelector('.image-preview-info');
+        document.body.appendChild(this.modal);
+    }
+
+    bindEvents() {
+        this.closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.hide();
+        });
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal || e.target === this.img) {
+                this.hide();
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isActive) {
+                this.hide();
+            }
+        });
+        this.img.addEventListener('load', () => {
+            const width = this.img.naturalWidth;
+            const height = this.img.naturalHeight;
+            this.info.textContent = `${width} × ${height}px`;
+        });
+    }
+
+    show(imageSrc) {
+        if (!imageSrc) {
+            console.warn('⚠️ No image source provided');
+            return;
+        }
+        this.img.src = imageSrc;
+        this.isActive = true;
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(() => {
+            this.modal.classList.add('active');
+        });
+        console.log('🖼️ Image preview opened');
+    }
+
+    hide() {
+        this.isActive = false;
+        this.modal.classList.remove('active');
+        document.body.style.overflow = '';
+        console.log('✅ Image preview closed');
+    }
+}
+
+let imagePreviewModal = null;
+
 // ============== DOM ELEMENTS (Global Variables) ==============
 // Sẽ được gán trong DOMContentLoaded
 let sitePlanInput, lotMapInput, addLotBtn, generateBtn, regenerateBtn, gallery, outputControls;
@@ -20,7 +98,11 @@ let sitePlanInput, lotMapInput, addLotBtn, generateBtn, regenerateBtn, gallery, 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Planning Mode initialized');
 
-    // 1. Initialize Elements
+    // 1. Initialize Image Preview Modal
+    imagePreviewModal = new ImagePreviewModal();
+    console.log('✅ Image Preview Modal initialized');
+
+    // 2. Initialize Elements
     sitePlanInput = document.getElementById('uploadSitePlan');
     lotMapInput = document.getElementById('uploadLotMap');
     addLotBtn = document.getElementById('addLotBtn');
@@ -313,8 +395,18 @@ function displayPlanningRender(base64Data, mimeType) {
     const img = document.createElement('img');
     img.src = `data:${mimeType};base64,${base64Data}`;
     img.alt = 'Planning render result';
+    img.title = 'Click to view full size';
     img.style.width = '100%';
     img.style.borderRadius = '12px';
+    img.style.cursor = 'zoom-in';
+
+    // ✅ NEW: Add click listener to open preview modal
+    img.addEventListener('click', () => {
+        if (imagePreviewModal) {
+            imagePreviewModal.show(img.src);
+        }
+    });
+
     gallery.appendChild(img);
 
     // Hiển thị nút download và controls
