@@ -406,8 +406,7 @@ You are performing high-fidelity inpainting. Adherence to mask and style is HIGH
         # Technical specs
         camera = tech_specs.get('camera', 'Professional DSLR (Canon 5D Mark IV equivalent)')
         lens = tech_specs.get('lens', '24mm wide-angle lens')
-        perspective = tech_specs.get('perspective', 'Two-point perspective')
-        
+
         # Lighting from technical_specs
         lighting = tech_specs.get('lighting', 'natural daylight, golden hour')
         

@@ -342,7 +342,6 @@ OUTPUT FORMAT (JSON):
     "technical_specs": {
         "camera": "Máy ảnh khuyến nghị (VD: Canon EOS 5D Mark IV, Nikon D850...)",
         "lens": "Ống kính phù hợp (VD: 24mm wide-angle, 50mm standard...)",
-        "perspective": "Phối cảnh (VD: 1 điểm tụ, 2 điểm tụ...)",
         "lighting": "Ánh sáng (VD: Ánh sáng tự nhiên ban ngày, hoàng hôn, giờ vàng...)"
     }
 }
@@ -407,7 +406,6 @@ OUTPUT FORMAT (English JSON):
     "technical_specs": {
         "camera": "Camera angle",
         "lens": "Lens specification",
-        "perspective": "Perspective type",
         "lighting": "Lighting condition"
     },
     "style_keywords": "Translated and enhanced style keywords",

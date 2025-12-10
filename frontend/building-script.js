@@ -477,7 +477,6 @@ function fillFormFromAnalysis(data) {
         setVal('tech_camera', data.technical_specs.camera);
         setVal('tech_lens', data.technical_specs.lens);
         setVal('tech_lighting', data.technical_specs.lighting);
-        setVal('tech_perspective', data.technical_specs.perspective);
     }
 }
 
@@ -535,7 +534,6 @@ function collectFormData() {
         technical_specs: {
             camera: getVal('tech_camera'),
             lens: getVal('tech_lens'),
-            perspective: getVal('tech_perspective'),
             lighting: getVal('tech_lighting')
         },
         negative_prompt: getVal('negative_prompt'),
