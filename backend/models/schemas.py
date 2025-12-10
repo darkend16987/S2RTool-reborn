@@ -133,7 +133,6 @@ class TechnicalSpecs(BaseModel):
     """Technical photo specifications"""
     camera: str
     lens: str
-    perspective: str
     depth_of_field: Optional[str] = None
 
 
