@@ -33,7 +33,27 @@
 
 ## 🚀 Quick Start
 
-### For Development
+### For Windows 10/11 Users 🪟
+
+**Easy installation with automated scripts:**
+
+1. **Install Docker Desktop** (one-time setup)
+   - See: [DOCKER-INSTALLATION-GUIDE.md](DOCKER-INSTALLATION-GUIDE.md)
+   - Or download from: https://www.docker.com/products/docker-desktop/
+
+2. **Install S2RTool**
+   - Double-click: `install-windows.bat`
+   - Follow on-screen instructions
+   - Enter your Gemini API key when prompted
+
+3. **Launch daily**
+   - Double-click: `start.bat`
+   - Browser opens automatically to http://localhost:3001
+
+📖 **Complete guide:** [WINDOWS-SETUP.md](WINDOWS-SETUP.md)
+📄 **Quick reference:** [README-WINDOWS.txt](README-WINDOWS.txt)
+
+### For Linux/Mac Development
 
 **Prerequisites:**
 - Docker Engine 20.10+
