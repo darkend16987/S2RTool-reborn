@@ -38,9 +38,9 @@
 
         .mode-cards-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 2rem;
-            max-width: 1600px;
+            max-width: 1800px;
             width: 100%;
         }
 
@@ -116,7 +116,14 @@
             font-size: 0.875rem;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1400px) {
+            .mode-cards-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
             .mode-cards-container {
                 grid-template-columns: 1fr;
                 gap: 1.5rem;
@@ -163,6 +170,22 @@
                     <li>Thư viện reference image</li>
                     <li>Chỉnh sửa vùng với inpainting</li>
                     <li>Bảo toàn structure 95%+</li>
+                </ul>
+            </a>
+
+            <!-- Interior Render Mode -->
+            <a href="interior-render.html" class="landing-mode-card">
+                <div class="landing-mode-icon">🛋️</div>
+                <h2 class="landing-mode-title">Interior Render</h2>
+                <p class="landing-mode-description">
+                    Render nội thất với độ chính xác cao về vị trí đồ vật và chất liệu
+                </p>
+                <ul class="landing-mode-features">
+                    <li>Phân tích sketch nội thất tự động</li>
+                    <li>Bảo toàn vị trí furniture 99%+</li>
+                    <li>Lighting hierarchy (primary/secondary)</li>
+                    <li>Multi-material wall treatments</li>
+                    <li>Ultra-sharp material details</li>
                 </ul>
             </a>
 
