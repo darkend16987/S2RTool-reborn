@@ -914,3 +914,167 @@ Style: Professional interior photography (Architectural Digest / AD quality)
             Analysis prompt for extracting structured data from sketch
         """
         return cls.PLANNING_ANALYZE_PROMPT
+
+    @classmethod
+    def build_interior_render_prompt(
+        cls,
+        translated_data_en: Dict,
+        viewpoint: str = "eye_level",
+        has_reference: bool = False,
+        negative_items: Optional[List[str]] = None,
+        sketch_adherence: float = 0.99,
+        aspect_ratio: str = "16:9"
+    ) -> Tuple[str, str]:
+        """
+        Build optimized interior render prompt
+
+        Args:
+            translated_data_en: English structured interior data
+            viewpoint: Camera viewpoint (eye_level, wide_angle, etc.)
+            has_reference: Whether reference image is provided
+            negative_items: Custom negative items (optional)
+            sketch_adherence: How strictly to follow sketch (0.95-1.0, default 0.99 for interiors)
+            aspect_ratio: Target aspect ratio (e.g., "16:9")
+
+        Returns:
+            (prompt, negative_prompt_summary)
+        """
+        # Extract interior-specific data
+        room_type = translated_data_en.get('room_type', 'Living Room')
+        interior_style = translated_data_en.get('interior_style', 'Modern Minimalist')
+        room_dimensions = translated_data_en.get('room_dimensions', '')
+
+        # Furniture layout (array of objects with position, description, material)
+        furniture_layout = translated_data_en.get('furniture_layout', [])
+
+        # Wall treatments (array for multi-material walls)
+        wall_treatments = translated_data_en.get('wall_treatments', [])
+
+        # Flooring and ceiling
+        flooring = translated_data_en.get('flooring', {})
+        ceiling = translated_data_en.get('ceiling', {})
+
+        # Lighting (array with importance: primary/secondary/accent)
+        lighting = translated_data_en.get('lighting', [])
+
+        # Decorations and windows/doors
+        decorations = translated_data_en.get('decorations', [])
+        windows_doors = translated_data_en.get('windows_doors', [])
+
+        # Environment and atmosphere
+        environment = translated_data_en.get('environment', [])
+
+        # Technical specs
+        tech_specs = translated_data_en.get('technical_specs', {})
+
+        # Build user description
+        user_description = f"{room_type}, {interior_style}"
+        if room_dimensions:
+            user_description += f" ({room_dimensions})"
+
+        # Camera/viewpoint specification
+        camera = tech_specs.get('camera', 'Eye-level perspective capturing the entire room')
+        lens = tech_specs.get('lens', '24-35mm wide-angle lens')
+
+        # Lighting description (CRITICAL for interior)
+        lighting_emphasis = tech_specs.get('lighting_emphasis', 'Natural lighting with enhanced contrast')
+
+        # Build detailed lighting description
+        lighting_parts = []
+        for light in lighting:
+            light_type = light.get('type', '')
+            light_desc = light.get('description', '')
+            importance = light.get('importance', 'secondary')
+            if light_type and light_desc:
+                priority_label = importance.upper() if importance == 'primary' else importance.capitalize()
+                lighting_parts.append(f"[{priority_label}] {light_type}: {light_desc}")
+
+        lighting_description = "\n   ".join(lighting_parts) if lighting_parts else "Natural daylight with balanced indoor lighting"
+
+        # Technical enhancements (contrast, sharpness)
+        contrast_boost = tech_specs.get('contrast_boost', '+15%')
+        sharpness = tech_specs.get('sharpness', '+10%')
+        technical_enhancements = f"Contrast boost: {contrast_boost}, Sharpness enhancement: {sharpness}, Ultra-high detail on material textures"
+
+        # Build materials description (comprehensive list from all sources)
+        materials_parts = []
+
+        # 1. Wall treatments
+        for wall in wall_treatments:
+            wall_loc = wall.get('wall_location', '')
+            wall_mat = wall.get('materials', '')
+            wall_desc = wall.get('description', '')
+            if wall_loc and wall_mat:
+                materials_parts.append(f"{wall_loc}: {wall_mat} ({wall_desc})")
+
+        # 2. Flooring
+        floor_type = flooring.get('type', '')
+        floor_desc = flooring.get('description', '')
+        floor_rug = flooring.get('rug_carpet', '')
+        if floor_type:
+            floor_text = f"Floor: {floor_type} - {floor_desc}"
+            if floor_rug:
+                floor_text += f" with {floor_rug}"
+            materials_parts.append(floor_text)
+
+        # 3. Ceiling
+        ceiling_type = ceiling.get('type', '')
+        ceiling_light = ceiling.get('lighting_system', '')
+        if ceiling_type:
+            ceiling_text = f"Ceiling: {ceiling_type}"
+            if ceiling_light:
+                ceiling_text += f" with {ceiling_light}"
+            materials_parts.append(ceiling_text)
+
+        # 4. Furniture materials (top 5 items)
+        for i, furniture in enumerate(furniture_layout[:5]):
+            obj_type = furniture.get('object_type', '')
+            material = furniture.get('material', '')
+            position = furniture.get('position', '')
+            if obj_type and material:
+                materials_parts.append(f"{obj_type} ({position}): {material}")
+
+        materials_description = ". ".join(materials_parts) if materials_parts else "Context-appropriate interior materials"
+
+        # Environment & atmosphere
+        environment_parts = []
+        for env in environment:
+            env_type = env.get('type', '')
+            env_desc = env.get('description', '')
+            if env_type and env_desc:
+                environment_parts.append(f"{env_type}: {env_desc}")
+
+        environment_description = ". ".join(environment_parts) if environment_parts else "Calm, luxurious interior atmosphere"
+
+        # Negative items (interior-specific defaults)
+        if negative_items is None:
+            negative_items = [
+                "sketch", "drawing", "illustration", "cartoon", "anime",
+                "blurry", "low resolution", "distorted proportions",
+                "unrealistic lighting", "adding extra furniture",
+                "moving objects", "changing layout", "warm yellow tint"
+            ]
+        negative_str = ", ".join(negative_items)
+
+        # Select template
+        template = cls.INTERIOR_RENDER_WITH_REFERENCE if has_reference else cls.INTERIOR_RENDER_WITHOUT_REFERENCE
+
+        # Convert sketch_adherence to display format
+        adherence_display = f"{sketch_adherence:.2f}"
+
+        # Format prompt
+        prompt = template.format(
+            sketch_adherence=adherence_display,
+            aspect_ratio=aspect_ratio,
+            viewpoint=viewpoint,
+            room_type=room_type,
+            interior_style=interior_style,
+            user_description=user_description,
+            materials_description=materials_description,
+            lighting_description=lighting_description,
+            technical_enhancements=technical_enhancements,
+            environment=environment_description,
+            negative_items=negative_str
+        )
+
+        return prompt, negative_str
