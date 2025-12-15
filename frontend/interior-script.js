@@ -703,7 +703,8 @@ async function generateRender() {
             form_data_vi: formData,
             aspect_ratio: aspectRatio,
             viewpoint: 'eye_level',
-            sketch_adherence: sketchAdherence
+            sketch_adherence: sketchAdherence,
+            render_mode: 'interior'  // ✅ NEW: Tell backend to use interior prompt builder
         };
 
         // Add reference image if exists

@@ -623,9 +623,15 @@ Style: Professional interior photography (Architectural Digest / AD quality)
 
     @classmethod
     def build_translation_prompt(cls) -> str:
-        """Get translation prompt from config"""
+        """Get building translation prompt from config"""
         from config import RESTRUCTURE_AND_TRANSLATE_PROMPT
         return RESTRUCTURE_AND_TRANSLATE_PROMPT
+
+    @classmethod
+    def build_interior_translation_prompt(cls) -> str:
+        """Get interior translation prompt from config"""
+        from config import INTERIOR_TRANSLATION_PROMPT
+        return INTERIOR_TRANSLATION_PROMPT
 
     @classmethod
     def build_planning_prompt(

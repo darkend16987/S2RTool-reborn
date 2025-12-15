@@ -558,6 +558,102 @@ IMPORTANT:
 - **VEHICLES** (xe cộ, xe ô tô, xe máy) → "vehicles, cars, motorcycles, traffic"
 - **TIME OF DAY** (thời điểm, buổi sáng, chiều tối) → translate accurately with atmospheric details"""
 
+
+# ============== INTERIOR TRANSLATION PROMPT ==============
+INTERIOR_TRANSLATION_PROMPT = """You are a professional Vietnamese-to-English translator specializing in interior design and architectural visualization terminology.
+
+TASK:
+Translate the Vietnamese interior design description to English while maintaining technical accuracy and adding photorealistic rendering details.
+
+INPUT FORMAT (Vietnamese JSON):
+{
+    "room_type": "Loại phòng",
+    "interior_style": "Phong cách nội thất",
+    "furniture_layout": [{"type": "...", "position": "...", "description": "...", "material": "..."}],
+    "wall_treatments": [{"wall_location": "...", "material": "...", "color": "...", "finish": "..."}],
+    "flooring": {"type": "...", "description": "...", "rug": "..."},
+    "ceiling": {"type": "...", "lighting_system": "..."},
+    "lighting": [{"type": "...", "description": "...", "importance": "primary|secondary|accent"}],
+    "decorations": [{"type": "...", "description": "..."}],
+    "windows_doors": [{"type": "...", "description": "..."}],
+    "environment": [{"type": "...", "description": "..."}],
+    "technical_specs": {"camera": "...", "lens": "...", "lighting_emphasis": "...", "contrast_boost": "...", "sharpness": "..."}
+}
+
+OUTPUT FORMAT (English JSON) - Preserve ALL fields and array structures:
+{
+    "room_type": "Room type in English",
+    "interior_style": "Design style in English",
+    "furniture_layout": [
+        {
+            "type": "Furniture name in English",
+            "position": "Spatial position description in English",
+            "description": "Detailed description in English",
+            "material": "Material description with finish in English"
+        }
+    ],
+    "wall_treatments": [
+        {
+            "wall_location": "Wall position in English",
+            "material": "Material in English",
+            "color": "Color description in English",
+            "finish": "Surface finish in English"
+        }
+    ],
+    "flooring": {
+        "type": "Flooring type in English",
+        "description": "Detailed flooring description in English",
+        "rug": "Rug description in English (if any)"
+    },
+    "ceiling": {
+        "type": "Ceiling type in English",
+        "lighting_system": "Ceiling lighting system description in English"
+    },
+    "lighting": [
+        {
+            "type": "Light fixture type in English",
+            "description": "Detailed lighting description with color temperature in English",
+            "importance": "primary|secondary|accent (keep as-is)"
+        }
+    ],
+    "decorations": [
+        {
+            "type": "Decoration item in English",
+            "description": "Detailed description in English"
+        }
+    ],
+    "windows_doors": [
+        {
+            "type": "Window/door type in English",
+            "description": "Detailed description in English"
+        }
+    ],
+    "environment": [
+        {
+            "type": "Environmental element in English",
+            "description": "Detailed description in English"
+        }
+    ],
+    "technical_specs": {
+        "camera": "Camera angle in English",
+        "lens": "Lens specification in English",
+        "lighting_emphasis": "Lighting emphasis in English",
+        "contrast_boost": "Contrast value (keep percentage)",
+        "sharpness": "Sharpness value (keep percentage)"
+    }
+}
+
+TRANSLATION RULES:
+- Preserve all array structures and field names EXACTLY
+- Translate "Phòng khách" → "Living Room", "Phòng ngủ" → "Bedroom"
+- Translate "Hiện đại tối giản" → "Modern Minimalist"
+- Translate "Scandinavian" → "Scandinavian", "Indochine" → "Indochine"
+- Materials must include: base material + color + texture + finish
+- Keep importance values unchanged: "primary", "secondary", "accent"
+- Add rendering terms: "photorealistic", "interior visualization", "ultra-high detail"
+- Ensure ALL furniture positions are preserved with spatial accuracy
+"""
+
 # ============== Debug Info ==============
 if __name__ == "__main__":
     print("=" * 60)

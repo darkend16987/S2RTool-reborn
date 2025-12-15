@@ -77,14 +77,20 @@ def render_image():
             reference_pil, _ = processor.process_base64_image(data['reference_image_base64'])
         
         # ✅ FIX: RE-TRANSLATE form_data_vi to include user edits!
-        print("🔄 Re-translating form_data_vi with user edits...")
+        # ✅ NEW: Pass render_mode to translator
+        render_mode = data.get('render_mode', 'building')  # Get mode early for translation
+        print(f"🔄 Re-translating form_data_vi with user edits (mode: {render_mode})...")
         form_data_vi = data['form_data_vi']
-        
+
         try:
-            translated_data_en = translator.translate_vi_to_en(form_data_vi)
+            translated_data_en = translator.translate_vi_to_en(form_data_vi, mode=render_mode)
             print(f"✅ Translation successful!")
-            print(f"   Lighting: {translated_data_en.get('technical_specs', {}).get('lighting', 'N/A')}")
-            print(f"   Environment items: {len(translated_data_en.get('environment', []))}")
+            if render_mode == 'interior':
+                print(f"   Room type: {translated_data_en.get('room_type', 'N/A')}")
+                print(f"   Furniture items: {len(translated_data_en.get('furniture_layout', []))}")
+            else:
+                print(f"   Lighting: {translated_data_en.get('technical_specs', {}).get('lighting', 'N/A')}")
+                print(f"   Environment items: {len(translated_data_en.get('environment', []))}")
         except Exception as e:
             print(f"❌ Translation failed: {e}")
             return jsonify({"error": f"Translation failed: {str(e)}"}), 500
@@ -98,13 +104,27 @@ def render_image():
 
         print(f"🎯 Geometry control: sketch_adherence={sketch_adherence}, aspect_ratio={aspect_ratio}")
 
-        prompt, negative_prompt = prompt_builder.build_render_prompt(
-            translated_data_en=translated_data_en,
-            viewpoint=viewpoint,
-            has_reference=(reference_pil is not None),
-            sketch_adherence=sketch_adherence,
-            aspect_ratio=aspect_ratio
-        )
+        # ✅ FIX: Route to correct prompt builder based on render_mode
+        # (render_mode already extracted earlier for translation)
+
+        if render_mode == 'interior':
+            print("🛋️ Using INTERIOR render prompt builder")
+            prompt, negative_prompt = prompt_builder.build_interior_render_prompt(
+                translated_data_en=translated_data_en,
+                viewpoint=viewpoint,
+                has_reference=(reference_pil is not None),
+                sketch_adherence=sketch_adherence,
+                aspect_ratio=aspect_ratio
+            )
+        else:
+            print("🏢 Using BUILDING render prompt builder")
+            prompt, negative_prompt = prompt_builder.build_render_prompt(
+                translated_data_en=translated_data_en,
+                viewpoint=viewpoint,
+                has_reference=(reference_pil is not None),
+                sketch_adherence=sketch_adherence,
+                aspect_ratio=aspect_ratio
+            )
         
         print(f"📝 Prompt preview (first 200 chars):")
         print(f"   {prompt[:200]}...")
