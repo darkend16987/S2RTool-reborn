@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interior Render - S2R Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="header-content">
+            <h1>🛋️ Interior Render - S2R Tool</h1>
+            <p class="header-subtitle">Interior Sketch to Photorealistic Render • Powered by Gemini AI</p>
+        </div>
+    </header>
+
+    <!-- BACK TO HOME -->
+    <div style="max-width: 1600px; margin: 0 auto; padding: 1rem 1.5rem;">
+        <a href="index.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #2563eb; text-decoration: none; font-weight: 600;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Về trang chủ
+        </a>
+    </div>
+
+    <!-- INTERIOR MODE CONTAINER -->
+    <div class="main-container">
+
+        <!-- =============================================== -->
+        <!-- COLUMN 1: INPUT SKETCH -->
+        <!-- =============================================== -->
+        <aside class="panel panel-input">
+            <div class="panel-header">
+                <span class="step-badge">Bước 1</span>
+                <h2>Upload Sketch Nội Thất</h2>
+            </div>
+
+            <!-- Image Uploader -->
+            <div id="imageUploader" class="image-uploader">
+                <input type="file" id="uploadSketch" accept="image/*" style="display: none;">
+                <label for="uploadSketch" id="uploadLabel" class="upload-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <span class="upload-text">Kéo thả hoặc nhấn để tải ảnh</span>
+                    <span class="upload-hint">JPG, PNG • Max 16MB</span>
+                </label>
+                <img id="previewImage" src="" alt="Sketch preview" class="preview-image hidden">
+            </div>
+
+            <!-- Analyze Button -->
+            <button id="analyzeSketchButton" class="btn-primary" disabled>
+                <span id="analyzeSpinner" class="spinner hidden"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Phân tích Sketch (AI)
+            </button>
+
+            <!-- Messages -->
+            <div id="analyzeError" class="message error-message hidden"></div>
+            <div id="analyzeSuccess" class="message success-message hidden"></div>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <strong>💡 Tips:</strong>
+                <ul>
+                    <li>Sketch rõ ràng vị trí đồ nội thất</li>
+                    <li>Thể hiện tỷ lệ và quan hệ không gian</li>
+                    <li>Có thể là vẽ tay hoặc CAD</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- =============================================== -->
+        <!-- COLUMN 2: PARAMETERS FORM -->
+        <!-- =============================================== -->
+        <main class="panel panel-form">
+            <div class="panel-header">
+                <span class="step-badge">Bước 2</span>
+                <h2>Tinh chỉnh Thông số</h2>
+            </div>
+
+            <form id="renderPromptForm">
+
+                <!-- Room Type -->
+                <div class="form-group">
+                    <label for="room_type">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        Loại phòng (Room Type)
+                    </label>
+                    <textarea id="room_type" rows="2" placeholder="AI sẽ điền tự động sau khi phân tích..."></textarea>
+                </div>
+
+                <!-- Interior Style -->
+                <div class="form-group">
+                    <label for="interior_style">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        Phong cách Nội thất
+                    </label>
+                    <input type="text" id="interior_style" placeholder="Ví dụ: Modern Minimalist, Scandinavian, Industrial...">
+                </div>
+
+                <!-- Aspect Ratio & Sketch Adherence -->
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="aspect_ratio">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                            Tỷ lệ khung hình
+                        </label>
+                        <select id="aspect_ratio">
+                            <option value="" disabled selected>Đang tải...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sketch_adherence">
+                            Độ bám sát Sketch:
+                            <span id="sketch_adherence_value" class="range-value">0.99</span>
+                        </label>
+                        <input type="range" id="sketch_adherence" min="0.95" max="1.0" step="0.01" value="0.99" class="range-slider">
+                        <div class="range-labels">
+                            <span>Linh hoạt</span>
+                            <span>Chính xác</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collapsible: Furniture Layout -->
+                <details class="form-section" open>
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        Bố trí Nội thất (Furniture Layout)
+                    </summary>
+                    <div class="section-content">
+                        <div id="furnitureLayoutContainer" class="dynamic-container"></div>
+                        <button type="button" class="btn-add" data-container="furnitureLayoutContainer" data-type="furniture">
+                            + Thêm đồ nội thất
+                        </button>
+                    </div>
+                </details>
+
+                <!-- Collapsible: Wall Treatments -->
+                <details class="form-section" open>
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        Vật liệu Tường (Wall Treatments)
+                    </summary>
+                    <div class="section-content">
+                        <div id="wallTreatmentsContainer" class="dynamic-container"></div>
+                        <button type="button" class="btn-add" data-container="wallTreatmentsContainer" data-type="wall">
+                            + Thêm tường
+                        </button>
+                    </div>
+                </details>
+
+                <!-- Collapsible: Flooring -->
+                <details class="form-section">
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        Sàn nhà (Flooring)
+                    </summary>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label for="flooring_type">Loại sàn:</label>
+                            <input type="text" id="flooring_type" placeholder="VD: Sàn gỗ sồi, Sàn gạch, Sàn đá marble...">
+                        </div>
+                        <div class="form-group">
+                            <label for="flooring_description">Mô tả chi tiết:</label>
+                            <textarea id="flooring_description" rows="2" placeholder="VD: Sàn gỗ sồi tự nhiên màu sáng, vân gỗ rõ nét, độ bóng mờ..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="flooring_rug">Thảm trải (nếu có):</label>
+                            <input type="text" id="flooring_rug" placeholder="VD: Thảm len xám lớn, kết cấu dệt thô...">
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Collapsible: Ceiling -->
+                <details class="form-section">
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        Trần nhà (Ceiling)
+                    </summary>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label for="ceiling_type">Loại trần:</label>
+                            <input type="text" id="ceiling_type" placeholder="VD: Trần thạch cao phẳng, Trần giật cấp, Trần gỗ...">
+                        </div>
+                        <div class="form-group">
+                            <label for="ceiling_lighting">Hệ thống ánh sáng trần:</label>
+                            <textarea id="ceiling_lighting" rows="2" placeholder="VD: Khe hắt sáng LED trắng, Đèn âm trần, Đèn chùm..."></textarea>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Collapsible: Lighting -->
+                <details class="form-section" open>
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                        Hệ thống Ánh sáng (Lighting)
+                    </summary>
+                    <div class="section-content">
+                        <div id="lightingContainer" class="dynamic-container"></div>
+                        <button type="button" class="btn-add" data-container="lightingContainer" data-type="lighting">
+                            + Thêm nguồn sáng
+                        </button>
+                    </div>
+                </details>
+
+                <!-- Collapsible: Decorations -->
+                <details class="form-section">
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        Đồ trang trí (Decorations)
+                    </summary>
+                    <div class="section-content">
+                        <div id="decorationsContainer" class="dynamic-container"></div>
+                        <button type="button" class="btn-add" data-container="decorationsContainer" data-type="decoration">
+                            + Thêm đồ trang trí
+                        </button>
+                    </div>
+                </details>
+
+                <!-- Collapsible: Windows & Doors -->
+                <details class="form-section">
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                        Cửa sổ & Cửa ra vào
+                    </summary>
+                    <div class="section-content">
+                        <div id="windowsDoorsContainer" class="dynamic-container"></div>
+                        <button type="button" class="btn-add" data-container="windowsDoorsContainer" data-type="window_door">
+                            + Thêm cửa
+                        </button>
+                    </div>
+                </details>
+
+                <!-- Collapsible: Environment & Atmosphere -->
+                <details class="form-section">
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        Môi trường & Bầu không khí
+                    </summary>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label for="env_atmosphere">Bầu không khí:</label>
+                            <textarea id="env_atmosphere" rows="2" placeholder="VD: Sang trọng và ấm cúng, Thoáng đãng và hiện đại, Yên tĩnh..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="env_time">Thời điểm trong ngày:</label>
+                            <select id="env_time">
+                                <option value="">-- Chọn --</option>
+                                <option value="Ban ngày, ánh sáng tự nhiên" selected>Ban ngày</option>
+                                <option value="Buổi tối, đèn bật sáng">Buổi tối</option>
+                                <option value="Hoàng hôn, ánh nắng nghiêng">Hoàng hôn</option>
+                                <option value="Ban đêm, ánh đèn ấm">Ban đêm</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Collapsible: Technical Specs -->
+                <details class="form-section">
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.5-11v.01M6.5 18v.01M19 6.5h.01M5 17.5h.01M19 17.5h.01M5 6.5h.01"/></svg>
+                        Thông số Kỹ thuật
+                    </summary>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label for="tech_camera">Góc nhìn camera:</label>
+                            <input type="text" id="tech_camera" value="Eye-level perspective, full room view">
+                        </div>
+                        <div class="form-group">
+                            <label for="tech_lens">Ống kính:</label>
+                            <input type="text" id="tech_lens" value="24-35mm wide-angle">
+                        </div>
+                        <div class="form-group">
+                            <label for="tech_lighting_emphasis">Nhấn mạnh ánh sáng:</label>
+                            <input type="text" id="tech_lighting_emphasis" value="High contrast, deep shadows, crisp highlights">
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="tech_contrast">Tăng Contrast:</label>
+                                <input type="text" id="tech_contrast" value="+20%">
+                            </div>
+                            <div class="form-group">
+                                <label for="tech_sharpness">Tăng Sharpness:</label>
+                                <input type="text" id="tech_sharpness" value="+10%">
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Collapsible: Style Keywords -->
+                <details class="form-section">
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                        Từ khóa Phong cách
+                    </summary>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <input type="text" id="style_keywords" placeholder="professional interior photography, 8K UHD..." value="photorealistic interior rendering, 8K UHD, high dynamic range, ultra-sharp material details, Architectural Digest quality">
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Collapsible: Negative Prompt -->
+                <details class="form-section">
+                    <summary>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        Negative Prompt
+                    </summary>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <textarea id="negative_prompt" rows="3">sketch, drawing, illustration, cartoon, anime, blurry, low resolution, distorted proportions, unrealistic lighting, adding extra furniture, moving objects, changing layout</textarea>
+                        </div>
+                    </div>
+                </details>
+            </form>
+        </main>
+
+        <!-- =============================================== -->
+        <!-- COLUMN 3: OUTPUT & ACTIONS -->
+        <!-- =============================================== -->
+        <aside class="panel panel-output">
+            <div class="panel-header">
+                <span class="step-badge">Bước 3</span>
+                <h2>Kết quả Render</h2>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="output-actions">
+                <button id="generateRenderButton" class="btn-submit" disabled>
+                    <span id="renderSpinner" class="spinner hidden"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Tạo Render
+                </button>
+            </div>
+
+            <!-- Messages -->
+            <div id="renderError" class="message error-message hidden"></div>
+            <div id="renderSuccess" class="message success-message hidden"></div>
+
+            <!-- Gallery -->
+            <div id="gallery" class="gallery">
+                <div class="gallery-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <p>Kết quả render sẽ xuất hiện ở đây</p>
+                </div>
+            </div>
+
+            <!-- Output Controls -->
+            <div id="outputControls" class="output-controls hidden">
+                <button id="downloadImageBtn" class="btn-secondary btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Tải về
+                </button>
+                <button id="regenerateBtn" class="btn-secondary btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="1 4 1 10 7 10"/>
+                        <polyline points="23 20 23 14 17 14"/>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                    </svg>
+                    Tạo lại
+                </button>
+            </div>
+
+            <!-- Stats Box -->
+            <div id="statsBox" class="stats-box hidden">
+                <div class="stat-item">
+                    <span class="stat-label">Thời gian:</span>
+                    <span class="stat-value" id="statTime">-</span>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+        <p>Made by <strong>Nam Ta</strong> + <strong>Gemini AI</strong></p>
+        <p>©2025 • Interior S2R Tool • All rights reserved</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="interior-script.js?v=1"></script>
+</body>
+</html>

@@ -18,6 +18,7 @@ from config import ServerConfig
 from api.render import render_bp
 from api.translate import translate_bp
 from api.analyze import analyze_bp
+from api.analyze_interior import analyze_interior_bp
 from api.references import references_bp
 from api.inpaint import inpaint_bp
 from api.planning import planning_bp
@@ -45,13 +46,14 @@ def create_app():
     
     # ============== REGISTER BLUEPRINTS ==============
     # All API endpoints are organized in api/ folder
-    app.register_blueprint(analyze_bp, url_prefix='/api')      # /api/analyze-sketch
-    app.register_blueprint(translate_bp, url_prefix='/api')    # /api/translate-prompt
-    app.register_blueprint(render_bp, url_prefix='/api')       # /api/render
-    app.register_blueprint(references_bp, url_prefix='/api')   # /api/references/*
-    app.register_blueprint(inpaint_bp, url_prefix='/api')      # /api/inpaint
-    app.register_blueprint(planning_bp, url_prefix='/api')     # /api/planning/*
-    app.register_blueprint(settings_bp, url_prefix='/api')     # /api/settings
+    app.register_blueprint(analyze_bp, url_prefix='/api')              # /api/analyze-sketch
+    app.register_blueprint(analyze_interior_bp, url_prefix='/api')     # /api/analyze-sketch-interior
+    app.register_blueprint(translate_bp, url_prefix='/api')            # /api/translate-prompt
+    app.register_blueprint(render_bp, url_prefix='/api')               # /api/render
+    app.register_blueprint(references_bp, url_prefix='/api')           # /api/references/*
+    app.register_blueprint(inpaint_bp, url_prefix='/api')              # /api/inpaint
+    app.register_blueprint(planning_bp, url_prefix='/api')             # /api/planning/*
+    app.register_blueprint(settings_bp, url_prefix='/api')             # /api/settings
     
     # ============== HEALTH CHECK ==============
     @app.route('/health', methods=['GET'])
