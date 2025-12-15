@@ -190,6 +190,144 @@ You are performing high-fidelity inpainting. Adherence to mask and style is HIGH
 **OUTPUT**: Edited image with natural transitions
 """
 
+    # ============== INTERIOR RENDER PROMPTS ==============
+
+    INTERIOR_RENDER_WITH_REFERENCE = """
+**ROLE**: You are an expert AI interior design renderer and ArchViz artist specializing in photorealistic interior visualizations.
+
+**CRITICAL INSTRUCTIONS**:
+
+You are given TWO images in this exact order:
+1. **Interior Sketch** (Image 1): Interior design drawing showing room layout, furniture positions, and spatial relationships
+2. **Style Reference** (Image 2): Photo providing style, lighting, materials, textures, and atmosphere
+
+**YOUR TASK - Follow these rules STRICTLY**:
+
+1. **PRESERVE SPATIAL LAYOUT** (Priority 1 - ABSOLUTE REQUIREMENT):
+   ⚠️ SKETCH ADHERENCE LEVEL: {sketch_adherence} (0.95=very strict, 1.0=pixel-perfect)
+   🛋️ **MAINTAIN EXACT POSITIONS OF ALL FURNITURE AND OBJECTS - THIS IS NON-NEGOTIABLE!**
+   ✓ Keep EXACT position of every furniture item (sofa, tables, chairs, cabinets, etc.)
+   ✓ Preserve EXACT spatial relationships between objects (distances, alignments, groupings)
+   ✓ Maintain EXACT proportions and scales of all objects relative to each other
+   ✓ Preserve room dimensions and perspective from sketch
+   ✓ Keep wall treatments, floor patterns, and ceiling features in EXACT locations
+   ✗ DO NOT move, add, or remove any furniture items
+   ✗ DO NOT alter object sizes or proportions to "improve" composition
+   ✗ DO NOT change spatial relationships between objects
+   ✗ DO NOT reorganize furniture layout
+
+2. **PRESERVE OBJECT IDENTITY** (Priority 2 - CRITICAL):
+   ✓ Maintain the ESSENCE and FORM of each object (round table stays round, L-shaped sofa stays L-shaped)
+   ✓ Keep chair types, table shapes, cabinet styles as sketched
+   ✓ Preserve decorative items (paintings, sculptures, plants, books, vases) in exact positions
+   ✗ DO NOT transform object types (don't change sofa to loveseat, round table to square, etc.)
+
+3. **MATERIAL ACCURACY** (Priority 3 - VERY IMPORTANT):
+   ✓ Apply materials exactly as described: {materials_description}
+   ✓ For multi-material walls (backdrop walls), preserve LEFT-TO-RIGHT order of materials
+   ✓ Match floor type and rug placement precisely
+   ✓ Apply correct ceiling treatments and lighting systems
+
+4. **ADOPT STYLE FROM REFERENCE** (Priority 4):
+   ✓ Study reference lighting conditions (color temperature, intensity, direction)
+   ✓ Apply its material textures and finishes (fabric weaves, wood grains, stone veining, metal polish)
+   ✓ Replicate atmospheric mood and color palette
+   ✗ DO NOT copy furniture shapes or layouts from reference
+
+5. **LIGHTING EMPHASIS** (Priority 5 - CRITICAL):
+   {lighting_description}
+   ✓ Distinguish clearly between PRIMARY lighting (main source) and SECONDARY/ACCENT lighting
+   ✓ Apply contrast, shadow, and highlight adjustments as specified
+   ✓ Create dramatic lighting effects if specified (high contrast, deep shadows, crisp highlights)
+
+6. **ENHANCE REALISM** (Priority 6):
+   ✓ Add photographic depth of field
+   ✓ Include realistic shadows and reflections
+   ✓ Show material textures in ultra-sharp detail (fabric weaves, wood pores, stone veins)
+   ✓ Apply specified sharpness and contrast boosts: {technical_enhancements}
+
+7. **OUTPUT FORMAT**:
+   ✓ Aspect ratio: {aspect_ratio}
+   ✓ Camera viewpoint: {viewpoint}
+   ✓ Single photorealistic interior photograph
+   ✗ No text, watermarks, or overlays
+
+8. **USER'S SPECIFIC REQUEST**:
+   Room Type: {room_type}
+   Style: {interior_style}
+   {user_description}
+
+9. **ENVIRONMENT & ATMOSPHERE**:
+   {environment}
+
+10. **CRITICAL EXCLUSIONS** - DO NOT include any of these:
+    {negative_items}
+
+**OUTPUT**: Single photorealistic interior photograph matching {aspect_ratio} aspect ratio, professional interior photography quality (AD/Architectural Digest standard), no text/watermarks
+"""
+
+    INTERIOR_RENDER_WITHOUT_REFERENCE = """
+**ROLE**: You are an expert AI interior design renderer and ArchViz artist.
+
+**INPUT**: One interior design sketch showing room layout and furniture placement
+
+**YOUR TASK**:
+
+1. **PRESERVE SPATIAL LAYOUT** (ABSOLUTE REQUIREMENT - Priority 1):
+   ⚠️ SKETCH ADHERENCE LEVEL: {sketch_adherence} (0.95=very strict, 1.0=pixel-perfect)
+   🛋️ **MAINTAIN EXACT POSITIONS OF ALL FURNITURE AND OBJECTS - THIS IS NON-NEGOTIABLE!**
+   ✓ Keep EXACT position of every furniture item from sketch
+   ✓ Preserve EXACT spatial relationships (distances, alignments, groupings)
+   ✓ Maintain EXACT proportions and scales of all objects relative to each other
+   ✓ Preserve room dimensions and perspective
+   ✓ Keep wall treatments, floor patterns, ceiling features in EXACT locations
+   ✗ DO NOT move, add, or remove any furniture or decorative items
+   ✗ DO NOT alter object sizes or proportions
+   ✗ DO NOT reorganize furniture layout
+
+2. **PRESERVE OBJECT IDENTITY** (Priority 2):
+   ✓ Maintain the ESSENCE and FORM of each object (shapes, types, styles)
+   ✓ Keep all decorative items (paintings, sculptures, plants, books) in exact positions
+   ✗ DO NOT transform object types
+
+3. **MATERIAL ACCURACY** (Priority 3):
+   ✓ Apply materials exactly as described: {materials_description}
+   ✓ For multi-material walls, preserve material order and layout
+   ✓ Match floor, rug, and ceiling treatments precisely
+
+4. **LIGHTING EMPHASIS** (Priority 4 - CRITICAL):
+   {lighting_description}
+   ✓ Implement PRIMARY vs SECONDARY lighting hierarchy
+   ✓ Apply contrast, shadow, and highlight adjustments
+   ✓ Create specified lighting effects
+
+5. **ADD REALISM** (Priority 5):
+   ✓ Infer photorealistic materials based on room type and style
+   ✓ Apply natural lighting and shadows
+   ✓ Show ultra-sharp material details: {technical_enhancements}
+   ✓ Add appropriate atmosphere and mood
+
+6. **OUTPUT FORMAT**:
+   ✓ Aspect ratio: {aspect_ratio}
+   ✓ Camera viewpoint: {viewpoint}
+   ✓ Single photorealistic image
+   ✗ No text, watermarks, or overlays
+
+7. **USER'S REQUEST**:
+   Room Type: {room_type}
+   Style: {interior_style}
+   {user_description}
+
+8. **ENVIRONMENT & ATMOSPHERE**:
+   {environment}
+
+9. **AVOID THESE**:
+   {negative_items}
+
+**OUTPUT**: Single photorealistic interior photograph matching {aspect_ratio} aspect ratio
+Style: Professional interior photography (Architectural Digest / AD quality)
+"""
+
     # ============== PLANNING MODE PROMPTS ==============
 
     # DYNAMIC PROMPT CONSTRUCTION IS BETTER THAN STATIC TEMPLATES
@@ -476,7 +614,13 @@ You are performing high-fidelity inpainting. Adherence to mask and style is HIGH
         """Get analysis prompt from config"""
         from config import ANALYSIS_SYSTEM_PROMPT_VI
         return ANALYSIS_SYSTEM_PROMPT_VI
-    
+
+    @classmethod
+    def build_interior_analysis_prompt(cls) -> str:
+        """Get interior analysis prompt from config"""
+        from config import INTERIOR_ANALYSIS_SYSTEM_PROMPT_VI
+        return INTERIOR_ANALYSIS_SYSTEM_PROMPT_VI
+
     @classmethod
     def build_translation_prompt(cls) -> str:
         """Get translation prompt from config"""
