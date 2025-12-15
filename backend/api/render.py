@@ -98,13 +98,27 @@ def render_image():
 
         print(f"🎯 Geometry control: sketch_adherence={sketch_adherence}, aspect_ratio={aspect_ratio}")
 
-        prompt, negative_prompt = prompt_builder.build_render_prompt(
-            translated_data_en=translated_data_en,
-            viewpoint=viewpoint,
-            has_reference=(reference_pil is not None),
-            sketch_adherence=sketch_adherence,
-            aspect_ratio=aspect_ratio
-        )
+        # ✅ FIX: Route to correct prompt builder based on render_mode
+        render_mode = data.get('render_mode', 'building')  # Default to building for backward compatibility
+
+        if render_mode == 'interior':
+            print("🛋️ Using INTERIOR render prompt builder")
+            prompt, negative_prompt = prompt_builder.build_interior_render_prompt(
+                translated_data_en=translated_data_en,
+                viewpoint=viewpoint,
+                has_reference=(reference_pil is not None),
+                sketch_adherence=sketch_adherence,
+                aspect_ratio=aspect_ratio
+            )
+        else:
+            print("🏢 Using BUILDING render prompt builder")
+            prompt, negative_prompt = prompt_builder.build_render_prompt(
+                translated_data_en=translated_data_en,
+                viewpoint=viewpoint,
+                has_reference=(reference_pil is not None),
+                sketch_adherence=sketch_adherence,
+                aspect_ratio=aspect_ratio
+            )
         
         print(f"📝 Prompt preview (first 200 chars):")
         print(f"   {prompt[:200]}...")
