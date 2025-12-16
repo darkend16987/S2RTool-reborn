@@ -818,11 +818,14 @@ async function generateRender() {
         }
 
         const result = await response.json();
+
+        // ✅ FIX: Store base64 without prefix for download
         currentRenderedImage = result.generated_image_base64;
 
         const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
-        displayRenderedImage(currentRenderedImage, elapsed);
+        // ✅ FIX: Pass mime_type for proper data URI
+        displayRenderedImage(currentRenderedImage, result.mime_type, elapsed);
         showSuccess('renderSuccess', '✨ Render thành công!');
 
     } catch (error) {
@@ -836,11 +839,14 @@ async function generateRender() {
 }
 
 // ============== DISPLAY RENDERED IMAGE ==============
-function displayRenderedImage(imageBase64, elapsedTime) {
+function displayRenderedImage(imageBase64, mimeType, elapsedTime) {
     if (!gallery) return;
 
+    // ✅ FIX: Create proper data URI with mime type
+    const dataUri = `data:${mimeType};base64,${imageBase64}`;
+
     gallery.innerHTML = `
-        <img src="${imageBase64}" alt="Rendered interior" class="rendered-image" style="width: 100%; border-radius: 8px; cursor: pointer;">
+        <img src="${dataUri}" alt="Rendered interior" class="rendered-image" style="width: 100%; border-radius: 8px; cursor: pointer;">
     `;
 
     // Click to view full size
@@ -848,7 +854,7 @@ function displayRenderedImage(imageBase64, elapsedTime) {
     if (img) {
         img.addEventListener('click', () => {
             if (imagePreviewModal) {
-                imagePreviewModal.show(imageBase64);
+                imagePreviewModal.show(dataUri);
             }
         });
     }
@@ -870,14 +876,38 @@ function displayRenderedImage(imageBase64, elapsedTime) {
 
 // ============== DOWNLOAD IMAGE ==============
 function handleDownloadImage() {
-    if (!currentRenderedImage) return;
+    if (!currentRenderedImage) {
+        showError('renderError', 'Chưa có ảnh!');
+        return;
+    }
 
-    const link = document.createElement('a');
-    link.href = currentRenderedImage;
-    link.download = `interior-render-${Date.now()}.png`;
-    link.click();
+    try {
+        // ✅ FIX: Convert base64 to blob for proper download (matching building-script.js)
+        const byteString = atob(currentRenderedImage);
+        const mimeString = 'image/png';
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
 
-    console.log('💾 Image downloaded');
+        const blob = new Blob([ab], { type: mimeString });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `interior-render-${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        console.log('💾 Image downloaded');
+        showSuccess('renderSuccess', '✅ Ảnh đã được tải xuống!');
+    } catch (error) {
+        console.error('❌ Download failed:', error);
+        showError('renderError', `Lỗi tải ảnh: ${error.message}`);
+    }
 }
 
 // ============== EXPORT JSON ==============
