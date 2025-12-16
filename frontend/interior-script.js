@@ -108,6 +108,7 @@ let imagePreviewModal = null;
 
 // ============== DOM ELEMENTS ==============
 let uploadSketch, previewImage, uploadLabel, analyzeButton, generateButton;
+let uploadReference, previewReference, uploadReferenceLabel, clearReferenceButton;
 let gallery, aspectRatioSelect;
 
 // ============== INIT ==============
@@ -126,6 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
     generateButton = document.getElementById('generateRenderButton');
     gallery = document.getElementById('gallery');
     aspectRatioSelect = document.getElementById('aspect_ratio');
+
+    // Reference image elements
+    uploadReference = document.getElementById('uploadReference');
+    previewReference = document.getElementById('previewReference');
+    uploadReferenceLabel = document.getElementById('uploadReferenceLabel');
+    clearReferenceButton = document.getElementById('clearReferenceButton');
 
     // Setup
     loadAspectRatios();
@@ -161,6 +168,16 @@ function setupEventListeners() {
     // File upload
     if (uploadSketch) {
         uploadSketch.addEventListener('change', handleImageUpload);
+    }
+
+    // Reference image upload
+    if (uploadReference) {
+        uploadReference.addEventListener('change', handleReferenceUpload);
+    }
+
+    // Clear reference button
+    if (clearReferenceButton) {
+        clearReferenceButton.addEventListener('click', clearReference);
     }
 
     // Click preview to view full size
@@ -280,6 +297,72 @@ async function handleImageUpload(event) {
         console.error('❌ Image optimization failed:', error);
         showError('analyzeError', 'Lỗi xử lý ảnh. Vui lòng thử lại.');
     }
+}
+
+// ============== REFERENCE IMAGE HANDLING ==============
+async function handleReferenceUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+        console.log(`📸 Processing reference image: ${file.name}`);
+        const optimizedBlob = await optimizeImageForUpload(file);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            currentReferenceImage = e.target.result.split(',')[1]; // Remove data:image/...;base64,
+
+            if (previewReference) {
+                previewReference.src = e.target.result;
+                previewReference.classList.remove('hidden');
+                previewReference.title = 'Click to view full size';
+                previewReference.style.cursor = 'pointer';
+                previewReference.onclick = () => {
+                    if (imagePreviewModal) imagePreviewModal.show(e.target.result);
+                };
+            }
+
+            if (uploadReferenceLabel) {
+                uploadReferenceLabel.classList.add('hidden');
+            }
+
+            if (clearReferenceButton) {
+                clearReferenceButton.style.display = 'block';
+            }
+
+            console.log('✅ Reference image uploaded');
+            console.log('💡 This reference will guide materials, colors, and lighting consistency');
+        };
+        reader.readAsDataURL(optimizedBlob);
+
+    } catch (error) {
+        console.error('❌ Reference image optimization failed:', error);
+        showError('analyzeError', 'Lỗi xử lý ảnh reference. Vui lòng thử lại.');
+    }
+}
+
+function clearReference() {
+    currentReferenceImage = null;
+
+    if (uploadReference) {
+        uploadReference.value = '';
+    }
+
+    if (previewReference) {
+        previewReference.classList.add('hidden');
+        previewReference.src = '';
+        previewReference.onclick = null;
+    }
+
+    if (uploadReferenceLabel) {
+        uploadReferenceLabel.classList.remove('hidden');
+    }
+
+    if (clearReferenceButton) {
+        clearReferenceButton.style.display = 'none';
+    }
+
+    console.log('🗑️ Reference image cleared');
 }
 
 // ============== STEP 1: ANALYZE SKETCH ==============
@@ -715,6 +798,7 @@ async function generateRender() {
         // Add reference image if exists
         if (currentReferenceImage) {
             requestBody.reference_image_base64 = currentReferenceImage;
+            console.log('🖼️ Using reference image for material/color consistency');
         }
 
         const response = await fetch(`${API_BASE_URL}/render`, {
