@@ -736,7 +736,8 @@ async function translatePrompt() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                form_data: formData
+                form_data: formData,
+                render_mode: 'interior'  // ✅ FIX: Tell backend to use interior translation prompt
             })
         });
 
