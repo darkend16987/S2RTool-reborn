@@ -372,23 +372,24 @@ OUTPUT FORMAT (JSON):
     "room_dimensions": "Kích thước phòng ước tính (VD: 4m x 5m x 3m cao - để trống nếu không rõ)",
     "furniture_layout": [
         {
-            "object_type": "Loại đồ nội thất (VD: Sofa, Bàn trà, Ghế thư giãn, Giường, Tủ...)",
+            "type": "Loại đồ nội thất (VD: Sofa, Bàn trà, Ghế thư giãn, Giường, Tủ...)",
             "position": "Vị trí trong không gian (VD: Trung tâm phòng, Góc trái, Sát tường phải, Giữa phòng...)",
             "description": "Mô tả chi tiết: hình dạng, kích thước, màu sắc, chất liệu",
-            "material": "Vật liệu chính (VD: Vải linen màu be, Da bò nâu, Gỗ óc chó tối...)"
+            "material": "Vật liệu chính với bề mặt (VD: Da bò nâu bóng, Gỗ óc chó tự nhiên vân rõ, Vải linen màu be mờ...)"
         }
     ],
     "wall_treatments": [
         {
             "wall_location": "Vị trí tường (VD: Tường sau sofa, Tường bên trái, Tường cạnh cửa sổ...)",
-            "materials": "Vật liệu ốp tường (VD: Lam gỗ óc chó dọc + Đá marble trắng vân xám + Gạch thẻ trắng...)",
-            "description": "Mô tả chi tiết về cách phối hợp vật liệu, màu sắc, kết cấu"
+            "material": "Vật liệu chính (VD: Lam gỗ óc chó, Đá marble trắng, Sơn trắng mờ, Gạch men...)",
+            "color": "Màu sắc chi tiết (VD: Trắng ngà, Xám nhạt, Nâu gỗ tự nhiên...)",
+            "finish": "Bề mặt hoàn thiện (VD: Mờ, Bóng, Vân gỗ tự nhiên, Nhám...)"
         }
     ],
     "flooring": {
-        "type": "Loại sàn (VD: Sàn gỗ sồi, Sàn gạch, Sàn đá marble, Thảm trải...)",
-        "description": "Mô tả màu sắc, vân gỗ/đá, độ bóng",
-        "rug_carpet": "Thảm trải (nếu có - VD: Thảm len xám lớn, Thảm lông ngắn...)"
+        "type": "Loại sàn (VD: Sàn gỗ sồi tự nhiên, Sàn gạch granite, Sàn đá marble...)",
+        "description": "Mô tả màu sắc, vân, độ bóng, chất liệu cụ thể",
+        "rug": "Thảm trải (nếu có - VD: Thảm len xám lớn 2x3m, Thảm lông ngắn be...)"
     },
     "ceiling": {
         "type": "Loại trần (VD: Trần thạch cao phẳng, Trần giật cấp, Trần gỗ...)",
@@ -404,15 +405,13 @@ OUTPUT FORMAT (JSON):
     "decorations": [
         {
             "type": "Loại đồ trang trí (VD: Tranh treo tường, Tượng điêu khắc, Cây cảnh, Sách, Hoa...)",
-            "location": "Vị trí (VD: Trên tường sau sofa, Trên bàn trà, Góc phòng...)",
-            "description": "Mô tả chi tiết màu sắc, kích thước, chất liệu"
+            "description": "Mô tả chi tiết vị trí, màu sắc, kích thước, chất liệu (VD: Tranh treo tường sau sofa 1.2m, Cây cảnh góc phòng cao 1.5m...)"
         }
     ],
     "windows_doors": [
         {
             "type": "Loại (VD: Cửa sổ kính lớn, Cửa đi gỗ, Cửa trượt...)",
-            "location": "Vị trí (VD: Bên trái phòng, Phía sau, Cạnh giường...)",
-            "description": "Mô tả khung, kính, rèm cửa (nếu có)"
+            "description": "Mô tả vị trí, khung, kính, rèm cửa (VD: Cửa sổ kính lớn bên trái, khung nhôm đen, rèm vải trắng...)"
         }
     ],
     "environment": [
@@ -440,9 +439,31 @@ QUY TẮC:
 3. Mô tả đầy đủ CHẤT LIỆU, MÀU SẮC, KẾT CẤU của từng vật thể
 4. Với tường điểm nhấn (backdrop wall), mô tả rõ cách phối hợp các vật liệu từ trái sang phải
 5. Phân biệt rõ nguồn sáng CHÍNH (primary) và PHỤ (secondary/accent)
-6. Sử dụng thuật ngữ thiết kế nội thất chuyên nghiệp
-7. Chỉ mô tả những gì THẬT SỰ NHÌN THẤY trong sketch
-8. Trả về ĐÚNG format JSON, không có text thừa
+6. ⭐ VẬT LIỆU phải mô tả ĐẦY ĐỦ 4 yếu tố: loại cụ thể + màu sắc + bề mặt + phản chiếu
+7. Sử dụng thuật ngữ thiết kế nội thất chuyên nghiệp
+8. Chỉ mô tả những gì THẬT SỰ NHÌN THẤY trong sketch
+9. Trả về ĐÚNG format JSON, không có text thừa
+
+QUAN TRỌNG - VẬT LIỆU (CRITICAL - ƯU TIÊN CAO NHẤT):
+⚠️ Vật liệu là yếu tố QUAN TRỌNG NHẤT trong render nội thất!
+Mỗi vật liệu PHẢI mô tả ĐẦY ĐỦ 4 yếu tố:
+1. **Loại vật liệu CỤ THỂ**: Gỗ óc chó tự nhiên, Da bò thật, Thạch cao, Đá marble Carrara, Vải linen Bỉ...
+2. **Màu sắc CHI TIẾT**: Nâu sẫm gỗ tự nhiên, Trắng ngà kem, Xám nhạt vân mây, Be nhạt...
+3. **Bề mặt/Hoàn thiện**: Bóng gương, Mờ nhám, Vân gỗ tự nhiên, Nhám mịn, Dệt thô...
+4. **Đặc tính ánh sáng**: Phản chiếu cao, Hấp thụ ánh sáng, Bán bóng, Phản chiếu khuếch tán...
+
+VÍ DỤ MÔ TẢ VẬT LIỆU ĐÚNG:
+✅ "Gỗ óc chó tự nhiên màu nâu sẫm, vân gỗ rõ nét, bề mặt bóng mờ tự nhiên, phản chiếu nhẹ"
+✅ "Da bò thật màu nâu cognac, bề mặt mềm mại có vân da, phản chiếu ánh sáng nhẹ tạo độ sâu"
+✅ "Thạch cao trắng ngà, bề mặt mịn màng hoàn thiện mờ, hấp thụ ánh sáng tạo bóng mềm"
+✅ "Đá marble trắng vân xám, bề mặt đánh bóng gương, phản chiếu cao tạo điểm sáng"
+❌ "Gỗ", "Da nâu", "Sơn trắng" (quá sơ sài, thiếu chi tiết)
+
+QUAN TRỌNG - TRẦN, TƯỜNG, SÀN (BẮT BUỘC):
+⚠️ BẮT BUỘC phải có mô tả đầy đủ, áp dụng 4 yếu tố vật liệu cho mỗi bộ phận:
+- Trần: Loại + màu + bề mặt + cách phản chiếu (VD: "Thạch cao trắng mờ nhám hấp thụ ánh sáng")
+- Tường: Vật liệu + màu + finish + phản chiếu (VD: "Lam gỗ óc chó nâu sẫm vân rõ bán bóng phản chiếu nhẹ")
+- Sàn: Loại + màu + vân + độ bóng (VD: "Gỗ sồi tự nhiên nâu vàng vân rõ bóng mờ phản chiếu khuếch tán")
 
 QUAN TRỌNG - YẾU TỐ "TRUNG THỰC" (FIDELITY):
 ⚠️ Đây là yếu tố QUAN TRỌNG NHẤT cho interior rendering:

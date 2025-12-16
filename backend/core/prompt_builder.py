@@ -222,15 +222,32 @@ You are given TWO images in this exact order:
    ✓ Preserve decorative items (paintings, sculptures, plants, books, vases) in exact positions
    ✗ DO NOT transform object types (don't change sofa to loveseat, round table to square, etc.)
 
-3. **MATERIAL ACCURACY** (Priority 3 - VERY IMPORTANT):
-   ✓ Apply materials exactly as described: {materials_description}
-   ✓ For multi-material walls (backdrop walls), preserve LEFT-TO-RIGHT order of materials
-   ✓ Match floor type and rug placement precisely
+3. **MATERIAL ACCURACY** (Priority 3 - CRITICAL FOR PHOTOREALISM):
+   ⚠️ MATERIALS ARE THE MOST IMPORTANT FACTOR IN INTERIOR RENDERING!
+   ✓ Apply materials EXACTLY as described with all 4 properties:
+     - Material type (wood species, fabric type, stone variety)
+     - Color (precise color description with undertones)
+     - Surface finish (glossy/matte/satin/textured/natural grain)
+     - Light interaction (reflectivity, absorption, diffusion)
+
+   📋 Materials Specification: {materials_description}
+
+   ✓ CRITICAL: Each material must display realistic light physics:
+     - Glossy surfaces: Sharp specular highlights, clear reflections
+     - Matte surfaces: Soft, diffused light, no reflections
+     - Natural wood: Visible grain patterns, semi-gloss sheen, warm light absorption
+     - Leather: Soft sheen, subtle creases, gentle light reflection
+     - Marble/stone: High gloss polish, sharp reflections, color depth through translucency
+     - Fabric: Visible weave texture, soft light diffusion, color depth variations
+
+   ✓ For multi-material walls (backdrop walls), preserve LEFT-TO-RIGHT order of materials precisely
+   ✓ Match floor type and rug placement with exact material properties
    ✓ Apply correct ceiling treatments and lighting systems
+   ✓ Ensure material textures are ULTRA-SHARP (fabric weave, wood pores, stone veins visible)
 
 4. **ADOPT STYLE FROM REFERENCE** (Priority 4):
    ✓ Study reference lighting conditions (color temperature, intensity, direction)
-   ✓ Apply its material textures and finishes (fabric weaves, wood grains, stone veining, metal polish)
+   ✓ Apply its material textures and finishes (fabric weaves, wood grains, stone veining, metal polish) while respecting material specification above
    ✓ Replicate atmospheric mood and color palette
    ✗ DO NOT copy furniture shapes or layouts from reference
 
@@ -290,10 +307,27 @@ You are given TWO images in this exact order:
    ✓ Keep all decorative items (paintings, sculptures, plants, books) in exact positions
    ✗ DO NOT transform object types
 
-3. **MATERIAL ACCURACY** (Priority 3):
-   ✓ Apply materials exactly as described: {materials_description}
-   ✓ For multi-material walls, preserve material order and layout
-   ✓ Match floor, rug, and ceiling treatments precisely
+3. **MATERIAL ACCURACY** (Priority 3 - CRITICAL FOR PHOTOREALISM):
+   ⚠️ MATERIALS ARE THE MOST IMPORTANT FACTOR IN INTERIOR RENDERING!
+   ✓ Apply materials EXACTLY as described with all 4 properties:
+     - Material type (wood species, fabric type, stone variety)
+     - Color (precise color description with undertones)
+     - Surface finish (glossy/matte/satin/textured/natural grain)
+     - Light interaction (reflectivity, absorption, diffusion)
+
+   📋 Materials Specification: {materials_description}
+
+   ✓ CRITICAL: Each material must display realistic light physics:
+     - Glossy surfaces: Sharp specular highlights, clear reflections
+     - Matte surfaces: Soft, diffused light, no reflections
+     - Natural wood: Visible grain patterns, semi-gloss sheen, warm light absorption
+     - Leather: Soft sheen, subtle creases, gentle light reflection
+     - Marble/stone: High gloss polish, sharp reflections, color depth through translucency
+     - Fabric: Visible weave texture, soft light diffusion, color depth variations
+
+   ✓ For multi-material walls, preserve material order and layout precisely
+   ✓ Match floor, rug, ceiling treatments with exact material properties
+   ✓ Ensure material textures are ULTRA-SHARP in close-up areas (fabric weave, wood pores, stone veins visible)
 
 4. **LIGHTING EMPHASIS** (Priority 4 - CRITICAL):
    {lighting_description}
@@ -1005,25 +1039,29 @@ Style: Professional interior photography (Architectural Digest / AD quality)
         # Build materials description (comprehensive list from all sources)
         materials_parts = []
 
-        # 1. Wall treatments
+        # 1. Wall treatments (CRITICAL: material properties for accurate rendering)
         for wall in wall_treatments:
             wall_loc = wall.get('wall_location', '')
-            wall_mat = wall.get('materials', '')
-            wall_desc = wall.get('description', '')
+            wall_mat = wall.get('material', '')
+            wall_color = wall.get('color', '')
+            wall_finish = wall.get('finish', '')
             if wall_loc and wall_mat:
-                materials_parts.append(f"{wall_loc}: {wall_mat} ({wall_desc})")
+                # Include material type + color + finish for accurate light interaction
+                wall_full = f"{wall_mat} {wall_color} {wall_finish}".strip()
+                materials_parts.append(f"{wall_loc}: {wall_full}")
 
-        # 2. Flooring
+        # 2. Flooring (CRITICAL: floor material affects room reflections)
         floor_type = flooring.get('type', '')
         floor_desc = flooring.get('description', '')
-        floor_rug = flooring.get('rug_carpet', '')
+        floor_rug = flooring.get('rug', '')
         if floor_type:
+            # Include full material description for accurate reflections
             floor_text = f"Floor: {floor_type} - {floor_desc}"
             if floor_rug:
                 floor_text += f" with {floor_rug}"
             materials_parts.append(floor_text)
 
-        # 3. Ceiling
+        # 3. Ceiling (CRITICAL: ceiling affects ambient lighting)
         ceiling_type = ceiling.get('type', '')
         ceiling_light = ceiling.get('lighting_system', '')
         if ceiling_type:
@@ -1032,13 +1070,19 @@ Style: Professional interior photography (Architectural Digest / AD quality)
                 ceiling_text += f" with {ceiling_light}"
             materials_parts.append(ceiling_text)
 
-        # 4. Furniture materials (top 5 items)
-        for i, furniture in enumerate(furniture_layout[:5]):
-            obj_type = furniture.get('object_type', '')
+        # 4. Furniture materials (CRITICAL: each material has unique light properties)
+        # Process ALL furniture items to ensure complete material specification
+        for furniture in furniture_layout:
+            obj_type = furniture.get('type', '')
             material = furniture.get('material', '')
             position = furniture.get('position', '')
+            description = furniture.get('description', '')
             if obj_type and material:
-                materials_parts.append(f"{obj_type} ({position}): {material}")
+                # Include full material spec with position for spatial accuracy
+                if description and len(description) > 5:
+                    materials_parts.append(f"{obj_type} ({position}): {material} - {description}")
+                else:
+                    materials_parts.append(f"{obj_type} ({position}): {material}")
 
         materials_description = ". ".join(materials_parts) if materials_parts else "Context-appropriate interior materials"
 
