@@ -353,7 +353,7 @@ function fillFormFromAnalysis(data) {
     if (data.flooring) {
         setVal('flooring_type', data.flooring.type);
         setVal('flooring_description', data.flooring.description);
-        setVal('flooring_rug', data.flooring.rug_carpet);
+        setVal('flooring_rug', data.flooring.rug || data.flooring.rug_carpet);
     }
 
     // Ceiling (single object)
@@ -438,7 +438,7 @@ function addDynamicItem(container, type, data = null) {
             html = `
                 <div class="form-group">
                     <label>Loại đồ nội thất:</label>
-                    <input type="text" class="furniture-object_type" placeholder="VD: Sofa, Bàn trà, Ghế..." value="${data?.object_type || ''}">
+                    <input type="text" class="furniture-type" placeholder="VD: Sofa, Bàn trà, Ghế..." value="${data?.type || data?.object_type || ''}">
                 </div>
                 <div class="form-group">
                     <label>Vị trí:</label>
@@ -464,11 +464,15 @@ function addDynamicItem(container, type, data = null) {
                 </div>
                 <div class="form-group">
                     <label>Vật liệu:</label>
-                    <input type="text" class="wall-materials" placeholder="VD: Lam gỗ óc chó + Đá marble + Gạch thẻ..." value="${data?.materials || ''}">
+                    <input type="text" class="wall-material" placeholder="VD: Lam gỗ óc chó, Đá marble..." value="${data?.material || data?.materials || ''}">
                 </div>
                 <div class="form-group">
-                    <label>Mô tả chi tiết:</label>
-                    <textarea class="wall-description" rows="2" placeholder="Cách phối hợp vật liệu, màu sắc...">${data?.description || ''}</textarea>
+                    <label>Màu sắc:</label>
+                    <input type="text" class="wall-color" placeholder="VD: Nâu gỗ tự nhiên, Trắng ngà..." value="${data?.color || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Bề mặt:</label>
+                    <input type="text" class="wall-finish" placeholder="VD: Mờ, Bóng, Vân gỗ..." value="${data?.finish || ''}">
                 </div>
                 <button type="button" class="btn-remove" onclick="this.parentElement.remove()">× Xóa</button>
             `;
@@ -549,7 +553,7 @@ function collectFormData() {
         flooring: {
             type: document.getElementById('flooring_type')?.value || '',
             description: document.getElementById('flooring_description')?.value || '',
-            rug_carpet: document.getElementById('flooring_rug')?.value || ''
+            rug: document.getElementById('flooring_rug')?.value || ''
         },
         ceiling: {
             type: document.getElementById('ceiling_type')?.value || '',
@@ -573,7 +577,7 @@ function collectFormData() {
     // Collect furniture layout
     document.querySelectorAll('#furnitureLayoutContainer .dynamic-item').forEach(item => {
         data.furniture_layout.push({
-            object_type: item.querySelector('.furniture-object_type')?.value || '',
+            type: item.querySelector('.furniture-type')?.value || '',
             position: item.querySelector('.furniture-position')?.value || '',
             description: item.querySelector('.furniture-description')?.value || '',
             material: item.querySelector('.furniture-material')?.value || ''
@@ -584,8 +588,9 @@ function collectFormData() {
     document.querySelectorAll('#wallTreatmentsContainer .dynamic-item').forEach(item => {
         data.wall_treatments.push({
             wall_location: item.querySelector('.wall-location')?.value || '',
-            materials: item.querySelector('.wall-materials')?.value || '',
-            description: item.querySelector('.wall-description')?.value || ''
+            material: item.querySelector('.wall-material')?.value || '',
+            color: item.querySelector('.wall-color')?.value || '',
+            finish: item.querySelector('.wall-finish')?.value || ''
         });
     });
 
