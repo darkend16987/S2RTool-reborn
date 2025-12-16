@@ -7,6 +7,12 @@ COPY building-render.html /usr/share/nginx/html/
 COPY planning-render.html /usr/share/nginx/html/
 COPY planning-detail-render.html /usr/share/nginx/html/
 COPY settings.html /usr/share/nginx/html/
+
+# --- BỔ SUNG CÁC FILE CÒN THIẾU ---
+COPY interior-render.html /usr/share/nginx/html/
+COPY interior-script.js /usr/share/nginx/html/
+# ----------------------------------
+
 COPY style.css /usr/share/nginx/html/
 COPY building-script.js /usr/share/nginx/html/
 COPY planning-script.js /usr/share/nginx/html/
