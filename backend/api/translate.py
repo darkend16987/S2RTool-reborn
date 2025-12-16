@@ -17,7 +17,8 @@ def translate_prompt():
 
     Request:
     {
-        "form_data": {...}  // Vietnamese
+        "form_data": {...},  // Vietnamese
+        "render_mode": "building" | "interior"  // Optional, defaults to 'building'
     }
 
     Response:
@@ -36,9 +37,10 @@ def translate_prompt():
             return jsonify({"error": "Missing 'form_data'"}), 400
 
         form_data_vi = data['form_data']
+        render_mode = data.get('render_mode', 'building')  # ✅ NEW: Get render mode
 
-        # Translate
-        translated_data_en = translator.translate_vi_to_en(form_data_vi)
+        # Translate with mode
+        translated_data_en = translator.translate_vi_to_en(form_data_vi, mode=render_mode)
         
         return jsonify({
             "translated_data_en": translated_data_en,
