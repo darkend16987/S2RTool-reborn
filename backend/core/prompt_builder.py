@@ -203,7 +203,16 @@ You are given TWO images in this exact order:
 
 **YOUR TASK - Follow these rules STRICTLY**:
 
-1. **PRESERVE SPATIAL LAYOUT** (Priority 1 - ABSOLUTE REQUIREMENT):
+1. **CAMERA ANGLE & VIEWPOINT** (ABSOLUTE REQUIREMENT - Priority 1):
+   📷 {viewpoint}
+   ⚠️ **THIS IS CRITICAL**: The camera angle determines how we see ALL furniture and objects
+   ✓ Maintain the EXACT viewing direction, angle, and height from the sketch
+   ✓ Respect the EXACT perspective projection (vanishing points, horizon line)
+   ✓ Keep the EXACT framing (what's visible, what's cropped, what's in foreground/background)
+   ✗ DO NOT change camera position or viewing angle from the sketch
+   ✗ DO NOT rotate, tilt, or shift the viewpoint
+
+2. **PRESERVE SPATIAL LAYOUT** (Priority 2 - ABSOLUTE REQUIREMENT):
    ⚠️ SKETCH ADHERENCE LEVEL: {sketch_adherence} (0.95=very strict, 1.0=pixel-perfect)
    🛋️ **MAINTAIN EXACT POSITIONS OF ALL FURNITURE AND OBJECTS - THIS IS NON-NEGOTIABLE!**
    ✓ Keep EXACT position of every furniture item (sofa, tables, chairs, cabinets, etc.)
@@ -216,13 +225,13 @@ You are given TWO images in this exact order:
    ✗ DO NOT change spatial relationships between objects
    ✗ DO NOT reorganize furniture layout
 
-2. **PRESERVE OBJECT IDENTITY** (Priority 2 - CRITICAL):
+3. **PRESERVE OBJECT IDENTITY** (Priority 3 - CRITICAL):
    ✓ Maintain the ESSENCE and FORM of each object (round table stays round, L-shaped sofa stays L-shaped)
    ✓ Keep chair types, table shapes, cabinet styles as sketched
    ✓ Preserve decorative items (paintings, sculptures, plants, books, vases) in exact positions
    ✗ DO NOT transform object types (don't change sofa to loveseat, round table to square, etc.)
 
-3. **MATERIAL ACCURACY** (Priority 3 - CRITICAL FOR PHOTOREALISM):
+4. **MATERIAL ACCURACY** (Priority 4 - CRITICAL FOR PHOTOREALISM):
    ⚠️ MATERIALS ARE THE MOST IMPORTANT FACTOR IN INTERIOR RENDERING!
    ✓ Apply materials EXACTLY as described with all 4 properties:
      - Material type (wood species, fabric type, stone variety)
@@ -245,25 +254,25 @@ You are given TWO images in this exact order:
    ✓ Apply correct ceiling treatments and lighting systems
    ✓ Ensure material textures are ULTRA-SHARP (fabric weave, wood pores, stone veins visible)
 
-4. **ADOPT STYLE FROM REFERENCE** (Priority 4):
+5. **ADOPT STYLE FROM REFERENCE** (Priority 5):
    ✓ Study reference lighting conditions (color temperature, intensity, direction)
    ✓ Apply its material textures and finishes (fabric weaves, wood grains, stone veining, metal polish) while respecting material specification above
    ✓ Replicate atmospheric mood and color palette
    ✗ DO NOT copy furniture shapes or layouts from reference
 
-5. **LIGHTING EMPHASIS** (Priority 5 - CRITICAL):
+6. **LIGHTING EMPHASIS** (Priority 6 - CRITICAL):
    {lighting_description}
    ✓ Distinguish clearly between PRIMARY lighting (main source) and SECONDARY/ACCENT lighting
    ✓ Apply contrast, shadow, and highlight adjustments as specified
    ✓ Create dramatic lighting effects if specified (high contrast, deep shadows, crisp highlights)
 
-6. **ENHANCE REALISM** (Priority 6):
+7. **ENHANCE REALISM** (Priority 7):
    ✓ Add photographic depth of field
    ✓ Include realistic shadows and reflections
    ✓ Show material textures in ultra-sharp detail (fabric weaves, wood pores, stone veins)
    ✓ Apply specified sharpness and contrast boosts: {technical_enhancements}
 
-7. **OUTPUT FORMAT**:
+8. **OUTPUT FORMAT**:
    ✓ Aspect ratio: {aspect_ratio}
    ✓ Camera viewpoint: {viewpoint}
    ✓ Single photorealistic interior photograph
@@ -290,7 +299,16 @@ You are given TWO images in this exact order:
 
 **YOUR TASK**:
 
-1. **PRESERVE SPATIAL LAYOUT** (ABSOLUTE REQUIREMENT - Priority 1):
+1. **CAMERA ANGLE & VIEWPOINT** (ABSOLUTE REQUIREMENT - Priority 1):
+   📷 {viewpoint}
+   ⚠️ **THIS IS CRITICAL**: The camera angle determines how we see ALL furniture and objects
+   ✓ Maintain the EXACT viewing direction, angle, and height from the sketch
+   ✓ Respect the EXACT perspective projection (vanishing points, horizon line)
+   ✓ Keep the EXACT framing (what's visible, what's cropped, what's in foreground/background)
+   ✗ DO NOT change camera position or viewing angle from the sketch
+   ✗ DO NOT rotate, tilt, or shift the viewpoint
+
+2. **PRESERVE SPATIAL LAYOUT** (ABSOLUTE REQUIREMENT - Priority 2):
    ⚠️ SKETCH ADHERENCE LEVEL: {sketch_adherence} (0.95=very strict, 1.0=pixel-perfect)
    🛋️ **MAINTAIN EXACT POSITIONS OF ALL FURNITURE AND OBJECTS - THIS IS NON-NEGOTIABLE!**
    ✓ Keep EXACT position of every furniture item from sketch
@@ -302,12 +320,12 @@ You are given TWO images in this exact order:
    ✗ DO NOT alter object sizes or proportions
    ✗ DO NOT reorganize furniture layout
 
-2. **PRESERVE OBJECT IDENTITY** (Priority 2):
+3. **PRESERVE OBJECT IDENTITY** (Priority 3):
    ✓ Maintain the ESSENCE and FORM of each object (shapes, types, styles)
    ✓ Keep all decorative items (paintings, sculptures, plants, books) in exact positions
    ✗ DO NOT transform object types
 
-3. **MATERIAL ACCURACY** (Priority 3 - CRITICAL FOR PHOTOREALISM):
+4. **MATERIAL ACCURACY** (Priority 4 - CRITICAL FOR PHOTOREALISM):
    ⚠️ MATERIALS ARE THE MOST IMPORTANT FACTOR IN INTERIOR RENDERING!
    ✓ Apply materials EXACTLY as described with all 4 properties:
      - Material type (wood species, fabric type, stone variety)
@@ -329,19 +347,19 @@ You are given TWO images in this exact order:
    ✓ Match floor, rug, ceiling treatments with exact material properties
    ✓ Ensure material textures are ULTRA-SHARP in close-up areas (fabric weave, wood pores, stone veins visible)
 
-4. **LIGHTING EMPHASIS** (Priority 4 - CRITICAL):
+5. **LIGHTING EMPHASIS** (Priority 5 - CRITICAL):
    {lighting_description}
    ✓ Implement PRIMARY vs SECONDARY lighting hierarchy
    ✓ Apply contrast, shadow, and highlight adjustments
    ✓ Create specified lighting effects
 
-5. **ADD REALISM** (Priority 5):
+6. **ADD REALISM** (Priority 6):
    ✓ Infer photorealistic materials based on room type and style
    ✓ Apply natural lighting and shadows
    ✓ Show ultra-sharp material details: {technical_enhancements}
    ✓ Add appropriate atmosphere and mood
 
-6. **OUTPUT FORMAT**:
+7. **OUTPUT FORMAT**:
    ✓ Aspect ratio: {aspect_ratio}
    ✓ Camera viewpoint: {viewpoint}
    ✓ Single photorealistic image
@@ -1012,7 +1030,11 @@ Style: Professional interior photography (Architectural Digest / AD quality)
         if room_dimensions:
             user_description += f" ({room_dimensions})"
 
-        # Camera/viewpoint specification
+        # ✅ FIX: Use CAMERA_VIEWPOINTS for consistent viewpoint handling
+        viewpoint_info = CAMERA_VIEWPOINTS.get(viewpoint, CAMERA_VIEWPOINTS.get('match_sketch'))
+        viewpoint_instruction = viewpoint_info['prompt_addition'] if viewpoint_info else f"Camera viewpoint: {viewpoint}"
+
+        # Camera/viewpoint specification (from technical specs - supplementary)
         camera = tech_specs.get('camera', 'Eye-level perspective capturing the entire room')
         lens = tech_specs.get('lens', '24-35mm wide-angle lens')
 
@@ -1116,7 +1138,7 @@ Style: Professional interior photography (Architectural Digest / AD quality)
         prompt = template.format(
             sketch_adherence=adherence_display,
             aspect_ratio=aspect_ratio,
-            viewpoint=viewpoint,
+            viewpoint=viewpoint_instruction,  # ✅ FIX: Use full viewpoint instruction from CAMERA_VIEWPOINTS
             room_type=room_type,
             interior_style=interior_style,
             user_description=user_description,

@@ -785,13 +785,14 @@ async function generateRender() {
 
         const formData = collectFormData();
         const aspectRatio = document.getElementById('aspect_ratio')?.value || '16:9';
+        const viewpoint = document.getElementById('viewpoint')?.value || 'match_sketch';
         const sketchAdherence = parseFloat(document.getElementById('sketch_adherence')?.value) || 0.99;
 
         const requestBody = {
             image_base64: currentSketchImage,
             form_data_vi: formData,
             aspect_ratio: aspectRatio,
-            viewpoint: 'eye_level',
+            viewpoint: viewpoint,  // ✅ FIX: Read from dropdown instead of hardcoding
             sketch_adherence: sketchAdherence,
             render_mode: 'interior'  // ✅ NEW: Tell backend to use interior prompt builder
         };

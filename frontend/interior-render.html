@@ -138,6 +138,28 @@
                     <input type="text" id="interior_style" placeholder="Ví dụ: Modern Minimalist, Scandinavian, Industrial...">
                 </div>
 
+                <!-- Viewpoint (Camera Angle) -->
+                <div class="form-group">
+                    <label for="viewpoint">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        Góc nhìn (Camera)
+                    </label>
+                    <select id="viewpoint">
+                        <option value="match_sketch" selected>Góc nhìn như sketch gốc (Mặc định) ⭐</option>
+                        <option value="three_quarter">Góc 3/4 (45°)</option>
+                        <option value="aerial_angle">Góc cao (Bird's eye)</option>
+                        <option value="low_angle">Góc thấp (Worm's eye)</option>
+                        <option value="side_elevation">Mặt bên</option>
+                        <option value="interior_exterior">Nội ngoại thất (Cutaway)</option>
+                    </select>
+                    <p style="color: #666; font-size: 0.85rem; margin-top: 0.5rem;">
+                        💡 <strong>"Góc nhìn như sketch gốc"</strong> sẽ tôn trọng chặt chẽ bố cục, vị trí, hướng nhìn của sketch
+                    </p>
+                </div>
+
                 <!-- Aspect Ratio & Sketch Adherence -->
                 <div class="form-grid-2">
                     <div class="form-group">
