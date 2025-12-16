@@ -56,6 +56,35 @@
                 <img id="previewImage" src="" alt="Sketch preview" class="preview-image hidden">
             </div>
 
+            <!-- Reference Image Upload (for multi-angle consistency) -->
+            <details class="form-section" style="margin-top: 1rem;">
+                <summary style="font-size: 0.9rem; color: #666; cursor: pointer; padding: 0.5rem; list-style: none;">
+                    <span style="margin-right: 0.5rem;">▶</span>
+                    🖼️ Ảnh Tham Khảo (Reference) - Optional
+                </summary>
+                <div class="section-content" style="padding: 0.5rem; border-left: 2px solid #e0e0e0; margin-left: 0.5rem;">
+                    <p style="color: #666; font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;">
+                        <strong>📐 Render nhiều góc của cùng 1 phòng:</strong><br>
+                        Upload ảnh góc đã render để AI giữ màu sắc, vật liệu, ánh sáng nhất quán.
+                    </p>
+                    <div class="image-uploader" style="min-height: 120px; border: 1px dashed #ccc;">
+                        <input type="file" id="uploadReference" accept="image/*" style="display: none;">
+                        <label for="uploadReference" id="uploadReferenceLabel" class="upload-label" style="font-size: 0.85rem; padding: 1rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            <span class="upload-text" style="font-size: 0.9rem;">📸 Upload Reference</span>
+                        </label>
+                        <img id="previewReference" src="" alt="Reference preview" class="preview-image hidden">
+                    </div>
+                    <button type="button" id="clearReferenceButton" class="btn-remove" style="display: none; margin-top: 0.5rem; width: 100%; font-size: 0.85rem;">
+                        × Xóa Reference
+                    </button>
+                </div>
+            </details>
+
             <!-- Analyze Button -->
             <button id="analyzeSketchButton" class="btn-primary" disabled>
                 <span id="analyzeSpinner" class="spinner hidden"></span>
