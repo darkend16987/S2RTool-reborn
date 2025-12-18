@@ -244,10 +244,20 @@ You are given TWO images in this exact order:
    ✓ CRITICAL: Each material must display realistic light physics:
      - Glossy surfaces: Sharp specular highlights, clear reflections
      - Matte surfaces: Soft, diffused light, no reflections
-     - Natural wood: Visible grain patterns, semi-gloss sheen, warm light absorption
+     - Natural solid wood: Visible grain patterns, SUBTLE semi-gloss sheen (NOT mirror-like), warm light absorption
+     - Engineered wood (Melamine/Laminate): MATTE to SEMI-MATTE finish, minimal specularity, soft diffused reflections, grain texture visible but NOT shiny
+     - Engineered wood (Acrylic surface): Moderate gloss with SOFT reflections (NOT metallic mirror), visible grain beneath clear coating
+     - Engineered wood (Veneer): Natural semi-matte finish, grain depth, warm undertones
      - Leather: Soft sheen, subtle creases, gentle light reflection
      - Marble/stone: High gloss polish, sharp reflections, color depth through translucency
      - Fabric: Visible weave texture, soft light diffusion, color depth variations
+
+   ⚠️ **CRITICAL - WOOD MATERIAL ANTI-METALLIC RULE**:
+     ✗ DO NOT render wood surfaces with metallic specularity or mirror-like reflections
+     ✗ DO NOT make melamine/laminate surfaces glossy - they should be MATTE
+     ✓ Wood reflections should be SOFT and DIFFUSED, never sharp like metal
+     ✓ Melamine/Laminate: Think "eggshell finish" not "high-gloss paint"
+     ✓ Even acrylic-coated wood: reflections are SOFT and WARM, not cold/metallic
 
    ✓ For multi-material walls (backdrop walls), preserve LEFT-TO-RIGHT order of materials precisely
    ✓ Match floor type and rug placement with exact material properties
@@ -338,10 +348,20 @@ You are given TWO images in this exact order:
    ✓ CRITICAL: Each material must display realistic light physics:
      - Glossy surfaces: Sharp specular highlights, clear reflections
      - Matte surfaces: Soft, diffused light, no reflections
-     - Natural wood: Visible grain patterns, semi-gloss sheen, warm light absorption
+     - Natural solid wood: Visible grain patterns, SUBTLE semi-gloss sheen (NOT mirror-like), warm light absorption
+     - Engineered wood (Melamine/Laminate): MATTE to SEMI-MATTE finish, minimal specularity, soft diffused reflections, grain texture visible but NOT shiny
+     - Engineered wood (Acrylic surface): Moderate gloss with SOFT reflections (NOT metallic mirror), visible grain beneath clear coating
+     - Engineered wood (Veneer): Natural semi-matte finish, grain depth, warm undertones
      - Leather: Soft sheen, subtle creases, gentle light reflection
      - Marble/stone: High gloss polish, sharp reflections, color depth through translucency
      - Fabric: Visible weave texture, soft light diffusion, color depth variations
+
+   ⚠️ **CRITICAL - WOOD MATERIAL ANTI-METALLIC RULE**:
+     ✗ DO NOT render wood surfaces with metallic specularity or mirror-like reflections
+     ✗ DO NOT make melamine/laminate surfaces glossy - they should be MATTE
+     ✓ Wood reflections should be SOFT and DIFFUSED, never sharp like metal
+     ✓ Melamine/Laminate: Think "eggshell finish" not "high-gloss paint"
+     ✓ Even acrylic-coated wood: reflections are SOFT and WARM, not cold/metallic
 
    ✓ For multi-material walls, preserve material order and layout precisely
    ✓ Match floor, rug, ceiling treatments with exact material properties

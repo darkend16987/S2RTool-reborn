@@ -453,11 +453,27 @@ Mỗi vật liệu PHẢI mô tả ĐẦY ĐỦ 4 yếu tố:
 4. **Đặc tính ánh sáng**: Phản chiếu cao, Hấp thụ ánh sáng, Bán bóng, Phản chiếu khuếch tán...
 
 VÍ DỤ MÔ TẢ VẬT LIỆU ĐÚNG:
+
+**GỖ TỰ NHIÊN:**
 ✅ "Gỗ óc chó tự nhiên màu nâu sẫm, vân gỗ rõ nét, bề mặt bóng mờ tự nhiên, phản chiếu nhẹ"
+✅ "Gỗ sồi tự nhiên màu vàng nâu, vân gỗ sâu, bề mặt semi-matte, phản chiếu khuếch tán mềm"
+
+**GỖ CÔNG NGHIỆP - MELAMINE/LAMINATE (⚠️ BỀ MẶT MỜ):**
+✅ "Gỗ công nghiệp phủ Melamine màu trắng sữa, bề mặt mờ nhám (eggshell finish), phản chiếu khuếch tán rất nhẹ"
+✅ "MDF phủ Laminate màu gỗ óc chó, vân gỗ in sắc nét, bề mặt semi-matte (KHÔNG BÓNG), phản chiếu mềm"
+✅ "Tủ bếp Melamine xám xi măng, bề mặt mờ mịn, phản chiếu ánh sáng rất nhẹ (không như kim loại)"
+
+**GỖ CÔNG NGHIỆP - BỀ MẶT ACRYLIC/UV (⚠️ BÓNG NHƯNG MỀM):**
+✅ "MDF phủ Acrylic trắng bóng, bề mặt glossy nhưng phản chiếu mềm mại (không sharp như gương hoặc kim loại), độ sâu màu cao"
+✅ "Tủ TV phủ UV cao cấp màu xám, bóng vừa phải, phản chiếu soft và ấm (không cold metallic)"
+
+**VẬT LIỆU KHÁC:**
 ✅ "Da bò thật màu nâu cognac, bề mặt mềm mại có vân da, phản chiếu ánh sáng nhẹ tạo độ sâu"
 ✅ "Thạch cao trắng ngà, bề mặt mịn màng hoàn thiện mờ, hấp thụ ánh sáng tạo bóng mềm"
 ✅ "Đá marble trắng vân xám, bề mặt đánh bóng gương, phản chiếu cao tạo điểm sáng"
+
 ❌ "Gỗ", "Da nâu", "Sơn trắng" (quá sơ sài, thiếu chi tiết)
+❌ "Tủ gỗ bóng" (không rõ loại gỗ, loại bóng - tự nhiên hay công nghiệp?)
 
 QUAN TRỌNG - TRẦN, TƯỜNG, SÀN (BẮT BUỘC):
 ⚠️ BẮT BUỘC phải có mô tả đầy đủ, áp dụng 4 yếu tố vật liệu cho mỗi bộ phận:
