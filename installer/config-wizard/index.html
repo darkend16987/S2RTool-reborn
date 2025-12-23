@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+  <title>S2RTool Configuration Wizard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-container">
+        <svg class="logo" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="48" height="48" rx="8" fill="#4A90E2"/>
+          <text x="24" y="32" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">S2R</text>
+        </svg>
+      </div>
+      <h1>S2RTool Configuration</h1>
+      <p class="subtitle">Please configure your S2RTool installation</p>
+    </header>
+
+    <!-- Main Form -->
+    <main class="main-content">
+      <!-- Installation Path Info -->
+      <div class="info-box">
+        <div class="info-label">Installation Directory:</div>
+        <div class="info-value" id="installPath">Loading...</div>
+      </div>
+
+      <!-- API Key Section -->
+      <div class="form-section">
+        <h2>Gemini API Configuration</h2>
+
+        <div class="form-group">
+          <label for="apiKey" class="required-label">
+            Gemini API Key
+            <span class="required-asterisk">*</span>
+          </label>
+          <div class="input-with-button">
+            <input
+              type="password"
+              id="apiKey"
+              class="form-input"
+              placeholder="Enter your Gemini API key..."
+              required
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <button id="toggleApiKeyBtn" class="btn-icon" type="button" title="Show/Hide API Key">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 4C5 4 1.73 7.11 1 10c.73 2.89 4 6 9 6s8.27-3.11 9-6c-.73-2.89-4-6-9-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+              </svg>
+            </button>
+          </div>
+          <small class="form-hint">
+            Get your free API key from <a href="#" id="getApiKeyLink" class="link">Google AI Studio</a>
+          </small>
+
+          <button id="testApiKeyBtn" class="btn btn-secondary" type="button">
+            <span class="btn-text">Test API Key</span>
+            <span class="btn-spinner hidden">Testing...</span>
+          </button>
+
+          <div id="apiKeyStatus" class="status-message hidden"></div>
+        </div>
+      </div>
+
+      <!-- Port Configuration Section -->
+      <div class="form-section">
+        <h2>Port Configuration</h2>
+
+        <div class="port-group">
+          <div class="form-group">
+            <label for="frontendPort">Frontend Port</label>
+            <input
+              type="number"
+              id="frontendPort"
+              class="form-input"
+              value="3001"
+              min="1024"
+              max="65535"
+              required
+            >
+            <small class="form-hint">Access S2RTool at: http://localhost:<span id="frontendPortPreview">3001</span></small>
+          </div>
+
+          <div class="form-group">
+            <label for="backendPort">Backend API Port</label>
+            <input
+              type="number"
+              id="backendPort"
+              class="form-input"
+              value="5001"
+              min="1024"
+              max="65535"
+              required
+            >
+            <small class="form-hint">Internal API server port</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Startup Options Section -->
+      <div class="form-section">
+        <h2>Startup Options</h2>
+
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="autoStart" checked>
+            <span class="checkbox-text">
+              <strong>Start S2RTool automatically on Windows startup</strong>
+              <small>Recommended: Services will start automatically when Windows boots</small>
+            </span>
+          </label>
+        </div>
+
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="desktopShortcut" checked>
+            <span class="checkbox-text">
+              <strong>Create desktop shortcut</strong>
+              <small>Quick access to S2RTool from your desktop</small>
+            </span>
+          </label>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer with Action Buttons -->
+    <footer class="footer">
+      <button id="cancelBtn" class="btn btn-secondary">Cancel</button>
+      <button id="saveBtn" class="btn btn-primary" disabled>
+        <span class="btn-text">Save & Continue</span>
+        <span class="btn-spinner hidden">Saving...</span>
+      </button>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="overlay hidden">
+      <div class="overlay-content">
+        <div class="spinner-large"></div>
+        <h3 id="loadingTitle">Saving Configuration...</h3>
+        <p id="loadingMessage">Please wait while we configure S2RTool</p>
+        <div class="progress-steps">
+          <div class="progress-step" id="step1">
+            <div class="step-icon">⏳</div>
+            <div class="step-text">Saving configuration</div>
+          </div>
+          <div class="progress-step" id="step2">
+            <div class="step-icon">⏳</div>
+            <div class="step-text">Installing service</div>
+          </div>
+          <div class="progress-step" id="step3">
+            <div class="step-icon">⏳</div>
+            <div class="step-text">Creating shortcuts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
