@@ -1,0 +1,61 @@
+{
+  "name": "s2rtool-config-wizard",
+  "version": "1.0.0",
+  "description": "S2RTool Configuration Wizard",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win --x64",
+    "pack": "electron-builder --dir"
+  },
+  "keywords": [
+    "s2rtool",
+    "configuration",
+    "wizard"
+  ],
+  "author": "S2RTool Development Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {},
+  "build": {
+    "appId": "com.s2rtool.configwizard",
+    "productName": "S2RTool Configuration Wizard",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "publisherName": "S2RTool"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": false,
+      "createStartMenuShortcut": false
+    },
+    "files": [
+      "**/*",
+      "!dist/**/*",
+      "!node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "assets",
+        "to": "assets"
+      }
+    ]
+  }
+}
