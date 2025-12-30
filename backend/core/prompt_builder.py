@@ -22,8 +22,10 @@ You are given TWO images in this exact order:
 
 **YOUR TASK - Follow these rules STRICTLY**:
 
-1. **PRESERVE GEOMETRY** (Priority 1 - ABSOLUTE REQUIREMENT):
+1. **PRESERVE GEOMETRY & CAMERA ANGLE** (Priority 1 - ABSOLUTE REQUIREMENT):
    ⚠️ SKETCH ADHERENCE LEVEL: {sketch_adherence} (0.5=flexible, 1.0=pixel-perfect)
+
+   **A. BUILDING GEOMETRY (NON-NEGOTIABLE)**:
    🏢 **BUILDING HAS EXACTLY {floor_count} - THIS IS NON-NEGOTIABLE!**
    ✓ Maintain EXACT proportions from sketch (±2% tolerance maximum)
    ✓ Keep ALL window/door positions UNCHANGED
@@ -34,6 +36,17 @@ You are given TWO images in this exact order:
    ✗ DO NOT alter building width/height ratios
    ✗ DO NOT change structural proportions to "improve" composition
    ✗ DO NOT add or remove floors to "improve" the design
+
+   **B. CAMERA ANGLE FIDELITY (EQUAL PRIORITY TO GEOMETRY)**:
+   📷 The camera angle/viewpoint is specified in Section 6 below
+   ⚠️ CRITICAL: Camera angle is JUST AS IMPORTANT as building geometry!
+   ✓ The EXACT camera position, height, and viewing direction from the sketch MUST be preserved
+   ✓ Perspective lines, vanishing points, and horizon line MUST match the sketch
+   ✓ If sketch shows eye-level view, render MUST be eye-level (NOT bird's eye, NOT worm's eye)
+   ✓ If sketch shows straight-on view, render MUST be straight-on (NOT 45° angle)
+   ✗ DO NOT change camera angle to "improve" composition or aesthetics
+   ✗ DO NOT rotate, tilt, or shift the camera from the sketch's viewpoint
+   ⚠️ See Section 6 for detailed viewpoint instructions - FOLLOW THEM STRICTLY!
 
 2. **ADOPT STYLE** (Priority 2):
    ✓ Study reference lighting conditions carefully
@@ -81,8 +94,10 @@ You are given TWO images in this exact order:
 
 **YOUR TASK**:
 
-1. **PRESERVE STRUCTURE** (ABSOLUTE REQUIREMENT):
+1. **PRESERVE STRUCTURE & CAMERA ANGLE** (ABSOLUTE REQUIREMENT):
    ⚠️ SKETCH ADHERENCE LEVEL: {sketch_adherence} (0.5=flexible, 1.0=pixel-perfect)
+
+   **A. BUILDING GEOMETRY (NON-NEGOTIABLE)**:
    🏢 **BUILDING HAS EXACTLY {floor_count} - THIS IS NON-NEGOTIABLE!**
    ✓ Maintain exact proportions from sketch (±2% maximum)
    ✓ Keep all architectural elements in exact positions
@@ -92,6 +107,17 @@ You are given TWO images in this exact order:
    ✗ Do NOT alter building width/height ratios
    ✗ Do NOT change structural proportions to fill frame
    ✗ DO NOT add or remove floors to "improve" the design
+
+   **B. CAMERA ANGLE FIDELITY (EQUAL PRIORITY TO GEOMETRY)**:
+   📷 The camera angle/viewpoint is specified in Section 5 below
+   ⚠️ CRITICAL: Camera angle is JUST AS IMPORTANT as building geometry!
+   ✓ The EXACT camera position, height, and viewing direction from the sketch MUST be preserved
+   ✓ Perspective lines, vanishing points, and horizon line MUST match the sketch
+   ✓ If sketch shows eye-level view, render MUST be eye-level (NOT bird's eye, NOT worm's eye)
+   ✓ If sketch shows straight-on view, render MUST be straight-on (NOT 45° angle)
+   ✗ DO NOT change camera angle to "improve" composition or aesthetics
+   ✗ DO NOT rotate, tilt, or shift the camera from the sketch's viewpoint
+   ⚠️ See Section 5 for detailed viewpoint instructions - FOLLOW THEM STRICTLY!
 
 2. **ADD REALISM**:
    ✓ Infer realistic materials based on building type
@@ -205,12 +231,19 @@ You are given TWO images in this exact order:
 
 1. **CAMERA ANGLE & VIEWPOINT** (ABSOLUTE REQUIREMENT - Priority 1):
    📷 {viewpoint}
-   ⚠️ **THIS IS CRITICAL**: The camera angle determines how we see ALL furniture and objects
+   ⚠️ **THIS IS THE MOST CRITICAL REQUIREMENT**: The camera angle determines how we see ALL furniture and objects
+
+   **CAMERA ANGLE FIDELITY (EQUAL PRIORITY TO SPATIAL LAYOUT)**:
    ✓ Maintain the EXACT viewing direction, angle, and height from the sketch
    ✓ Respect the EXACT perspective projection (vanishing points, horizon line)
    ✓ Keep the EXACT framing (what's visible, what's cropped, what's in foreground/background)
+   ✓ Preserve the EXACT eye level and focal point from the sketch
+   ✓ Match the EXACT lens perspective (wide-angle vs normal vs telephoto feeling)
    ✗ DO NOT change camera position or viewing angle from the sketch
    ✗ DO NOT rotate, tilt, or shift the viewpoint
+   ✗ DO NOT "improve" composition by changing camera angle
+   ✗ DO NOT change from eye-level to high-angle or low-angle
+   ⚠️ Camera angle affects EVERYTHING - if you change it, all furniture positions will look wrong!
 
 2. **PRESERVE SPATIAL LAYOUT** (Priority 2 - ABSOLUTE REQUIREMENT):
    ⚠️ SKETCH ADHERENCE LEVEL: {sketch_adherence} (0.95=very strict, 1.0=pixel-perfect)
@@ -311,12 +344,19 @@ You are given TWO images in this exact order:
 
 1. **CAMERA ANGLE & VIEWPOINT** (ABSOLUTE REQUIREMENT - Priority 1):
    📷 {viewpoint}
-   ⚠️ **THIS IS CRITICAL**: The camera angle determines how we see ALL furniture and objects
+   ⚠️ **THIS IS THE MOST CRITICAL REQUIREMENT**: The camera angle determines how we see ALL furniture and objects
+
+   **CAMERA ANGLE FIDELITY (EQUAL PRIORITY TO SPATIAL LAYOUT)**:
    ✓ Maintain the EXACT viewing direction, angle, and height from the sketch
    ✓ Respect the EXACT perspective projection (vanishing points, horizon line)
    ✓ Keep the EXACT framing (what's visible, what's cropped, what's in foreground/background)
+   ✓ Preserve the EXACT eye level and focal point from the sketch
+   ✓ Match the EXACT lens perspective (wide-angle vs normal vs telephoto feeling)
    ✗ DO NOT change camera position or viewing angle from the sketch
    ✗ DO NOT rotate, tilt, or shift the viewpoint
+   ✗ DO NOT "improve" composition by changing camera angle
+   ✗ DO NOT change from eye-level to high-angle or low-angle
+   ⚠️ Camera angle affects EVERYTHING - if you change it, all furniture positions will look wrong!
 
 2. **PRESERVE SPATIAL LAYOUT** (ABSOLUTE REQUIREMENT - Priority 2):
    ⚠️ SKETCH ADHERENCE LEVEL: {sketch_adherence} (0.95=very strict, 1.0=pixel-perfect)
