@@ -115,30 +115,18 @@ CAMERA_VIEWPOINTS: Dict[str, Dict] = {
         "name_vi": "Góc nhìn như sketch gốc (Mặc định)",
         "description": "Use the EXACT camera angle from the source sketch",
         "camera_angle": "match source sketch precisely",
-        "prompt_addition": """CRITICAL: Match the EXACT camera angle from the source sketch with absolute precision.
+        "prompt_addition": """⚠️ CRITICAL OVERRIDE: Use the EXACT camera angle from the source sketch.
 
-**CAMERA ANGLE PRESERVATION (ABSOLUTE REQUIREMENT - Equal Priority to Geometry)**:
-✓ Maintain the EXACT camera height (eye-level, high angle, low angle, aerial) from the sketch
-✓ Preserve the EXACT horizontal viewing direction (straight-on, 45°, side view) from the sketch
-✓ Keep the EXACT perspective projection (vanishing points, horizon line, convergence) from the sketch
-✓ Match the EXACT framing and composition (what's centered, what's visible, what's cropped) from the sketch
-✓ Respect the EXACT focal length feeling (wide-angle compression vs telephoto compression) from the sketch
+Match EXACTLY:
+✓ Camera height (eye-level / high-angle / low-angle - whatever is in the sketch)
+✓ Horizontal viewing direction (straight-on / 45° / side - whatever is in the sketch)
+✓ Perspective lines, vanishing points, and horizon line from the sketch
+✓ Framing and composition (what's visible, what's cropped) from the sketch
 
-**FORBIDDEN CAMERA CHANGES** (DO NOT do ANY of these):
-✗ DO NOT change from eye-level to bird's eye view or vice versa
-✗ DO NOT rotate the camera horizontally (e.g., from front view to 45° view)
-✗ DO NOT shift the camera up or down (changing horizon line position)
-✗ DO NOT change perspective from rectilinear to wide-angle distortion
-✗ DO NOT alter the vanishing point positions
-✗ DO NOT "improve" composition by changing camera angle
-✗ DO NOT add artistic camera movements (tilt, pan, dolly)
-
-**VERIFICATION**: Before generating, verify that your camera matches the sketch's:
-- Camera height relative to building
-- Horizontal viewing angle
-- Perspective lines and vanishing points
-- Horizon line position
-- What portions of the building are visible vs cropped"""
+FORBIDDEN changes:
+✗ DO NOT rotate, tilt, shift, or change the camera angle in any way
+✗ DO NOT "improve" composition by changing the viewpoint
+✗ Ignore any conflicting camera angle instructions below - THIS takes priority"""
     },
     "main_facade": {
         "name": "Main Facade",
