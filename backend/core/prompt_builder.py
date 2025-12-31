@@ -652,13 +652,21 @@ Style: Professional interior photography (Architectural Digest / AD quality)
         # Viewpoint instruction
         viewpoint_info = CAMERA_VIEWPOINTS.get(viewpoint, CAMERA_VIEWPOINTS['main_facade'])
         viewpoint_instruction = viewpoint_info['prompt_addition']
-        
-        # Technical specs
-        camera = tech_specs.get('camera', 'Professional DSLR (Canon 5D Mark IV equivalent)')
-        lens = tech_specs.get('lens', '24mm wide-angle lens')
 
-        # Lighting from technical_specs
-        lighting = tech_specs.get('lighting', 'natural daylight, golden hour')
+        # ✅ FIX: When viewpoint is "match_sketch", IGNORE camera/lens/perspective from technical_specs
+        # to avoid CONFLICT between "match sketch angle" and "low-angle shot" instructions
+        if viewpoint == "match_sketch":
+            # For match_sketch: ONLY use viewpoint instruction, ignore technical camera specs
+            camera = "Use camera settings that match the sketch perspective"
+            lens = "Match the lens perspective visible in the sketch"
+            # Keep lighting (it doesn't conflict with viewpoint)
+            lighting = tech_specs.get('lighting', 'natural daylight, golden hour')
+            # IGNORE tech_specs.perspective - it conflicts with match_sketch!
+        else:
+            # For other viewpoints: use technical specs normally
+            camera = tech_specs.get('camera', 'Professional DSLR (Canon 5D Mark IV equivalent)')
+            lens = tech_specs.get('lens', '24mm wide-angle lens')
+            lighting = tech_specs.get('lighting', 'natural daylight, golden hour')
         
         # Materials list - handle materials_precise format: {"type": "...", "description": "..."}
         materials_list = ", ".join([
@@ -1094,9 +1102,16 @@ Style: Professional interior photography (Architectural Digest / AD quality)
         viewpoint_info = CAMERA_VIEWPOINTS.get(viewpoint, CAMERA_VIEWPOINTS.get('match_sketch'))
         viewpoint_instruction = viewpoint_info['prompt_addition'] if viewpoint_info else f"Camera viewpoint: {viewpoint}"
 
-        # Camera/viewpoint specification (from technical specs - supplementary)
-        camera = tech_specs.get('camera', 'Eye-level perspective capturing the entire room')
-        lens = tech_specs.get('lens', '24-35mm wide-angle lens')
+        # ✅ FIX: When viewpoint is "match_sketch", IGNORE camera/lens from technical_specs
+        # to avoid CONFLICT between "match sketch angle" and specific camera angle instructions
+        if viewpoint == "match_sketch":
+            # For match_sketch: ONLY use viewpoint instruction, ignore technical camera specs
+            camera = "Use camera settings that match the sketch perspective"
+            lens = "Match the lens perspective visible in the sketch"
+        else:
+            # For other viewpoints: use technical specs normally
+            camera = tech_specs.get('camera', 'Eye-level perspective capturing the entire room')
+            lens = tech_specs.get('lens', '24-35mm wide-angle lens')
 
         # Lighting description (CRITICAL for interior)
         lighting_emphasis = tech_specs.get('lighting_emphasis', 'Natural lighting with enhanced contrast')
