@@ -593,6 +593,54 @@ Style: Professional interior photography (Architectural Digest / AD quality)
     # ============== PUBLIC METHODS ==============
     
     @classmethod
+    def build_refine_prompt(
+        cls,
+        refine_instruction: str,
+        translated_data_en: Dict,
+        aspect_ratio: str = "16:9",
+        render_mode: str = "building"
+    ) -> Tuple[str, str]:
+        """
+        Build simplified refine prompt with user override instruction
+
+        This mimics the successful pattern from user testing on Gemini web:
+        - Simple, clear instruction
+        - Direct override without complex details
+        - Focuses on the specific refinement needed
+        """
+
+        # Build minimal context from translated_data
+        if render_mode == 'interior':
+            room_type = translated_data_en.get('room_type', 'Interior space')
+            interior_style = translated_data_en.get('interior_style', 'Modern')
+            context = f"{room_type}, {interior_style} style"
+        else:
+            building_type = translated_data_en.get('building_type', 'Building')
+            facade_style = translated_data_en.get('facade_style', 'Modern')
+            context = f"{building_type}, {facade_style} style"
+
+        # Build simplified prompt
+        prompt = f"""⚠️ CRITICAL OVERRIDE INSTRUCTION: {refine_instruction}
+
+**TASK**: Render the sketch as a photorealistic architectural visualization.
+
+**CONTEXT**: {context}
+**OUTPUT**: {aspect_ratio} aspect ratio, 8K UHD quality, photorealistic
+
+**CRITICAL REQUIREMENTS**:
+1. **FOLLOW THE OVERRIDE INSTRUCTION ABOVE STRICTLY** - This is the MOST IMPORTANT requirement
+2. Preserve the exact geometry and proportions from the sketch
+3. Create a photorealistic render with high detail and quality
+4. Apply natural lighting and realistic materials
+
+Generate the render following the critical override instruction."""
+
+        # Simple negative prompt
+        negative_prompt = "sketch, drawing, cartoon, blurry, low quality, distorted"
+
+        return prompt, negative_prompt
+
+    @classmethod
     def build_render_prompt(
         cls,
         translated_data_en: Dict,

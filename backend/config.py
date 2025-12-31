@@ -572,8 +572,8 @@ OUTPUT FORMAT (English JSON):
         }
     ],
     "technical_specs": {
-        "camera": "Camera angle",
-        "lens": "Lens specification",
+        "camera": "Camera equipment name only (e.g., 'Canon EOS 5D Mark IV') - DO NOT add camera angle, viewpoint, or perspective",
+        "lens": "Lens specification only (e.g., '24mm wide-angle') - DO NOT add shooting angle or perspective",
         "lighting": "Lighting condition"
     },
     "style_keywords": "Translated and enhanced style keywords",
@@ -583,10 +583,11 @@ OUTPUT FORMAT (English JSON):
 TRANSLATION RULES:
 1. Maintain technical accuracy
 2. Use professional architectural terminology
-3. Add photorealistic details (e.g., "smooth glass" → "smooth tempered glass with subtle reflections")
+3. Add photorealistic details to MATERIALS ONLY (e.g., "smooth glass" → "smooth tempered glass with subtle reflections")
 4. Preserve all numerical values and measurements
 5. Enhance material descriptions with texture/finish details
 6. Return ONLY valid JSON, no additional text
+7. ⚠️ **CRITICAL**: For technical_specs.camera and technical_specs.lens - translate EQUIPMENT NAMES ONLY, DO NOT add camera angles, viewpoints, perspectives, or shooting directions (like "eye-level", "low-angle", "high-angle", "bird's eye", etc.)
 
 CRITICAL REQUIREMENTS:
 ⚠️ **FLOOR COUNT MUST BE PRESERVED EXACTLY** - This is the MOST CRITICAL architectural constraint!
@@ -604,7 +605,13 @@ IMPORTANT:
 - Materials must include: base material + color + texture + finish
 - **PEOPLE** (người, con người) → "people, pedestrians, human activity"
 - **VEHICLES** (xe cộ, xe ô tô, xe máy) → "vehicles, cars, motorcycles, traffic"
-- **TIME OF DAY** (thời điểm, buổi sáng, chiều tối) → translate accurately with atmospheric details"""
+- **TIME OF DAY** (thời điểm, buổi sáng, chiều tối) → translate accurately with atmospheric details
+
+**FORBIDDEN in technical_specs.camera/lens**:
+❌ DO NOT add: "eye-level", "low-angle", "high-angle", "bird's eye", "worm's eye", "aerial", "ground-level"
+❌ DO NOT add: "shot", "view", "perspective", "angle", "looking up", "looking down"
+❌ DO NOT add shooting directions or camera positions
+✅ ONLY translate equipment names: "Canon EOS 5D Mark IV", "24mm wide-angle lens", etc."""
 
 
 # ============== INTERIOR TRANSLATION PROMPT ==============
@@ -683,8 +690,8 @@ OUTPUT FORMAT (English JSON) - Preserve ALL fields and array structures:
         }
     ],
     "technical_specs": {
-        "camera": "Camera angle in English",
-        "lens": "Lens specification in English",
+        "camera": "Camera equipment name only (e.g., 'Sony A7R IV') - DO NOT add camera angle, viewpoint, or perspective",
+        "lens": "Lens specification only (e.g., '24-35mm wide-angle') - DO NOT add shooting angle or perspective",
         "lighting_emphasis": "Lighting emphasis in English",
         "contrast_boost": "Contrast value (keep percentage)",
         "sharpness": "Sharpness value (keep percentage)"
@@ -700,6 +707,13 @@ TRANSLATION RULES:
 - Keep importance values unchanged: "primary", "secondary", "accent"
 - Add rendering terms: "photorealistic", "interior visualization", "ultra-high detail"
 - Ensure ALL furniture positions are preserved with spatial accuracy
+- ⚠️ **CRITICAL**: For technical_specs.camera and technical_specs.lens - translate EQUIPMENT NAMES ONLY, DO NOT add camera angles, viewpoints, perspectives, or shooting directions
+
+**FORBIDDEN in technical_specs.camera/lens**:
+❌ DO NOT add: "eye-level", "low-angle", "high-angle", "overhead", "top-down", "wide-angle view"
+❌ DO NOT add: "shot", "view", "perspective", "angle", "from above", "from below"
+❌ DO NOT add shooting directions or camera positions
+✅ ONLY translate equipment names: "Sony A7R IV", "24-35mm wide-angle lens", etc.
 """
 
 # ============== Debug Info ==============

@@ -102,29 +102,42 @@ def render_image():
         # ✅ FIX: Extract sketch_adherence from form_data_vi (user-controlled!)
         sketch_adherence = form_data_vi.get('sketch_adherence', 0.95)
 
+        # ✅ NEW: Check if refine instruction provided
+        refine_instruction = data.get('refine_instruction', None)
+
         print(f"🎯 Geometry control: sketch_adherence={sketch_adherence}, aspect_ratio={aspect_ratio}")
 
-        # ✅ FIX: Route to correct prompt builder based on render_mode
-        # (render_mode already extracted earlier for translation)
-
-        if render_mode == 'interior':
-            print("🛋️ Using INTERIOR render prompt builder")
-            prompt, negative_prompt = prompt_builder.build_interior_render_prompt(
+        # ✅ NEW: If refine instruction provided, use simplified refine prompt
+        if refine_instruction:
+            print(f"🔧 REFINE MODE: Using simplified prompt override")
+            print(f"   Instruction: {refine_instruction}")
+            prompt, negative_prompt = prompt_builder.build_refine_prompt(
+                refine_instruction=refine_instruction,
                 translated_data_en=translated_data_en,
-                viewpoint=viewpoint,
-                has_reference=(reference_pil is not None),
-                sketch_adherence=sketch_adherence,
-                aspect_ratio=aspect_ratio
+                aspect_ratio=aspect_ratio,
+                render_mode=render_mode
             )
         else:
-            print("🏢 Using BUILDING render prompt builder")
-            prompt, negative_prompt = prompt_builder.build_render_prompt(
-                translated_data_en=translated_data_en,
-                viewpoint=viewpoint,
-                has_reference=(reference_pil is not None),
-                sketch_adherence=sketch_adherence,
-                aspect_ratio=aspect_ratio
-            )
+            # ✅ FIX: Route to correct prompt builder based on render_mode
+            # (render_mode already extracted earlier for translation)
+            if render_mode == 'interior':
+                print("🛋️ Using INTERIOR render prompt builder")
+                prompt, negative_prompt = prompt_builder.build_interior_render_prompt(
+                    translated_data_en=translated_data_en,
+                    viewpoint=viewpoint,
+                    has_reference=(reference_pil is not None),
+                    sketch_adherence=sketch_adherence,
+                    aspect_ratio=aspect_ratio
+                )
+            else:
+                print("🏢 Using BUILDING render prompt builder")
+                prompt, negative_prompt = prompt_builder.build_render_prompt(
+                    translated_data_en=translated_data_en,
+                    viewpoint=viewpoint,
+                    has_reference=(reference_pil is not None),
+                    sketch_adherence=sketch_adherence,
+                    aspect_ratio=aspect_ratio
+                )
         
         print(f"📝 Prompt preview (first 200 chars):")
         print(f"   {prompt[:200]}...")

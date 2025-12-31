@@ -202,13 +202,22 @@ function setupEventListeners() {
         generateButton.addEventListener('click', generateRender);
     }
 
-    // Xử lý các nút bấm được sinh ra động (Download, Regenerate) bằng Event Delegation
+    // Xử lý các nút bấm được sinh ra động (Download, Regenerate, Refine) bằng Event Delegation
     document.addEventListener('click', (e) => {
         if (e.target.closest('#downloadImageBtn')) {
             handleDownloadImage();
         }
         if (e.target.closest('#regenerateBtn')) {
             generateRender();
+        }
+        if (e.target.closest('#refineBtn')) {
+            showRefineControls();
+        }
+        if (e.target.closest('#applyRefineBtn')) {
+            applyRefinement();
+        }
+        if (e.target.closest('#cancelRefineBtn')) {
+            hideRefineControls();
         }
     });
 
@@ -663,6 +672,108 @@ async function generateRender() {
             isRendering = false;
             currentRenderController = null;
         }
+    }
+}
+
+// ============== REFINE RENDER FUNCTIONS ==============
+function showRefineControls() {
+    const refineControls = document.getElementById('refineControls');
+    const refineInstruction = document.getElementById('refineInstruction');
+
+    if (refineControls) {
+        refineControls.classList.remove('hidden');
+    }
+
+    // Focus on textarea
+    if (refineInstruction) {
+        refineInstruction.focus();
+    }
+
+    console.log('✨ Showing refine controls');
+}
+
+function hideRefineControls() {
+    const refineControls = document.getElementById('refineControls');
+    const refineInstruction = document.getElementById('refineInstruction');
+
+    if (refineControls) {
+        refineControls.classList.add('hidden');
+    }
+
+    // Clear textarea
+    if (refineInstruction) {
+        refineInstruction.value = '';
+    }
+
+    console.log('✨ Hiding refine controls');
+}
+
+async function applyRefinement() {
+    const refineInstruction = document.getElementById('refineInstruction');
+    const refineSpinner = document.getElementById('refineSpinner');
+    const applyRefineBtn = document.getElementById('applyRefineBtn');
+
+    if (!refineInstruction || !refineInstruction.value.trim()) {
+        showError('renderError', 'Vui lòng nhập chỉ dẫn tinh chỉnh!');
+        return;
+    }
+
+    if (!currentSketchImage || !currentRenderedImage) {
+        showError('renderError', 'Không có ảnh để tinh chỉnh!');
+        return;
+    }
+
+    // Disable button and show spinner
+    if (applyRefineBtn) applyRefineBtn.disabled = true;
+    if (refineSpinner) refineSpinner.classList.remove('hidden');
+    hideError('renderError');
+    hideSuccess('renderSuccess');
+
+    try {
+        console.log(`🔧 Applying refinement: "${refineInstruction.value}"`);
+
+        const form_data_vi = collectFormData();
+
+        // Add refine instruction to request
+        const requestData = {
+            image_base64: currentSketchImage,
+            form_data_vi: form_data_vi,
+            aspect_ratio: aspectRatioSelect ? aspectRatioSelect.value : "16:9",
+            viewpoint: viewpointSelect ? viewpointSelect.value : "match_sketch",
+            refine_instruction: refineInstruction.value.trim()  // ✅ NEW: Add refine instruction
+        };
+
+        if (currentReferenceImage) {
+            requestData.reference_image_base64 = currentReferenceImage;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/render`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Refine failed');
+        }
+
+        const result = await response.json();
+
+        currentRenderedImage = result.generated_image_base64;
+        displayRenderedImage(result.generated_image_base64, result.mime_type);
+        showSuccess('renderSuccess', '🎉 Tinh chỉnh hoàn tất!');
+        console.log('✅ Refinement completed');
+
+        // Hide refine controls after success
+        hideRefineControls();
+
+    } catch (error) {
+        console.error('❌ Refinement failed:', error);
+        showError('renderError', `Lỗi tinh chỉnh: ${error.message}`);
+    } finally {
+        if (applyRefineBtn) applyRefineBtn.disabled = false;
+        if (refineSpinner) refineSpinner.classList.add('hidden');
     }
 }
 
