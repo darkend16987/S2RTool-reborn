@@ -205,21 +205,28 @@ function setupEventListeners() {
     // Xử lý các nút bấm được sinh ra động (Download, Regenerate, Refine) bằng Event Delegation
     document.addEventListener('click', (e) => {
         if (e.target.closest('#downloadImageBtn')) {
+            console.log('📥 Download button clicked');
             handleDownloadImage();
         }
         if (e.target.closest('#regenerateBtn')) {
+            console.log('🔄 Regenerate button clicked');
             generateRender();
         }
         if (e.target.closest('#refineBtn')) {
+            console.log('✏️ Refine button clicked - calling showRefineControls()');
             showRefineControls();
         }
         if (e.target.closest('#applyRefineBtn')) {
+            console.log('✅ Apply Refine button clicked - calling applyRefinement()');
             applyRefinement();
         }
         if (e.target.closest('#cancelRefineBtn')) {
+            console.log('❌ Cancel Refine button clicked');
             hideRefineControls();
         }
     });
+
+    console.log('✅ Event delegation for dynamic buttons set up');
 
     // Range slider display
     const sketchAdherence = document.getElementById('sketch_adherence');
@@ -677,11 +684,18 @@ async function generateRender() {
 
 // ============== REFINE RENDER FUNCTIONS ==============
 function showRefineControls() {
+    console.log('🔧 showRefineControls() CALLED');
+
     const refineControls = document.getElementById('refineControls');
     const refineInstruction = document.getElementById('refineInstruction');
 
+    console.log('refineControls element:', refineControls);
+
     if (refineControls) {
         refineControls.classList.remove('hidden');
+        console.log('✅ Removed hidden class');
+    } else {
+        console.error('❌ refineControls element not found!');
     }
 
     // Focus on textarea
@@ -709,16 +723,26 @@ function hideRefineControls() {
 }
 
 async function applyRefinement() {
+    console.log('🔧 applyRefinement() CALLED');
+
     const refineInstruction = document.getElementById('refineInstruction');
     const refineSpinner = document.getElementById('refineSpinner');
     const applyRefineBtn = document.getElementById('applyRefineBtn');
 
+    console.log('refineInstruction element:', refineInstruction);
+    console.log('refineInstruction value:', refineInstruction ? refineInstruction.value : 'N/A');
+
     if (!refineInstruction || !refineInstruction.value.trim()) {
+        console.warn('⚠️ No refine instruction provided');
         showError('renderError', 'Vui lòng nhập chỉ dẫn tinh chỉnh!');
         return;
     }
 
+    console.log('currentSketchImage:', currentSketchImage ? 'exists' : 'missing');
+    console.log('currentRenderedImage:', currentRenderedImage ? 'exists' : 'missing');
+
     if (!currentSketchImage || !currentRenderedImage) {
+        console.warn('⚠️ Missing sketch or rendered image');
         showError('renderError', 'Không có ảnh để tinh chỉnh!');
         return;
     }
