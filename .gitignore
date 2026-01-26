@@ -1,14 +1,100 @@
-# Virtual Environment (tên venv của bạn)
+# Virtual Environment
 venv/
+.venv/
 
-# File biến môi trường
+# Environment variables (contains API keys)
 .env
+.env.local
+.env.*.local
 
 # User configuration (API key, model selections)
 backend/user_config.json
 
+# Test directories
 tests2/
 
 # Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Electron build output
+installer/config-wizard/dist/
+installer/config-wizard/out/
+installer/tray-app/dist/
+installer/tray-app/out/
+
+# Installer output
+installer/Output/
+installer/*.exe
+!installer/build-installer.bat
+
+# Large Docker images (exported for standalone installer)
+installer/images/*.tar
+installer/images/*.tar.gz
+installer/images/*.tar.xz
+
+# Large binary dependencies
+installer/bin/RancherDesktop*.exe
+installer/bin/nssm*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+logs/
+*.log
+
+# Docker volumes (local development)
+docker-data/
+volumes/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Reference images uploaded by users (keep folder structure)
+backend/references/*
+!backend/references/.gitkeep
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
