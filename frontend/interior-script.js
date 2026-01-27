@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     setupDynamicContainers();
     setupExportButton();
+    setupImportButton();
 });
 
 // ============== ASPECT RATIOS ==============
@@ -911,19 +912,13 @@ function handleDownloadImage() {
     }
 }
 
-// ============== EXPORT JSON ==============
+// ============== CONFIG IMPORT/EXPORT ==============
 function setupExportButton() {
     const exportBtn = document.createElement('button');
     exportBtn.id = 'exportJSONButton';
     exportBtn.className = 'btn-secondary';
     exportBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="12" y1="18" x2="12" y2="12"/>
-            <line x1="9" y1="15" x2="12" y2="18"/>
-            <line x1="15" y1="15" x2="12" y2="18"/>
-        </svg>
+        <span class="material-symbols-rounded" style="font-size: 18px;">download</span>
         Export JSON
     `;
     exportBtn.addEventListener('click', exportToJSON);
@@ -932,6 +927,282 @@ function setupExportButton() {
     if (outputActions) {
         outputActions.insertBefore(exportBtn, outputActions.firstChild);
     }
+}
+
+function setupImportButton() {
+    const formHeader = document.querySelector('.panel-form .panel-header');
+    if (!formHeader || document.getElementById('configActions')) return;
+
+    const configActions = document.createElement('div');
+    configActions.id = 'configActions';
+    configActions.className = 'config-actions';
+    configActions.innerHTML = `
+        <button type="button" id="importConfigBtn" class="btn-config" title="Nhập config từ file JSON">
+            <span class="material-symbols-rounded">upload</span>
+            Nhập Config
+        </button>
+        <button type="button" id="exportConfigBtn" class="btn-config" title="Xuất config ra file JSON">
+            <span class="material-symbols-rounded">download</span>
+            Xuất Config
+        </button>
+    `;
+    formHeader.appendChild(configActions);
+
+    document.getElementById('importConfigBtn').addEventListener('click', importFromJSON);
+    document.getElementById('exportConfigBtn').addEventListener('click', exportConfigOnly);
+}
+
+function exportConfigOnly() {
+    const formData = collectFormData();
+    const aspectRatio = document.getElementById('aspect_ratio')?.value || '16:9';
+    const viewpoint = document.getElementById('viewpoint')?.value || 'match_sketch';
+    const sketchAdherence = document.getElementById('sketch_adherence')?.value || '0.99';
+
+    const exportData = {
+        type: 'interior_config',
+        version: '4.0',
+        form_data: formData,
+        settings: {
+            aspect_ratio: aspectRatio,
+            viewpoint: viewpoint,
+            sketch_adherence: sketchAdherence
+        },
+        exported_at: new Date().toISOString()
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `interior-config-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showSuccess('renderSuccess', 'Đã xuất config thành công!');
+}
+
+function importFromJSON() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+
+            // Validate config type
+            if (data.type && data.type !== 'interior_config') {
+                showError('renderError', 'File này không phải config cho Interior Render!');
+                return;
+            }
+
+            // Apply form data
+            if (data.form_data) {
+                applyFormData(data.form_data);
+            }
+
+            // Apply settings
+            if (data.settings) {
+                const aspectRatio = document.getElementById('aspect_ratio');
+                if (data.settings.aspect_ratio && aspectRatio) {
+                    aspectRatio.value = data.settings.aspect_ratio;
+                }
+                const viewpoint = document.getElementById('viewpoint');
+                if (data.settings.viewpoint && viewpoint) {
+                    viewpoint.value = data.settings.viewpoint;
+                }
+                const adherence = document.getElementById('sketch_adherence');
+                if (data.settings.sketch_adherence && adherence) {
+                    adherence.value = data.settings.sketch_adherence;
+                    const valueDisplay = document.getElementById('sketch_adherence_value');
+                    if (valueDisplay) valueDisplay.textContent = adherence.value;
+                }
+            }
+
+            showSuccess('renderSuccess', 'Đã nhập config thành công!');
+            console.log('📦 Config imported:', data);
+
+        } catch (error) {
+            console.error('Import error:', error);
+            showError('renderError', 'File JSON không hợp lệ hoặc bị lỗi!');
+        }
+    };
+    input.click();
+}
+
+function applyFormData(formData) {
+    // Basic fields
+    const setVal = (id, value) => {
+        const el = document.getElementById(id);
+        if (el && value !== undefined && value !== null) el.value = value;
+    };
+
+    setVal('room_type', formData.room_type);
+    setVal('interior_style', formData.interior_style);
+    setVal('style_keywords', formData.style_keywords);
+    setVal('negative_prompt', formData.negative_prompt);
+
+    // Flooring
+    if (formData.flooring) {
+        setVal('flooring_type', formData.flooring.type);
+        setVal('flooring_description', formData.flooring.description);
+        setVal('flooring_rug', formData.flooring.rug);
+    }
+
+    // Ceiling
+    if (formData.ceiling) {
+        setVal('ceiling_type', formData.ceiling.type);
+        setVal('ceiling_lighting', formData.ceiling.lighting_system);
+    }
+
+    // Technical specs
+    if (formData.technical_specs) {
+        setVal('tech_camera', formData.technical_specs.camera);
+        setVal('tech_lens', formData.technical_specs.lens);
+        setVal('tech_lighting_emphasis', formData.technical_specs.lighting_emphasis);
+        setVal('tech_contrast', formData.technical_specs.contrast_boost);
+        setVal('tech_sharpness', formData.technical_specs.sharpness);
+    }
+
+    // Clear dynamic containers
+    clearDynamicContainer('furnitureLayoutContainer');
+    clearDynamicContainer('wallTreatmentsContainer');
+    clearDynamicContainer('lightingContainer');
+    clearDynamicContainer('decorationsContainer');
+    clearDynamicContainer('windowsDoorsContainer');
+
+    // Populate furniture layout
+    if (formData.furniture_layout && formData.furniture_layout.length > 0) {
+        formData.furniture_layout.forEach(item => {
+            addFurnitureItem(item);
+        });
+    }
+
+    // Populate wall treatments
+    if (formData.wall_treatments && formData.wall_treatments.length > 0) {
+        formData.wall_treatments.forEach(item => {
+            addWallItem(item);
+        });
+    }
+
+    // Populate lighting
+    if (formData.lighting && formData.lighting.length > 0) {
+        formData.lighting.forEach(item => {
+            addLightingItem(item);
+        });
+    }
+
+    // Populate decorations
+    if (formData.decorations && formData.decorations.length > 0) {
+        formData.decorations.forEach(item => {
+            addDecorationItem(item);
+        });
+    }
+
+    // Populate windows/doors
+    if (formData.windows_doors && formData.windows_doors.length > 0) {
+        formData.windows_doors.forEach(item => {
+            addWindowDoorItem(item);
+        });
+    }
+}
+
+function clearDynamicContainer(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) container.innerHTML = '';
+}
+
+function addFurnitureItem(data) {
+    const container = document.getElementById('furnitureLayoutContainer');
+    if (!container) return;
+
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.innerHTML = `
+        <input type="text" class="furniture-type" placeholder="Loại đồ nội thất" value="${data.type || ''}">
+        <input type="text" class="furniture-position" placeholder="Vị trí" value="${data.position || ''}">
+        <input type="text" class="furniture-description" placeholder="Mô tả chi tiết" value="${data.description || ''}">
+        <input type="text" class="furniture-material" placeholder="Chất liệu" value="${data.material || ''}">
+        <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+    `;
+    container.appendChild(item);
+}
+
+function addWallItem(data) {
+    const container = document.getElementById('wallTreatmentsContainer');
+    if (!container) return;
+
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.innerHTML = `
+        <input type="text" class="wall-location" placeholder="Vị trí tường" value="${data.wall_location || ''}">
+        <input type="text" class="wall-material" placeholder="Vật liệu" value="${data.material || ''}">
+        <input type="text" class="wall-color" placeholder="Màu sắc" value="${data.color || ''}">
+        <input type="text" class="wall-finish" placeholder="Bề mặt" value="${data.finish || ''}">
+        <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+    `;
+    container.appendChild(item);
+}
+
+function addLightingItem(data) {
+    const container = document.getElementById('lightingContainer');
+    if (!container) return;
+
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.innerHTML = `
+        <input type="text" class="lighting-type" placeholder="Loại đèn" value="${data.type || ''}">
+        <input type="text" class="lighting-description" placeholder="Mô tả" value="${data.description || ''}">
+        <select class="lighting-importance">
+            <option value="primary" ${data.importance === 'primary' ? 'selected' : ''}>Chủ đạo</option>
+            <option value="secondary" ${data.importance === 'secondary' || !data.importance ? 'selected' : ''}>Phụ trợ</option>
+            <option value="accent" ${data.importance === 'accent' ? 'selected' : ''}>Nhấn điểm</option>
+        </select>
+        <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+    `;
+    container.appendChild(item);
+}
+
+function addDecorationItem(data) {
+    const container = document.getElementById('decorationsContainer');
+    if (!container) return;
+
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.innerHTML = `
+        <input type="text" class="decoration-type" placeholder="Loại đồ trang trí" value="${data.type || ''}">
+        <input type="text" class="decoration-location" placeholder="Vị trí" value="${data.location || ''}">
+        <input type="text" class="decoration-description" placeholder="Mô tả" value="${data.description || ''}">
+        <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+    `;
+    container.appendChild(item);
+}
+
+function addWindowDoorItem(data) {
+    const container = document.getElementById('windowsDoorsContainer');
+    if (!container) return;
+
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.innerHTML = `
+        <input type="text" class="window_door-type" placeholder="Loại cửa" value="${data.type || ''}">
+        <input type="text" class="window_door-location" placeholder="Vị trí" value="${data.location || ''}">
+        <input type="text" class="window_door-description" placeholder="Mô tả" value="${data.description || ''}">
+        <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+    `;
+    container.appendChild(item);
 }
 
 function exportToJSON() {

@@ -541,6 +541,25 @@
             </div>
         </div>
 
+        <!-- Version Check Section -->
+        <div class="settings-section">
+            <h2><span class="material-symbols-rounded">system_update</span> Phiên bản</h2>
+
+            <div class="form-group">
+                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <div>
+                        <strong>Phiên bản hiện tại:</strong>
+                        <span id="currentVersion" class="status-badge" style="background: var(--color-primary-light); color: var(--color-primary);">v4.0.0</span>
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="checkUpdateBtn">
+                        <span class="material-symbols-rounded">refresh</span>
+                        Kiểm tra cập nhật
+                    </button>
+                </div>
+                <div id="updateStatus" style="margin-top: 1rem;"></div>
+            </div>
+        </div>
+
         <!-- Action Buttons -->
         <div class="action-buttons">
             <button type="button" class="btn btn-danger" id="resetBtn">
@@ -554,6 +573,7 @@
         </div>
     </div>
 
+    <script src="version-check.js"></script>
     <script src="settings.js"></script>
 </body>
 </html>

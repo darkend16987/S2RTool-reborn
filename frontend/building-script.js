@@ -154,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     setupDynamicContainers();
     setupExportButton();
+    setupImportButton();
     setupReferenceImageUI();
     setupInpaintingUI();
 });
@@ -1097,6 +1098,212 @@ function exportToJSON() {
     a.download = `s2r-data-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
+}
+
+// ============== IMPORT CONFIG ==============
+function setupImportButton() {
+    const formHeader = document.querySelector('.panel-form .panel-header');
+    if (!formHeader || document.getElementById('configActions')) return;
+
+    const configActions = document.createElement('div');
+    configActions.id = 'configActions';
+    configActions.className = 'config-actions';
+    configActions.innerHTML = `
+        <button type="button" id="importConfigBtn" class="btn-config" title="Nhập config từ file JSON">
+            <span class="material-symbols-rounded">upload</span>
+            Nhập Config
+        </button>
+        <button type="button" id="exportConfigBtn" class="btn-config" title="Xuất config ra file JSON">
+            <span class="material-symbols-rounded">download</span>
+            Xuất Config
+        </button>
+    `;
+    formHeader.appendChild(configActions);
+
+    document.getElementById('importConfigBtn').addEventListener('click', importFromJSON);
+    document.getElementById('exportConfigBtn').addEventListener('click', exportConfigOnly);
+}
+
+function exportConfigOnly() {
+    const exportData = {
+        type: 'building_config',
+        version: '4.0',
+        form_data: collectFormData(),
+        settings: {
+            aspect_ratio: aspectRatioSelect ? aspectRatioSelect.value : '16:9',
+            viewpoint: document.getElementById('viewpoint')?.value || 'match_sketch',
+            sketch_adherence: document.getElementById('sketch_adherence')?.value || '0.95'
+        },
+        exported_at: new Date().toISOString()
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `building-config-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showSuccess('renderSuccess', 'Đã xuất config thành công!');
+}
+
+function importFromJSON() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+
+            // Validate config type
+            if (data.type && data.type !== 'building_config') {
+                showError('renderError', 'File này không phải config cho Building Render!');
+                return;
+            }
+
+            // Apply form data
+            if (data.form_data) {
+                applyFormData(data.form_data);
+            }
+
+            // Apply settings
+            if (data.settings) {
+                if (data.settings.aspect_ratio && aspectRatioSelect) {
+                    aspectRatioSelect.value = data.settings.aspect_ratio;
+                }
+                const viewpoint = document.getElementById('viewpoint');
+                if (data.settings.viewpoint && viewpoint) {
+                    viewpoint.value = data.settings.viewpoint;
+                }
+                const adherence = document.getElementById('sketch_adherence');
+                if (data.settings.sketch_adherence && adherence) {
+                    adherence.value = data.settings.sketch_adherence;
+                    const valueDisplay = document.getElementById('sketch_adherence_value');
+                    if (valueDisplay) valueDisplay.textContent = adherence.value;
+                }
+            }
+
+            showSuccess('renderSuccess', 'Đã nhập config thành công!');
+            console.log('📦 Config imported:', data);
+
+        } catch (error) {
+            console.error('Import error:', error);
+            showError('renderError', 'File JSON không hợp lệ hoặc bị lỗi!');
+        }
+    };
+    input.click();
+}
+
+function applyFormData(formData) {
+    // Basic fields
+    const setVal = (id, value) => {
+        const el = document.getElementById(id);
+        if (el && value !== undefined && value !== null) el.value = value;
+    };
+    const setChecked = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = !!value;
+    };
+
+    setVal('main_description', formData.building_type);
+    setVal('facade_style', formData.facade_style);
+    setVal('floor_count', formData.floor_count);
+    setVal('floor_details', formData.floor_details);
+    setChecked('has_mezzanine', formData.has_mezzanine);
+    setVal('style_keywords', formData.style_keywords);
+    setVal('negative_prompt', formData.negative_prompt);
+
+    // Technical specs
+    if (formData.technical_specs) {
+        setVal('tech_camera', formData.technical_specs.camera);
+        setVal('tech_lens', formData.technical_specs.lens);
+        setVal('tech_lighting', formData.technical_specs.lighting);
+    }
+
+    // Clear and populate dynamic containers
+    clearDynamicContainer('criticalElementsContainer');
+    clearDynamicContainer('materialsPreciseContainer');
+
+    // Add critical elements
+    if (formData.critical_elements && formData.critical_elements.length > 0) {
+        formData.critical_elements.forEach(item => {
+            addDynamicItemWithData('criticalElementsContainer', 'element', item);
+        });
+    }
+
+    // Add materials
+    if (formData.materials_precise && formData.materials_precise.length > 0) {
+        formData.materials_precise.forEach(item => {
+            addDynamicItemWithData('materialsPreciseContainer', 'material', item);
+        });
+    }
+
+    // Apply environment settings
+    if (formData.environment && formData.environment.length > 0) {
+        formData.environment.forEach(env => {
+            applyEnvironmentSetting(env);
+        });
+    }
+}
+
+function clearDynamicContainer(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) container.innerHTML = '';
+}
+
+function addDynamicItemWithData(containerId, type, data) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // Create item using existing pattern
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.innerHTML = `
+        <input type="text" class="item-type" placeholder="Loại" value="${data.type || ''}">
+        <input type="text" class="item-description" placeholder="Mô tả chi tiết" value="${data.description || ''}">
+        <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+    `;
+    container.appendChild(item);
+}
+
+function applyEnvironmentSetting(env) {
+    const mappings = {
+        'Không gian': { select: 'env_location', custom: 'env_location_custom' },
+        'Thời điểm': { select: 'env_time', custom: 'env_time_custom' },
+        'Thời tiết': { select: 'env_weather', custom: 'env_weather_custom' },
+        'Xe cộ': { select: 'env_vehicles', custom: 'env_vehicles_custom' },
+        'Người': { select: 'env_people', custom: 'env_people_custom' },
+        'Bối cảnh bổ sung': { custom: 'env_additional' }
+    };
+
+    const mapping = mappings[env.type];
+    if (!mapping) return;
+
+    if (mapping.select) {
+        const select = document.getElementById(mapping.select);
+        const custom = document.getElementById(mapping.custom);
+        if (select && custom) {
+            // Try to find matching option
+            const options = Array.from(select.options);
+            const match = options.find(opt => opt.value === env.description);
+            if (match) {
+                select.value = env.description;
+            } else {
+                select.value = 'custom';
+                custom.value = env.description;
+                custom.style.display = 'block';
+            }
+        }
+    } else if (mapping.custom) {
+        const custom = document.getElementById(mapping.custom);
+        if (custom) custom.value = env.description;
+    }
 }
 
 function addUseAsReferenceButton() {
