@@ -19,6 +19,11 @@ COPY planning-script.js /usr/share/nginx/html/
 COPY planning-detail-script.js /usr/share/nginx/html/
 COPY settings.js /usr/share/nginx/html/
 
+# --- BỔ SUNG CÁC FILE VERSION CHECK ---
+COPY version-check.js /usr/share/nginx/html/
+COPY version.json /usr/share/nginx/html/
+# ---------------------------------------
+
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
