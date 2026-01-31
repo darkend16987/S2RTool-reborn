@@ -899,10 +899,16 @@ function setupReferenceImageUI() {
             📸 Ảnh tham khảo (Reference Image)
         </summary>
         <div class="section-content">
-            <div class="form-group">
-                <button type="button" id="chooseFromLibraryBtn" class="btn-secondary" style="width:100%">Chọn từ thư viện</button>
+            <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <button type="button" id="chooseFromLibraryBtn" class="btn-secondary">
+                    <span class="material-symbols-rounded">collections</span>
+                    Chọn từ thư viện
+                </button>
                 <input type="file" id="uploadReference" accept="image/*" style="display: none;">
-                <label for="uploadReference" class="btn-secondary" style="width:100%;display:block;text-align:center">Upload ảnh riêng</label>
+                <label for="uploadReference" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer;">
+                    <span class="material-symbols-rounded">upload</span>
+                    Upload ảnh riêng
+                </label>
             </div>
             <div id="referencePreview" class="hidden" style="margin-top:1rem">
                 <img id="referencePreviewImage" style="max-width:100%">
