@@ -92,6 +92,9 @@ temp/
 backend/references/*
 !backend/references/.gitkeep
 
+# Render history (local only - saved renders, not synced to git)
+backend/render_history/
+
 # Coverage reports
 htmlcov/
 .coverage

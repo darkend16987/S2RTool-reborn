@@ -300,6 +300,128 @@ class GeminiClient:
             print(f"❌ Raw API Error: {str(e)}")
             raise e
 
+    def generate_image_multi(
+        self,
+        prompt: str,
+        images: list,
+        model_name: str = Models.FLASH_IMAGE,
+        temperature: float = Defaults.TEMPERATURE_GENERATION
+    ) -> Image.Image:
+        """
+        Generate image with multiple input images (supports 3+ images).
+        Images are passed in order before the text prompt.
+
+        Args:
+            prompt: Text prompt
+            images: List of PIL Image objects (e.g., [scene, mask, new_object])
+            model_name: Gemini model name
+            temperature: Generation temperature
+
+        Returns:
+            Generated PIL Image
+        """
+        if not HAS_NEW_API:
+            raise ImportError("Library 'google-genai' not installed.")
+
+        def _generate_multi():
+            print(f"🎨 Generating image with {model_name} (multi-image, {len(images)} inputs)...")
+            parts = []
+
+            for img in images:
+                if img is not None:
+                    buf = io.BytesIO()
+                    img.save(buf, format='PNG')
+                    parts.append(types_new.Part.from_bytes(data=buf.getvalue(), mime_type="image/png"))
+
+            parts.append(types_new.Part.from_text(text=prompt))
+            contents = [types_new.Content(role="user", parts=parts)]
+
+            generate_content_config = {
+                "response_modalities": ["IMAGE", "TEXT"],
+                "temperature": temperature,
+                "image_config": {"image_size": "2K"},
+                "tools": [{"googleSearch": {}}]
+            }
+
+            for chunk in self.client_new.models.generate_content_stream(
+                model=model_name,
+                contents=contents,
+                config=generate_content_config
+            ):
+                if chunk.candidates:
+                    candidate = chunk.candidates[0]
+                    if candidate.content and candidate.content.parts:
+                        for part in candidate.content.parts:
+                            if part.inline_data and part.inline_data.data:
+                                print(f"   ✅ Image received (multi-image SDK)!")
+                                return Image.open(io.BytesIO(part.inline_data.data))
+
+            raise RuntimeError("Gemini API returned no image.")
+
+        try:
+            return self._retry_with_backoff(_generate_multi)
+        except Exception as e:
+            error_str = str(e).lower()
+            if ("validation error" in error_str and "extra" in error_str) or ("image_size" in error_str):
+                print(f"⚠️  SDK Validation Failed, switching to Raw REST API...")
+                return self._generate_multi_raw_rest(prompt, images, model_name, temperature)
+            else:
+                raise e
+
+    def _generate_multi_raw_rest(
+        self,
+        prompt: str,
+        images: list,
+        model_name: str,
+        temperature: float
+    ) -> Image.Image:
+        """Raw REST fallback for multi-image generation."""
+        import base64 as b64lib
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={self.api_key}"
+
+        parts = []
+        for img in images:
+            if img is not None:
+                buf = io.BytesIO()
+                img.save(buf, format='PNG')
+                parts.append({
+                    "inlineData": {
+                        "mimeType": "image/png",
+                        "data": b64lib.b64encode(buf.getvalue()).decode('utf-8')
+                    }
+                })
+        parts.append({"text": prompt})
+
+        payload = {
+            "contents": [{"role": "user", "parts": parts}],
+            "generationConfig": {
+                "responseModalities": ["IMAGE", "TEXT"],
+                "temperature": temperature,
+                "imageConfig": {"imageSize": "2K"}
+            },
+            "tools": [{"googleSearch": {}}]
+        }
+
+        try:
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode('utf-8'),
+                headers={'Content-Type': 'application/json'}
+            )
+            with urllib.request.urlopen(req) as response:
+                result = json.loads(response.read().decode('utf-8'))
+
+            for part in result.get('candidates', [{}])[0].get('content', {}).get('parts', []):
+                if 'inlineData' in part:
+                    import base64 as b64lib2
+                    img_data = b64lib2.b64decode(part['inlineData']['data'])
+                    print(f"   ✅ Image received (multi-image Raw REST)!")
+                    return Image.open(io.BytesIO(img_data))
+
+            raise RuntimeError("Raw REST returned no image.")
+        except urllib.error.HTTPError as e:
+            raise RuntimeError(f"Gemini API Error: {e.read().decode('utf-8')}")
+
     def generate_with_inpaint(
         self,
         original: Image.Image,

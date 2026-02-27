@@ -152,12 +152,30 @@ def render_image():
         
         if not generated_pil:
             return jsonify({"error": "Image generation failed"}), 500
-        
+
+        # Auto-save to render history (best-effort, non-blocking)
+        try:
+            from core.history_manager import HistoryManager
+            hm = HistoryManager()
+            if render_mode == 'interior':
+                summary = f"{form_data_vi.get('room_type', '')} | {form_data_vi.get('interior_style', '')}"
+            else:
+                summary = f"{form_data_vi.get('building_type', '')} | {form_data_vi.get('facade_style', '')}"
+            hm.save_render(
+                image_pil=generated_pil,
+                mode=render_mode,
+                prompt_summary=summary,
+                source_image_pil=preprocessed,
+                settings={"aspect_ratio": data['aspect_ratio'], "viewpoint": viewpoint}
+            )
+        except Exception as he:
+            print(f"⚠️  History save failed (non-critical): {he}")
+
         # Convert to base64
         output_buffer = io.BytesIO()
         generated_pil.save(output_buffer, format='PNG', quality=95)
         output_base64 = base64.b64encode(output_buffer.getvalue()).decode('utf-8')
-        
+
         return jsonify({
             "generated_image_base64": output_base64,
             "mime_type": "image/png",

@@ -1273,3 +1273,177 @@ Generate the render following the critical override instruction."""
         )
 
         return prompt, negative_str
+    # ============================================================
+    # OBJECT SWAP PROMPTS
+    # ============================================================
+
+    @classmethod
+    def build_object_swap_prompt(
+        cls,
+        swap_instruction: str = "",
+        has_reference_object: bool = True
+    ) -> str:
+        """
+        Build prompt for object swap (approach 1.2).
+        Images sent: [original_scene, binary_mask, new_object_reference?]
+        """
+        if has_reference_object:
+            ref_instruction = (
+                "Image 3: NEW OBJECT REFERENCE — The object/furniture/item to place.\n"
+                "   - Use Image 3 shape, color, and material for the replacement.\n"
+                "   - Adapt perspective, scale, and lighting to match Image 1.\n"
+                "   - Do NOT copy Image 3's background — only the object itself."
+            )
+        else:
+            ref_instruction = (
+                f'No reference image provided. Use this description for the new object:\n'
+                f'   "{swap_instruction}"\n'
+                f'   Create a photorealistic object matching the description.'
+            )
+
+        user_note = f'\n   User instruction: "{swap_instruction}"' if swap_instruction else ""
+
+        return f"""ROLE: Expert AI photo editor specializing in seamless object replacement.
+
+INPUT IMAGES:
+   Image 1: ORIGINAL SCENE — Ground truth for perspective, lighting, and all non-masked content.
+   Image 2: BINARY MASK — White pixels = area to replace. Black pixels = area to PRESERVE 100%.
+   {ref_instruction}
+
+YOUR TASK: Replace the WHITE-MASKED area with the new object.{user_note}
+
+CRITICAL RULES (strict priority order):
+
+1. PRESERVE NON-MASKED AREAS (ABSOLUTE — PRIORITY 1)
+   - Everything in the BLACK mask area must be preserved pixel-perfect
+   - No changes to furniture, walls, floor, ceiling, or lighting outside the mask
+   - No color shifts or tonal adjustments to preserved areas
+   - DO NOT modify ANYTHING outside the white mask boundary
+
+2. REPLACE MASKED AREA WITH NEW OBJECT (PRIORITY 2)
+   - Place the new object precisely within the white-masked region
+   - SCALE: object must be proportionally correct relative to surrounding objects
+   - PERSPECTIVE: object must match the camera angle of the original scene
+   - LIGHTING: object must receive light consistent with the scene's light sources
+   - SHADOWS: cast shadows consistent with Image 1's lighting direction
+
+3. SEAMLESS BLENDING (PRIORITY 3)
+   - Blend edges of the new object naturally with surrounding surfaces
+   - Add contact shadows where object meets floor/wall
+   - Add reflections on glossy floors/surfaces if present in Image 1
+
+FORBIDDEN:
+   - Do NOT change the camera angle or room perspective
+   - Do NOT add objects not in Image 3 or the scene
+   - Do NOT alter the room layout or move other objects
+   - Do NOT apply filters to non-masked areas
+
+OUTPUT: Single photorealistic image identical to Image 1 except the white-masked area now shows the new object seamlessly integrated."""
+
+    # ============================================================
+    # FLOOR PLAN ANALYSIS PROMPT (Vietnamese)
+    # ============================================================
+
+    @classmethod
+    def build_floorplan_analysis_prompt(cls) -> str:
+        """Build Vietnamese analysis prompt for 2D architectural floor plans."""
+        from config import FLOORPLAN_ANALYSIS_PROMPT_VI
+        return FLOORPLAN_ANALYSIS_PROMPT_VI
+
+    # ============================================================
+    # FLOOR PLAN RENDER PROMPT
+    # ============================================================
+
+    @classmethod
+    def build_floorplan_render_prompt(
+        cls,
+        analysis_data,
+        style: str = "modern",
+        color_scheme: str = "",
+        has_reference: bool = False,
+        aspect_ratio: str = "1:1"
+    ) -> str:
+        """
+        Build render prompt for 2D floor plan material/color rendering.
+        CRITICAL: maintains strict top-down perspective.
+        """
+        apt_name = analysis_data.get('apartment_type', 'Residential apartment')
+        rooms = analysis_data.get('rooms', [])
+        overall_size = analysis_data.get('overall_size', '')
+
+        room_specs = []
+        for room in rooms:
+            room_type = room.get('room_type', '')
+            floor_mat = room.get('floor_material', '')
+            wall_color = room.get('wall_color', '')
+            objects = room.get('objects', [])
+            obj_str = ', '.join(objects[:6]) if objects else ''
+            if room_type:
+                spec = f"- {room_type}: floor={floor_mat or 'appropriate material'}, walls={wall_color or 'neutral'}"
+                if obj_str:
+                    spec += f", objects=[{obj_str}]"
+                room_specs.append(spec)
+
+        room_specs_text = '\n'.join(room_specs) if room_specs else "Apply appropriate materials for each room type"
+        color_text = (
+            f"Apply this color scheme: {color_scheme}" if color_scheme else
+            "Apply a harmonious, professional color palette appropriate for the style"
+        )
+        ref_note = ""
+        if has_reference:
+            ref_note = (
+                "\nSTYLE REFERENCE (Image 2):\n"
+                "   Use for STYLE INSPIRATION ONLY (colors, textures, finish quality).\n"
+                "   Do NOT copy layout, furniture positions, or viewpoint from reference."
+            )
+
+        return f"""ROLE: Expert architectural visualization artist specializing in 2D floor plan rendering.
+
+TASK: Apply photorealistic materials, colors, and textures to this 2D floor plan.
+Project: {apt_name}{f" | Size: {overall_size}" if overall_size else ""}
+Style: {style.capitalize()}
+{color_text}{ref_note}
+
+WARNING CRITICAL REQUIREMENT 1 — MAINTAIN STRICT TOP-DOWN VIEW (NON-NEGOTIABLE):
+   - Camera: DIRECTLY OVERHEAD, looking straight DOWN at 90° zenith angle
+   - Output must look like a RENDERED FLOOR PLAN, not a 3D room rendering
+   - ABSOLUTELY NO perspective view, 3D projection, or isometric view
+   - NO vanishing points, NO depth perspective, NO horizon line
+   - DO NOT upgrade to 3D view — it MUST remain top-down flat plan
+
+WARNING CRITICAL REQUIREMENT 2 — PRESERVE EXACT LAYOUT AND PROPORTIONS:
+   - Keep EXACT room shapes, sizes, and proportions from the source floor plan
+   - Keep ALL walls at their exact positions and thicknesses
+   - Keep EVERY object at its exact position (do NOT move furniture)
+   - Preserve the overall apartment shape, boundary walls, and room divisions
+   - DO NOT add rooms, walls, or spaces not in the original floor plan
+   - DO NOT distort, stretch, or reshape any room or the overall apartment shape
+
+WARNING CRITICAL REQUIREMENT 3 — OBJECT FIDELITY:
+   - Render ONLY objects shown in the source floor plan
+   - Preserve exact object count in each room
+   - Render each object as seen from top-down (birds-eye view)
+   - DO NOT add or remove furniture
+
+ROOM MATERIAL SPECIFICATIONS:
+{room_specs_text}
+
+LIGHTING (top-down simulation):
+   - Primary: Even overhead ambient light (soft and uniform)
+   - Secondary: Subtle directional light from windows/balcony doors
+   - Shadows: Very subtle, directly below objects (pure top-down shadow)
+   - NO dramatic side-lighting, NO sunset effects, NO atmospheric sky
+
+RENDERING QUALITY: Photorealistic architectural floor plan visualization
+   - Materials: accurate textures and reflections seen from above
+   - Furniture: top-down view with realistic material textures
+   - Walls: solid architectural elements with proper thickness shadows
+   - Aspect ratio: {aspect_ratio}
+
+FORBIDDEN:
+   - No 3D perspective views
+   - No additional rooms or spaces
+   - No extra furniture beyond what is shown
+   - No text labels or annotations in the image
+   - No distorted proportions
+   - No cartoon or illustration style — photorealistic only"""

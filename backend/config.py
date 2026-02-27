@@ -716,6 +716,100 @@ TRANSLATION RULES:
 ✅ ONLY translate equipment names: "Sony A7R IV", "24-35mm wide-angle lens", etc.
 """
 
+# ============== Object Swap Config ==============
+class ObjectSwapConfig:
+    """Object Swap settings"""
+    DEFAULT_PRESERVE_MODE = "hybrid"
+    TEMPERATURE = 0.3  # Low for precise preservation
+
+# ============== Floor Plan Config ==============
+class FloorPlanConfig:
+    """2D Floor Plan render settings"""
+    TEMPERATURE_ANALYSIS = 0.2   # Very low for structured output
+    TEMPERATURE_RENDER = 0.35    # Low for faithful rendering
+    DEFAULT_STYLE = "modern"
+    DEFAULT_ASPECT_RATIO = "1:1"  # Square is best for floor plans
+
+    STYLES = {
+        "modern": "Modern / Minimalist",
+        "tropical": "Tropical / Southeast Asian",
+        "industrial": "Industrial / Loft",
+        "scandinavian": "Scandinavian / Nordic",
+        "neoclassical": "Neoclassical / Traditional",
+        "japanese": "Japanese / Wabi-sabi",
+        "mediterranean": "Mediterranean / Resort"
+    }
+
+# Path for render history (inside backend folder, gitignored)
+RENDER_HISTORY_DIR = BASE_DIR / "render_history"
+
+# ============== Floor Plan Analysis Prompt (Vietnamese) ==============
+FLOORPLAN_ANALYSIS_PROMPT_VI = """Bạn là chuyên gia phân tích bản vẽ mặt bằng kiến trúc 2D với 20 năm kinh nghiệm.
+
+NHIỆM VỤ:
+Phân tích bản vẽ mặt bằng 2D (floor plan) và trả về thông tin chi tiết bằng tiếng Việt theo format JSON.
+
+QUY TẮC ĐỌC BẢN VẼ MẶT BẰNG (QUAN TRỌNG):
+1. CẦU THANG:
+   - Nét song song xiên + mũi tên ↑ + nét liền = Cầu thang LÊN (nhìn từ tầng hiện tại)
+   - Nét song song xiên + nét đứt (dashed) = Cầu thang XUỐNG
+   - Thường có chú thích số bậc
+
+2. TỦ BẾP VÀ NỘI THẤT TREO:
+   - Nét đứt (dashed line) song song với tường bếp = Tủ bếp TREO (wall-mounted cabinet)
+   - Nét liền sát tường = Tủ bếp đứng / bàn bếp
+
+3. CỬA:
+   - Arc 1/4 hình tròn = Cửa mở xoay, chiều arc = hướng mở cửa
+   - Hai nét song song đứt = Cửa trượt (sliding door)
+   - Hai arc đối xứng = Cửa đôi (double door)
+   - Khoảng trống trên tường = Cửa sổ
+
+4. TƯỜNG:
+   - Nét đậm, dày = Tường chịu lực (load-bearing wall)
+   - Nét mảnh hơn = Vách ngăn nhẹ (partition wall)
+
+OUTPUT FORMAT (JSON):
+{
+    "apartment_type": "Loại căn hộ/nhà (VD: Căn hộ 2PN, Nhà phố, Biệt thự tầng 1...)",
+    "overall_size": "Kích thước tổng thể ước tính (VD: 80m², 120m², không rõ...)",
+    "total_rooms": "Số phòng tổng cộng",
+    "rooms": [
+        {
+            "room_id": "room_1",
+            "room_type": "Loại phòng (VD: Phòng khách, Phòng ngủ chính, Nhà bếp, WC, Hành lang...)",
+            "estimated_size": "Kích thước ước tính (VD: 20m², 12m², nhỏ/vừa/lớn)",
+            "objects": ["Danh sách đồ vật (VD: Sofa, Bàn ăn, Giường đôi, Bồn rửa, Bồn cầu...)"],
+            "special_elements": ["Đặc điểm đặc biệt (VD: Cửa sổ lớn, Ban công, Cầu thang lên, Tủ bếp treo...)"],
+            "floor_material": "Vật liệu sàn gợi ý (VD: Gỗ sồi, Gạch men trắng, Đá marble...)",
+            "wall_color": "Màu tường gợi ý (VD: Trắng ngà, Xám nhạt, Xanh sage...)"
+        }
+    ],
+    "special_zones": {
+        "stairs": [
+            {
+                "direction": "up/down",
+                "location": "Vị trí cầu thang (VD: Góc trái, Cạnh phòng khách...)"
+            }
+        ],
+        "balcony": "Mô tả ban công/logia nếu có",
+        "wet_areas": ["Danh sách vị trí phòng ướt (WC, bếp)"]
+    },
+    "doors_windows": {
+        "main_entrance": "Vị trí cửa chính",
+        "window_count": "Số cửa sổ ước tính",
+        "natural_light_direction": "Hướng ánh sáng tự nhiên chính (Đông/Tây/Nam/Bắc nếu đoán được)"
+    }
+}
+
+QUY TẮC:
+1. Chỉ mô tả những gì THẬT SỰ NHÌN THẤY trong bản vẽ
+2. Áp dụng đúng quy tắc đọc bản vẽ kiến trúc 2D ở trên
+3. Gợi ý vật liệu sàn và màu tường phù hợp với loại phòng (người dùng có thể chỉnh sau)
+4. Nếu không chắc loại phòng, đưa ra dự đoán hợp lý nhất dựa trên vị trí và đồ vật
+5. Trả về ĐÚNG format JSON, không có text thừa
+6. Rooms phải liệt kê TẤT CẢ phòng/không gian trong mặt bằng, kể cả hành lang, kho, WC"""
+
 # ============== Debug Info ==============
 if __name__ == "__main__":
     print("=" * 60)

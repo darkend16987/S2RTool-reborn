@@ -23,6 +23,9 @@ from api.references import references_bp
 from api.inpaint import inpaint_bp
 from api.planning import planning_bp
 from api.settings import settings_bp
+from api.history import history_bp
+from api.object_swap import object_swap_bp
+from api.floorplan import floorplan_bp
 
 
 def create_app():
@@ -54,6 +57,9 @@ def create_app():
     app.register_blueprint(inpaint_bp, url_prefix='/api')              # /api/inpaint
     app.register_blueprint(planning_bp, url_prefix='/api')             # /api/planning/*
     app.register_blueprint(settings_bp, url_prefix='/api')             # /api/settings
+    app.register_blueprint(history_bp, url_prefix='/api')              # /api/history/*
+    app.register_blueprint(object_swap_bp, url_prefix='/api')          # /api/object-swap/*
+    app.register_blueprint(floorplan_bp, url_prefix='/api')            # /api/floorplan/*
     
     # ============== HEALTH CHECK ==============
     @app.route('/health', methods=['GET'])
@@ -90,7 +96,10 @@ def create_app():
                 "multi_viewpoint_rendering",
                 "reference_library",
                 "hybrid_inpainting",
-                "planning_mode_rendering"
+                "planning_mode_rendering",
+                "render_history",
+                "object_swap",
+                "floorplan_material_render"
             ]
         })
     

@@ -112,6 +112,22 @@ def planning_render():
         if not generated_pil:
             return jsonify({"error": "Planning render generation failed"}), 500
 
+        # Auto-save to render history (best-effort)
+        try:
+            from core.history_manager import HistoryManager
+            hm = HistoryManager()
+            n_lots = len(lot_descriptions)
+            summary = f"Planning: {n_lots} lots | {camera_angle} | {time_of_day}"
+            hm.save_render(
+                image_pil=generated_pil,
+                mode="planning",
+                prompt_summary=summary,
+                source_image_pil=site_plan_pil,
+                settings={"camera_angle": camera_angle, "time_of_day": time_of_day, "aspect_ratio": aspect_ratio}
+            )
+        except Exception as he:
+            print(f"⚠️  History save failed (non-critical): {he}")
+
         # Convert PIL Image to base64
         output_buffer = io.BytesIO()
         generated_pil.save(output_buffer, format='PNG', quality=95)
@@ -312,6 +328,21 @@ def planning_detail_render():
 
         if not generated_pil:
             return jsonify({"error": "Planning detail render generation failed"}), 500
+
+        # Auto-save to render history (best-effort)
+        try:
+            from core.history_manager import HistoryManager
+            hm = HistoryManager()
+            summary = f"Planning Detail | {camera_angle} | {planning_description[:100]}"
+            hm.save_render(
+                image_pil=generated_pil,
+                mode="planning_detail",
+                prompt_summary=summary,
+                source_image_pil=sketch_pil,
+                settings={"camera_angle": camera_angle, "time_of_day": time_of_day, "aspect_ratio": aspect_ratio}
+            )
+        except Exception as he:
+            print(f"⚠️  History save failed (non-critical): {he}")
 
         # Convert PIL Image to base64
         output_buffer = io.BytesIO()

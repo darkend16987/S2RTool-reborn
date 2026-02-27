@@ -13,6 +13,15 @@ COPY interior-render.html /usr/share/nginx/html/
 COPY interior-script.js /usr/share/nginx/html/
 # ----------------------------------
 
+# --- NEW FEATURES: Object Swap, Floor Plan, Render History ---
+COPY object-swap.html /usr/share/nginx/html/
+COPY object-swap-script.js /usr/share/nginx/html/
+COPY floorplan-render.html /usr/share/nginx/html/
+COPY floorplan-script.js /usr/share/nginx/html/
+COPY render-history.html /usr/share/nginx/html/
+COPY render-history-script.js /usr/share/nginx/html/
+# -------------------------------------------------------------
+
 COPY style.css /usr/share/nginx/html/
 COPY building-script.js /usr/share/nginx/html/
 COPY planning-script.js /usr/share/nginx/html/
