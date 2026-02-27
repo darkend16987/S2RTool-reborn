@@ -101,6 +101,20 @@ def get_inpainting_engine():
     return _thread_locals.inpainting_engine
 
 
+def get_object_swap_engine():
+    """
+    Get thread-local ObjectSwapEngine instance.
+
+    Returns:
+        ObjectSwapEngine: Thread-safe instance
+    """
+    if not hasattr(_thread_locals, 'object_swap_engine'):
+        from core.object_swap_engine import ObjectSwapEngine
+        gemini = get_gemini_client()
+        _thread_locals.object_swap_engine = ObjectSwapEngine(gemini_client=gemini)
+    return _thread_locals.object_swap_engine
+
+
 def clear_thread_locals():
     """
     Clear all thread-local instances (for testing/cleanup)

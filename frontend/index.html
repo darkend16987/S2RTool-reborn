@@ -241,9 +241,15 @@
             font-size: 20px;
         }
 
+        @media (max-width: 1400px) {
+            .mode-cards-container {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
+
         @media (max-width: 1200px) {
             .mode-cards-container {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 1fr) !important;
                 gap: 1.25rem;
             }
 
@@ -295,7 +301,7 @@
             <p class="landing-subtitle">Chuyển đổi sketch thành render photorealistic với AI</p>
         </div>
 
-        <div class="mode-cards-container">
+        <div class="mode-cards-container" style="grid-template-columns: repeat(3, 1fr);">
             <!-- Building Render Mode -->
             <a href="building-render.html" class="landing-mode-card">
                 <div class="landing-mode-icon">
@@ -365,6 +371,60 @@
                     <li><span class="material-symbols-rounded">check_circle</span> Góc nhìn birdview/drone 45°</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Render quality presets</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Focus: Hình thái, layout, không gian xanh</li>
+                </ul>
+            </a>
+
+            <!-- Object Swap Mode (NEW) -->
+            <a href="object-swap.html" class="landing-mode-card">
+                <div class="landing-mode-icon" style="background:#fef2f2; color:#dc2626;">
+                    <span class="material-symbols-rounded">find_replace</span>
+                </div>
+                <h2 class="landing-mode-title">Object Swap</h2>
+                <p class="landing-mode-description">
+                    Thay thế đồ vật trong ảnh: vẽ vùng mask, upload đồ mới, AI ghép chính xác
+                </p>
+                <ul class="landing-mode-features">
+                    <li><span class="material-symbols-rounded">check_circle</span> Vẽ mask vùng cần thay (canvas tool)</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Upload ảnh đồ vật mới làm reference</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Bảo toàn 100% vùng ngoài mask</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Ghép đúng góc, tỷ lệ, ánh sáng</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Approach 1.2: Source + Mask + Ref</li>
+                </ul>
+            </a>
+
+            <!-- Floor Plan Render Mode (NEW) -->
+            <a href="floorplan-render.html" class="landing-mode-card">
+                <div class="landing-mode-icon" style="background:#f0f9ff; color:#0284c7;">
+                    <span class="material-symbols-rounded">floor</span>
+                </div>
+                <h2 class="landing-mode-title">Floor Plan Render</h2>
+                <p class="landing-mode-description">
+                    Đổ màu & vật liệu lên mặt bằng 2D — giữ nguyên top-down view và tỷ lệ
+                </p>
+                <ul class="landing-mode-features">
+                    <li><span class="material-symbols-rounded">check_circle</span> AI nhận diện phòng, đồ vật tự động</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Giữ nguyên góc nhìn top-down tuyệt đối</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Áp vật liệu, màu sắc theo từng phòng</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> 6 phong cách: Modern, Tropical, Japandi...</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Hỗ trợ ảnh reference cho style</li>
+                </ul>
+            </a>
+
+            <!-- Render History (NEW) -->
+            <a href="render-history.html" class="landing-mode-card">
+                <div class="landing-mode-icon" style="background:#f0fdf4; color:#16a34a;">
+                    <span class="material-symbols-rounded">history</span>
+                </div>
+                <h2 class="landing-mode-title">Lịch Sử Render</h2>
+                <p class="landing-mode-description">
+                    Xem lại tất cả ảnh đã render ở mọi mode — tải về hoặc xóa bất kỳ lúc nào
+                </p>
+                <ul class="landing-mode-features">
+                    <li><span class="material-symbols-rounded">check_circle</span> Lưu trữ local (không đồng bộ cloud)</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Gallery tất cả render modes</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Filter theo mode, tìm kiếm</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Tải về ảnh gốc chất lượng cao</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Xóa từng render hoặc clear tất cả</li>
                 </ul>
             </a>
         </div>

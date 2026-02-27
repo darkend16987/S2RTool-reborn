@@ -18,6 +18,8 @@ services:
       - ./backend:/app
       # Persist reference images
       - backend-references:/app/references
+      # Persist render history (local only, gitignored)
+      - render-history:/app/render_history
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5001/health')"]
@@ -53,4 +55,6 @@ networks:
 
 volumes:
   backend-references:
+    driver: local
+  render-history:
     driver: local
