@@ -25,13 +25,13 @@
             margin-bottom: 0.75rem;
         }
         .room-name-input {
-            font-size: 0.875rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: var(--color-text-primary);
             border: none;
             border-bottom: 1.5px solid transparent;
             background: transparent;
-            padding: 0.1rem 0.25rem;
+            padding: 0.35rem 0.5rem;
             flex: 1;
             min-width: 0;
             outline: none;
@@ -48,63 +48,91 @@
             white-space: nowrap;
             margin-left: 0.5rem;
         }
-        .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; margin-bottom: 0.625rem; }
+        .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; margin-bottom: 0.875rem; }
         .room-field label {
-            font-size: 0.72rem;
-            font-weight: 500;
-            color: var(--color-text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-text-label);
             display: block;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.4rem;
         }
         .room-field select,
         .room-field input[type="text"] {
             width: 100%;
-            padding: 0.375rem 0.5rem;
-            font-size: 0.8rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
             border: 1.5px solid var(--color-border);
             border-radius: var(--radius-sm);
             background: white;
             box-sizing: border-box;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .room-field select:focus,
+        .room-field input[type="text"]:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-light);
         }
         .room-field input[type="text"].other-input {
             margin-top: 0.3rem;
             display: none;
         }
-        .room-objects { margin-top: 0; }
+        .room-objects { margin-top: 0.25rem; }
         .room-objects label {
-            font-size: 0.72rem;
-            font-weight: 500;
-            color: var(--color-text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-text-label);
             display: block;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.4rem;
         }
         .room-objects textarea {
             width: 100%;
-            padding: 0.375rem 0.5rem;
-            font-size: 0.8rem;
+            padding: 0.6rem 0.75rem;
+            font-size: 0.875rem;
             border: 1.5px solid var(--color-border);
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
             background: white;
             resize: vertical;
             font-family: inherit;
-            line-height: 1.45;
+            line-height: 1.5;
             box-sizing: border-box;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .room-objects textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-light);
+        }
+
+        /* ── Form Section additions ────────────────────────────── */
+        .form-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .form-section:not(details) {
+            padding: 1.25rem;
+            background: white;
+        }
+        .form-section details {
+            background: var(--color-bg-subtle);
         }
 
         /* ── Style grid ─────────────────────────────────────── */
         .style-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.4rem;
-            margin-bottom: 0.5rem;
+            gap: 0.6rem;
+            margin-bottom: 0.75rem;
         }
         .style-option {
-            padding: 0.5rem 0.25rem;
+            padding: 0.6rem 0.5rem;
             border: 1.5px solid var(--color-border);
             border-radius: var(--radius-md);
             text-align: center;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 500;
             transition: all var(--transition-fast);
         }
@@ -112,12 +140,12 @@
         .style-option.active { background: var(--gradient-primary); color: white; border-color: transparent; }
 
         /* ── Aspect ratio ───────────────────────────────────── */
-        .aspect-options { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+        .aspect-options { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
         .aspect-btn {
-            padding: 0.35rem 0.75rem;
+            padding: 0.5rem 0.85rem;
             border: 1.5px solid var(--color-border);
             border-radius: var(--radius-md);
-            font-size: 0.78rem;
+            font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
             transition: all var(--transition-fast);
@@ -127,9 +155,9 @@
         .aspect-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
         .aspect-btn.active { background: var(--gradient-primary); color: white; border-color: transparent; }
         .aspect-hint {
-            font-size: 0.73rem;
+            font-size: 0.8rem;
             color: var(--color-text-tertiary);
-            margin-top: 0.4rem;
+            margin-top: 0.5rem;
             line-height: 1.4;
         }
 
@@ -137,10 +165,10 @@
         .fp-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
-            font-size: 0.75rem;
+            gap: 0.5rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            padding: 0.25rem 0.65rem;
+            padding: 0.4rem 0.85rem;
             border-radius: var(--radius-full);
             background: #f0f9ff;
             color: #0284c7;
@@ -352,9 +380,9 @@
 
             <!-- Style selection -->
             <div class="form-section">
-                <div class="form-section-header" style="margin-bottom:0.625rem;">
+                <div class="form-section-header">
                     <span class="material-symbols-rounded">palette</span>
-                    <div style="font-weight:600; font-size:0.9rem;">Phong cách</div>
+                    <div style="font-weight:600; font-size:1rem;">Phong cách</div>
                 </div>
                 <div class="style-grid">
                     <div class="style-option active" data-style="modern">Modern</div>
@@ -381,12 +409,12 @@
 
             <!-- Rooms list -->
             <div class="form-section">
-                <div class="form-section-header" style="margin-bottom:0.625rem; justify-content:space-between;">
+                <div class="form-section-header" style="justify-content:space-between;">
                     <div style="display:flex; align-items:center; gap:0.5rem;">
                         <span class="material-symbols-rounded">meeting_room</span>
-                        <div style="font-weight:600; font-size:0.9rem;">
+                        <div style="font-weight:600; font-size:1rem;">
                             Danh sách phòng
-                            <span id="roomCount" style="color:var(--color-text-tertiary); font-size:0.8rem; font-weight:400;"> (0 phòng)</span>
+                            <span id="roomCount" style="color:var(--color-text-tertiary); font-size:0.85rem; font-weight:400;"> (0 phòng)</span>
                         </div>
                     </div>
                     <button id="addRoomBtn" class="btn-outline" style="font-size:0.75rem; padding:0.3rem 0.65rem;">
@@ -403,7 +431,7 @@
 
             <!-- Aspect ratio -->
             <div class="form-section">
-                <div style="font-size:0.85rem; font-weight:600; color:var(--color-text-label); margin-bottom:0.625rem;">Tỷ lệ ảnh</div>
+                <div style="font-size:0.95rem; font-weight:600; color:var(--color-text-label); margin-bottom:0.875rem;">Tỷ lệ ảnh</div>
                 <div class="aspect-options">
                     <div class="aspect-btn active" data-ratio="auto">Gốc ◎</div>
                     <div class="aspect-btn" data-ratio="1:1">1:1 ■</div>
