@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
     <style>
         /* ── Room cards ─────────────────────────────────────── */
         .room-card {
@@ -18,12 +21,14 @@
             padding: 1rem 1.125rem;
             margin-bottom: 0.75rem;
         }
+
         .room-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 0.75rem;
         }
+
         .room-name-input {
             font-size: 0.95rem;
             font-weight: 600;
@@ -37,7 +42,11 @@
             outline: none;
             transition: border-color 0.15s;
         }
-        .room-name-input:focus { border-bottom-color: var(--color-primary); }
+
+        .room-name-input:focus {
+            border-bottom-color: var(--color-primary);
+        }
+
         .room-tag {
             font-size: 0.72rem;
             font-weight: 600;
@@ -48,7 +57,14 @@
             white-space: nowrap;
             margin-left: 0.5rem;
         }
-        .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; margin-bottom: 0.875rem; }
+
+        .room-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.875rem;
+            margin-bottom: 0.875rem;
+        }
+
         .room-field label {
             font-size: 0.75rem;
             font-weight: 600;
@@ -56,6 +72,7 @@
             display: block;
             margin-bottom: 0.4rem;
         }
+
         .room-field select,
         .room-field input[type="text"] {
             width: 100%;
@@ -67,17 +84,23 @@
             box-sizing: border-box;
             transition: border-color 0.15s, box-shadow 0.15s;
         }
+
         .room-field select:focus,
         .room-field input[type="text"]:focus {
             outline: none;
             border-color: var(--color-primary);
             box-shadow: 0 0 0 3px var(--color-primary-light);
         }
+
         .room-field input[type="text"].other-input {
             margin-top: 0.3rem;
             display: none;
         }
-        .room-objects { margin-top: 0.25rem; }
+
+        .room-objects {
+            margin-top: 0.25rem;
+        }
+
         .room-objects label {
             font-size: 0.75rem;
             font-weight: 600;
@@ -85,6 +108,7 @@
             display: block;
             margin-bottom: 0.4rem;
         }
+
         .room-objects textarea {
             width: 100%;
             padding: 0.6rem 0.75rem;
@@ -98,6 +122,7 @@
             box-sizing: border-box;
             transition: border-color 0.15s, box-shadow 0.15s;
         }
+
         .room-objects textarea:focus {
             outline: none;
             border-color: var(--color-primary);
@@ -111,10 +136,12 @@
             gap: 0.5rem;
             margin-bottom: 1rem;
         }
+
         .form-section:not(details) {
             padding: 1.25rem;
             background: white;
         }
+
         .form-section details {
             background: var(--color-bg-subtle);
         }
@@ -126,6 +153,7 @@
             gap: 0.6rem;
             margin-bottom: 0.75rem;
         }
+
         .style-option {
             padding: 0.6rem 0.5rem;
             border: 1.5px solid var(--color-border);
@@ -136,11 +164,26 @@
             font-weight: 500;
             transition: all var(--transition-fast);
         }
-        .style-option:hover { border-color: var(--color-primary); color: var(--color-primary); }
-        .style-option.active { background: var(--gradient-primary); color: white; border-color: transparent; }
+
+        .style-option:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .style-option.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: transparent;
+        }
 
         /* ── Aspect ratio ───────────────────────────────────── */
-        .aspect-options { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+        .aspect-options {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
         .aspect-btn {
             padding: 0.5rem 0.85rem;
             border: 1.5px solid var(--color-border);
@@ -152,8 +195,18 @@
             background: white;
             white-space: nowrap;
         }
-        .aspect-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
-        .aspect-btn.active { background: var(--gradient-primary); color: white; border-color: transparent; }
+
+        .aspect-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .aspect-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: transparent;
+        }
+
         .aspect-hint {
             font-size: 0.8rem;
             color: var(--color-text-tertiary);
@@ -175,7 +228,13 @@
             border: 1px solid #bae6fd;
             margin-bottom: 1rem;
         }
-        .analyze-bar { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.875rem; }
+
+        .analyze-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.875rem;
+        }
 
         /* ── Output thumbnail ───────────────────────────────── */
         .output-thumb-wrapper {
@@ -186,13 +245,18 @@
             border: 1.5px solid var(--color-border);
             background: var(--color-bg-subtle);
         }
+
         .output-thumb-wrapper img {
             display: block;
             width: 100%;
             height: auto;
             transition: filter 0.2s;
         }
-        .output-thumb-wrapper:hover img { filter: brightness(0.88); }
+
+        .output-thumb-wrapper:hover img {
+            filter: brightness(0.88);
+        }
+
         .output-thumb-overlay {
             position: absolute;
             inset: 0;
@@ -208,8 +272,14 @@
             font-weight: 600;
             pointer-events: none;
         }
-        .output-thumb-overlay .material-symbols-rounded { font-size: 32px; }
-        .output-thumb-wrapper:hover .output-thumb-overlay { opacity: 1; }
+
+        .output-thumb-overlay .material-symbols-rounded {
+            font-size: 32px;
+        }
+
+        .output-thumb-wrapper:hover .output-thumb-overlay {
+            opacity: 1;
+        }
 
         /* ── Full-image modal ───────────────────────────────── */
         .fp-img-modal {
@@ -217,24 +287,29 @@
             position: fixed;
             inset: 0;
             z-index: 9000;
-            background: rgba(0,0,0,0.88);
+            background: rgba(0, 0, 0, 0.88);
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
         }
-        .fp-img-modal.active { display: flex; }
+
+        .fp-img-modal.active {
+            display: flex;
+        }
+
         .fp-img-modal img {
             max-width: 92vw;
             max-height: 90vh;
             object-fit: contain;
             border-radius: var(--radius-lg);
-            box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
         }
+
         .fp-modal-close {
             position: fixed;
             top: 1rem;
             right: 1.25rem;
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             border: none;
             color: white;
             border-radius: 50%;
@@ -248,7 +323,11 @@
             z-index: 9001;
             transition: background 0.2s;
         }
-        .fp-modal-close:hover { background: rgba(255,255,255,0.3); }
+
+        .fp-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
         .fp-modal-actions {
             position: fixed;
             bottom: 1.5rem;
@@ -260,6 +339,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- Full-image Modal -->
@@ -332,7 +412,9 @@
                     <span class="material-symbols-rounded icon-sm">close</span>
                 </button>
             </div>
-            <div id="analyzeStatus" style="display:none; font-size:0.8rem; color:var(--color-text-secondary); margin-top:0.5rem; text-align:center; line-height:1.4;"></div>
+            <div id="analyzeStatus"
+                style="display:none; font-size:0.8rem; color:var(--color-text-secondary); margin-top:0.5rem; text-align:center; line-height:1.4;">
+            </div>
 
             <!-- Reference image (optional) -->
             <details class="form-section" style="margin-top:1.25rem;">
@@ -341,7 +423,8 @@
                     Ảnh tham khảo Style (Optional)
                 </summary>
                 <div class="section-content">
-                    <p style="color:var(--color-text-secondary); font-size:0.75rem; margin-bottom:0.75rem; line-height:1.5;">
+                    <p
+                        style="color:var(--color-text-secondary); font-size:0.75rem; margin-bottom:0.75rem; line-height:1.5;">
                         Upload ảnh mặt bằng đã render hoặc ảnh nội thất để tham khảo phong cách màu sắc, vật liệu.
                     </p>
                     <div class="image-uploader" style="min-height:100px; aspect-ratio:auto;">
@@ -352,7 +435,8 @@
                         </label>
                         <img id="previewRef" src="" alt="Reference" class="preview-image hidden">
                     </div>
-                    <button type="button" id="clearRefBtn" class="btn-remove" style="display:none; margin-top:0.5rem; width:100%; font-size:0.75rem;">
+                    <button type="button" id="clearRefBtn" class="btn-remove"
+                        style="display:none; margin-top:0.5rem; width:100%; font-size:0.75rem;">
                         <span class="material-symbols-rounded icon-sm">close</span> Xóa reference
                     </button>
                 </div>
@@ -370,7 +454,8 @@
             <div class="form-section">
                 <div class="form-group">
                     <label class="form-label">Loại căn hộ / công trình</label>
-                    <input type="text" id="aptType" class="form-input" placeholder="VD: Căn hộ 2 phòng ngủ, Nhà phố tầng 1...">
+                    <input type="text" id="aptType" class="form-input"
+                        placeholder="VD: Căn hộ 2 phòng ngủ, Nhà phố tầng 1...">
                 </div>
                 <div class="form-group" style="margin-top:0.625rem;">
                     <label class="form-label">Diện tích ước tính</label>
@@ -414,7 +499,9 @@
                         <span class="material-symbols-rounded">meeting_room</span>
                         <div style="font-weight:600; font-size:1rem;">
                             Danh sách phòng
-                            <span id="roomCount" style="color:var(--color-text-tertiary); font-size:0.85rem; font-weight:400;"> (0 phòng)</span>
+                            <span id="roomCount"
+                                style="color:var(--color-text-tertiary); font-size:0.85rem; font-weight:400;"> (0
+                                phòng)</span>
                         </div>
                     </div>
                     <button id="addRoomBtn" class="btn-outline" style="font-size:0.75rem; padding:0.3rem 0.65rem;">
@@ -422,16 +509,61 @@
                     </button>
                 </div>
                 <div id="roomsList">
-                    <div style="text-align:center; padding:1.5rem 1rem; color:var(--color-text-tertiary); font-size:0.85rem; border:1.5px dashed var(--color-border); border-radius:var(--radius-lg); line-height:1.6;">
-                        <span class="material-symbols-rounded" style="font-size:32px; display:block; margin-bottom:0.5rem;">psychology</span>
+                    <div
+                        style="text-align:center; padding:1.5rem 1rem; color:var(--color-text-tertiary); font-size:0.85rem; border:1.5px dashed var(--color-border); border-radius:var(--radius-lg); line-height:1.6;">
+                        <span class="material-symbols-rounded"
+                            style="font-size:32px; display:block; margin-bottom:0.5rem;">psychology</span>
                         Nhấn "Phân tích AI" để tự động nhận diện phòng,<br>hoặc thêm thủ công bằng nút "Thêm".
                     </div>
                 </div>
             </div>
 
+            <!-- Technical Specs (Camera, Lens, Lighting) -->
+            <div class="form-section">
+                <details class="form-section"
+                    style="margin: 0; padding: 0; background: transparent; border: none; box-shadow: none;">
+                    <summary
+                        style="font-weight: 600; font-size: 0.95rem; color: var(--color-text-label); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; user-select: none;">
+                        <span class="material-symbols-rounded">settings_photo_camera</span>
+                        Thông số Kỹ thuật (Tùy chọn)
+                    </summary>
+                    <div class="section-content"
+                        style="padding-top: 1rem; margin-top: 0.75rem; border-top: 1px dashed var(--color-border-light);">
+                        <div class="form-group" style="margin-bottom: 0.875rem;">
+                            <label for="tech_camera" class="form-label"
+                                style="display: flex; align-items: center; gap: 0.4rem;">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">photo_camera</span>
+                                Máy ảnh (Loại máy chụp)
+                            </label>
+                            <input type="text" id="tech_camera" class="form-input"
+                                value="Medium format digital camera, overhead rig">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0.875rem;">
+                            <label for="tech_lens" class="form-label"
+                                style="display: flex; align-items: center; gap: 0.4rem;">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">camera</span>
+                                Ống kính
+                            </label>
+                            <input type="text" id="tech_lens" class="form-input"
+                                value="Orthographic flat lens, 0 distortion">
+                        </div>
+                        <div class="form-group">
+                            <label for="tech_lighting" class="form-label"
+                                style="display: flex; align-items: center; gap: 0.4rem;">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">light_mode</span>
+                                Ánh sáng
+                            </label>
+                            <input type="text" id="tech_lighting" class="form-input"
+                                value="Even overhead studio lighting, photorealistic textures">
+                        </div>
+                    </div>
+                </details>
+            </div>
+
             <!-- Aspect ratio -->
             <div class="form-section">
-                <div style="font-size:0.95rem; font-weight:600; color:var(--color-text-label); margin-bottom:0.875rem;">Tỷ lệ ảnh</div>
+                <div style="font-size:0.95rem; font-weight:600; color:var(--color-text-label); margin-bottom:0.875rem;">
+                    Tỷ lệ ảnh</div>
                 <div class="aspect-options">
                     <div class="aspect-btn active" data-ratio="auto">Gốc ◎</div>
                     <div class="aspect-btn" data-ratio="1:1">1:1 ■</div>
@@ -493,7 +625,8 @@
             </div>
 
             <!-- Floor plan tips -->
-            <div style="background:var(--color-success-light); border-radius:var(--radius-lg); padding:1rem 1.125rem; margin-top:1.5rem; border:1px solid rgba(16,185,129,0.2);">
+            <div
+                style="background:var(--color-success-light); border-radius:var(--radius-lg); padding:1rem 1.125rem; margin-top:1.5rem; border:1px solid rgba(16,185,129,0.2);">
                 <div style="font-weight:600; font-size:0.82rem; color:var(--color-success); margin-bottom:0.5rem;">
                     Nguyên tắc Floor Plan Render
                 </div>
@@ -513,4 +646,5 @@
 
     <script src="floorplan-script.js"></script>
 </body>
+
 </html>

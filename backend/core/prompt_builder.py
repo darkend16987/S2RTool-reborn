@@ -1361,7 +1361,8 @@ OUTPUT: Single photorealistic image identical to Image 1 except the white-masked
         style: str = "modern",
         color_scheme: str = "",
         has_reference: bool = False,
-        aspect_ratio: str = "1:1"
+        aspect_ratio: str = "1:1",
+        technical_specs: dict = None
     ) -> str:
         """
         Build render prompt for 2D floor plan material/color rendering.
@@ -1396,6 +1397,20 @@ OUTPUT: Single photorealistic image identical to Image 1 except the white-masked
                 "   Use for STYLE INSPIRATION ONLY (colors, textures, finish quality).\n"
                 "   Do NOT copy layout, furniture positions, or viewpoint from reference."
             )
+
+        # Technical specs note (NEW)
+        tech_note = ""
+        if technical_specs:
+            tech_camera = technical_specs.get('camera', 'Medium format digital camera')
+            tech_lens = technical_specs.get('lens', 'Orthographic flat lens')
+            tech_lighting = technical_specs.get('lighting', 'Even overhead studio lighting')
+            tech_note = f"""
+TECHNICAL SPECIFICATIONS (FOR PHOTOREALISM QUALITY):
+   - Camera: {tech_camera}
+   - Lens: {tech_lens}
+   - Lighting: {tech_lighting}
+   ⚠️ IMPORTANT: Use these specs strictly to enhance material and texture realism.
+   ⚠️ DO NOT change the strict 90° overhead zenith angle — the view MUST STAY 2D TOP-DOWN."""
 
         return f"""ROLE: Expert architectural visualization artist specializing in 2D floor plan rendering.
 
@@ -1433,6 +1448,7 @@ LIGHTING (top-down simulation):
    - Secondary: Subtle directional light from windows/balcony doors
    - Shadows: Very subtle, directly below objects (pure top-down shadow)
    - NO dramatic side-lighting, NO sunset effects, NO atmospheric sky
+{tech_note}
 
 RENDERING QUALITY: Photorealistic architectural floor plan visualization
    - Materials: accurate textures and reflections seen from above

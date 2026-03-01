@@ -323,7 +323,12 @@ async function renderFloorplan() {
             analysis_data: currentAnalysis,
             style: effectiveStyle,
             color_scheme: document.getElementById('colorScheme').value.trim(),
-            aspect_ratio: selectedRatio
+            aspect_ratio: selectedRatio,
+            technical_specs: {
+                camera: document.getElementById('tech_camera')?.value || 'Medium format digital camera, overhead rig',
+                lens: document.getElementById('tech_lens')?.value || 'Orthographic flat lens, 0 distortion',
+                lighting: document.getElementById('tech_lighting')?.value || 'Even overhead studio lighting, photorealistic textures'
+            }
         };
         if (referenceB64) payload.reference_image_base64 = referenceB64;
 

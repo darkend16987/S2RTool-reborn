@@ -125,6 +125,7 @@ def render_floorplan():
         style = data.get('style', FloorPlanConfig.DEFAULT_STYLE)
         color_scheme = data.get('color_scheme', '')
         aspect_ratio = data.get('aspect_ratio', FloorPlanConfig.DEFAULT_ASPECT_RATIO)
+        technical_specs = data.get('technical_specs', None)
 
         print(f"🏠 Rendering floor plan:")
         print(f"   Type: {analysis_data.get('apartment_type', 'N/A')}")
@@ -139,7 +140,8 @@ def render_floorplan():
             style=style,
             color_scheme=color_scheme,
             has_reference=(reference_pil is not None),
-            aspect_ratio=aspect_ratio
+            aspect_ratio=aspect_ratio,
+            technical_specs=technical_specs
         )
 
         print(f"📝 Prompt preview: {render_prompt[:200]}...")
