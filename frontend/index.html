@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
     <style>
         /* Landing page specific styles */
         body {
@@ -167,14 +170,36 @@
             color: var(--color-text-secondary);
             line-height: 1.5;
             margin: 0;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .landing-mode-card:hover .landing-mode-description {
+            max-height: 100px;
+            opacity: 1;
+            margin-top: 0.5rem;
         }
 
         .landing-mode-features {
             list-style: none;
             padding: 0;
-            margin: 0.5rem 0 0 0;
+            margin: 0;
             text-align: left;
             width: 100%;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .landing-mode-card:hover .landing-mode-features {
+            max-height: 400px;
+            opacity: 1;
+            margin-top: 1rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed var(--color-border);
         }
 
         .landing-mode-features li {
@@ -291,6 +316,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="landing-container">
         <div class="landing-header">
@@ -313,7 +339,8 @@
                 </p>
                 <ul class="landing-mode-features">
                     <li><span class="material-symbols-rounded">check_circle</span> Phân tích sketch tự động với AI</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> Đa góc nhìn (facade, 3/4, aerial)</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Đa góc nhìn (facade, 3/4, aerial)
+                    </li>
                     <li><span class="material-symbols-rounded">check_circle</span> Thư viện reference image</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Chỉnh sửa vùng với inpainting</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Bảo toàn structure 95%+</li>
@@ -330,9 +357,11 @@
                     Render nội thất với độ chính xác cao về vị trí đồ vật và chất liệu
                 </p>
                 <ul class="landing-mode-features">
-                    <li><span class="material-symbols-rounded">check_circle</span> Phân tích sketch nội thất tự động</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Phân tích sketch nội thất tự động
+                    </li>
                     <li><span class="material-symbols-rounded">check_circle</span> Bảo toàn vị trí furniture 99%+</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> Lighting hierarchy (primary/secondary)</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Lighting hierarchy
+                        (primary/secondary)</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Multi-material wall treatments</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Ultra-sharp material details</li>
                 </ul>
@@ -350,7 +379,8 @@
                 <ul class="landing-mode-features">
                     <li><span class="material-symbols-rounded">check_circle</span> Upload mặt bằng phân lô</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Mô tả từng lô riêng biệt</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> Góc nhìn aerial (drone, bird's eye)</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Góc nhìn aerial (drone, bird's eye)
+                    </li>
                     <li><span class="material-symbols-rounded">check_circle</span> Thời gian trong ngày tùy chỉnh</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Bảo toàn lot boundaries 95%+</li>
                 </ul>
@@ -366,11 +396,14 @@
                     Render quy hoạch chi tiết từ sketch có sẵn công trình, tập trung vào hình thái tổng thể
                 </p>
                 <ul class="landing-mode-features">
-                    <li><span class="material-symbols-rounded">check_circle</span> Upload sketch quy hoạch (có công trình)</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> Bảo toàn shape và tỷ lệ công trình</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Upload sketch quy hoạch (có công
+                        trình)</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Bảo toàn shape và tỷ lệ công trình
+                    </li>
                     <li><span class="material-symbols-rounded">check_circle</span> Góc nhìn birdview/drone 45°</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Render quality presets</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> Focus: Hình thái, layout, không gian xanh</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Focus: Hình thái, layout, không gian
+                        xanh</li>
                 </ul>
             </a>
 
@@ -384,11 +417,14 @@
                     Thay thế đồ vật trong ảnh: vẽ vùng mask, upload đồ mới, AI ghép chính xác
                 </p>
                 <ul class="landing-mode-features">
-                    <li><span class="material-symbols-rounded">check_circle</span> Vẽ mask vùng cần thay (canvas tool)</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> Upload ảnh đồ vật mới làm reference</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Vẽ mask vùng cần thay (canvas tool)
+                    </li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Upload ảnh đồ vật mới làm reference
+                    </li>
                     <li><span class="material-symbols-rounded">check_circle</span> Bảo toàn 100% vùng ngoài mask</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Ghép đúng góc, tỷ lệ, ánh sáng</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> Approach 1.2: Source + Mask + Ref</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Approach 1.2: Source + Mask + Ref
+                    </li>
                 </ul>
             </a>
 
@@ -402,10 +438,14 @@
                     Đổ màu & vật liệu lên mặt bằng 2D — giữ nguyên top-down view và tỷ lệ
                 </p>
                 <ul class="landing-mode-features">
-                    <li><span class="material-symbols-rounded">check_circle</span> AI nhận diện phòng, đồ vật tự động</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> Giữ nguyên góc nhìn top-down tuyệt đối</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> Áp vật liệu, màu sắc theo từng phòng</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> 6 phong cách: Modern, Tropical, Japandi...</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> AI nhận diện phòng, đồ vật tự động
+                    </li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Giữ nguyên góc nhìn top-down tuyệt
+                        đối</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Áp vật liệu, màu sắc theo từng phòng
+                    </li>
+                    <li><span class="material-symbols-rounded">check_circle</span> 6 phong cách: Modern, Tropical,
+                        Japandi...</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Hỗ trợ ảnh reference cho style</li>
                 </ul>
             </a>
@@ -420,11 +460,13 @@
                     Xem lại tất cả ảnh đã render ở mọi mode — tải về hoặc xóa bất kỳ lúc nào
                 </p>
                 <ul class="landing-mode-features">
-                    <li><span class="material-symbols-rounded">check_circle</span> Lưu trữ local (không đồng bộ cloud)</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Lưu trữ local (không đồng bộ cloud)
+                    </li>
                     <li><span class="material-symbols-rounded">check_circle</span> Gallery tất cả render modes</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Filter theo mode, tìm kiếm</li>
                     <li><span class="material-symbols-rounded">check_circle</span> Tải về ảnh gốc chất lượng cao</li>
-                    <li><span class="material-symbols-rounded">check_circle</span> Xóa từng render hoặc clear tất cả</li>
+                    <li><span class="material-symbols-rounded">check_circle</span> Xóa từng render hoặc clear tất cả
+                    </li>
                 </ul>
             </a>
         </div>
@@ -442,4 +484,5 @@
     <!-- JavaScript -->
     <script src="version-check.js"></script>
 </body>
+
 </html>
