@@ -1438,7 +1438,7 @@ RENDERING QUALITY: Photorealistic architectural floor plan visualization
    - Materials: accurate textures and reflections seen from above
    - Furniture: top-down view with realistic material textures
    - Walls: solid architectural elements with proper thickness shadows
-   - Aspect ratio: {aspect_ratio}
+   - Aspect ratio: {"match the original floor plan image proportions exactly" if aspect_ratio == "auto" else aspect_ratio}
 
 FORBIDDEN:
    - No 3D perspective views
