@@ -806,9 +806,10 @@ QUY TẮC:
 1. Chỉ mô tả những gì THẬT SỰ NHÌN THẤY trong bản vẽ
 2. Áp dụng đúng quy tắc đọc bản vẽ kiến trúc 2D ở trên
 3. Gợi ý vật liệu sàn và màu tường phù hợp với loại phòng (người dùng có thể chỉnh sau)
-4. Nếu không chắc loại phòng, đưa ra dự đoán hợp lý nhất dựa trên vị trí và đồ vật
-5. Trả về ĐÚNG format JSON, không có text thừa
-6. Rooms phải liệt kê TẤT CẢ phòng/không gian trong mặt bằng, kể cả hành lang, kho, WC"""
+4. ĐẶT TÊN PHÒNG: Nếu CHẮC CHẮN loại phòng (có đồ vật đặc trưng rõ ràng như bồn cầu → WC, bếp → Bếp), dùng tên cụ thể. Nếu KHÔNG CHẮC (phòng trống, đa dụng, khó đoán), dùng "Phòng 1", "Phòng 2", "Phòng 3"... hoặc "Không gian 1", "Không gian 2"... KHÔNG ĐƯỢC đoán bừa tên phòng khi thiếu bằng chứng rõ ràng.
+5. Phân biệt WC/Vệ sinh: chỉ khi thấy bồn cầu, bồn tắm, bồn rửa. Dùng "WC 1", "WC 2" nếu nhiều phòng vệ sinh.
+6. Trả về ĐÚNG format JSON, không có text thừa
+7. Rooms phải liệt kê TẤT CẢ phòng/không gian trong mặt bằng, kể cả hành lang, kho, WC"""
 
 # ============== Debug Info ==============
 if __name__ == "__main__":

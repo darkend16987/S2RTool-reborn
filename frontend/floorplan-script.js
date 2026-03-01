@@ -9,12 +9,18 @@ let floorplanB64 = null;
 let referenceB64 = null;
 let analysisData = null;
 let selectedStyle = 'modern';
-let selectedRatio = '1:1';
+let selectedRatio = 'auto';
 let roomIdCounter = 0;
+let currentResultSrc = null;  // for modal download
 
-const FLOOR_MATERIALS = ['Gỗ sồi', 'Gỗ óc chó', 'Gạch men trắng', 'Đá marble', 'Gạch cement', 'Gỗ công nghiệp', 'Đá tự nhiên', 'Thảm', 'Epoxy'];
-const WALL_COLORS = ['Trắng ngà', 'Xám nhạt', 'Xanh sage', 'Kem be', 'Nâu gỗ nhạt', 'Xanh navy', 'Hồng blush', 'Xám bê tông'];
-const ROOM_TYPES = ['Phòng khách', 'Phòng ngủ chính', 'Phòng ngủ 2', 'Phòng ngủ 3', 'Nhà bếp', 'Phòng tắm / WC', 'WC', 'Phòng làm việc', 'Phòng ăn', 'Hành lang', 'Kho', 'Ban công', 'Logia', 'Phòng tiện ích'];
+const FLOOR_MATERIALS = [
+    'Gỗ sồi', 'Gỗ óc chó', 'Gỗ công nghiệp', 'Gạch men trắng',
+    'Đá marble', 'Gạch cement', 'Đá tự nhiên', 'Thảm', 'Epoxy'
+];
+const WALL_COLORS = [
+    'Trắng ngà', 'Xám nhạt', 'Xanh sage', 'Kem be',
+    'Nâu gỗ nhạt', 'Xanh navy', 'Hồng blush', 'Xám bê tông'
+];
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
@@ -25,6 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.style-option').forEach(o => o.classList.remove('active'));
             opt.classList.add('active');
             selectedStyle = opt.dataset.style;
+            const customInput = document.getElementById('styleCustomInput');
+            if (selectedStyle === '__other__') {
+                customInput.style.display = 'block';
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+            }
         });
     });
 
@@ -34,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.aspect-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedRatio = btn.dataset.ratio;
+            const hint = document.getElementById('aspectHint');
+            hint.style.display = selectedRatio === 'auto' ? 'none' : 'block';
         });
     });
 
@@ -97,6 +112,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render button
     document.getElementById('renderBtn').addEventListener('click', renderFloorplan);
     document.getElementById('retryBtn')?.addEventListener('click', renderFloorplan);
+
+    // Modal: close on Escape
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeOutputModal();
+    });
 });
 
 // ── AI Analysis ───────────────────────────────────────────────────────────────
@@ -109,6 +129,7 @@ async function analyzeFloorplan() {
     btn.disabled = true;
     btn.innerHTML = '<span class="material-symbols-rounded spinning">autorenew</span> Đang phân tích...';
     status.style.display = 'block';
+    status.style.color = 'var(--color-text-secondary)';
     status.textContent = 'AI đang nhận diện các phòng và đồ vật... (15-30 giây)';
 
     try {
@@ -123,7 +144,7 @@ async function analyzeFloorplan() {
 
         analysisData = data.analysis;
 
-        // Fill form with analysis
+        // Fill form fields
         document.getElementById('aptType').value = analysisData.apartment_type || '';
         document.getElementById('aptSize').value = analysisData.overall_size || '';
 
@@ -152,15 +173,11 @@ function addRoomCard(roomData = null) {
     const id = ++roomIdCounter;
     const room = roomData || {};
 
-    const roomType = room.room_type || 'Phòng';
+    // Room name: use AI-detected name, or default numbered name
+    const roomName = room.room_type || `Phòng ${id}`;
     const floorMat = room.floor_material || '';
     const wallColor = room.wall_color || '';
     const objects = (room.objects || []).join(', ');
-    const specials = (room.special_elements || []).join(', ');
-
-    const roomTypeOptions = ROOM_TYPES.map(t =>
-        `<option value="${t}" ${t === roomType ? 'selected' : ''}>${t}</option>`
-    ).join('');
 
     const floorOptions = FLOOR_MATERIALS.map(m =>
         `<option value="${m}" ${m === floorMat ? 'selected' : ''}>${m}</option>`
@@ -175,10 +192,9 @@ function addRoomCard(roomData = null) {
     card.dataset.roomId = id;
     card.innerHTML = `
         <div class="room-card-header">
-            <select class="room-type-select" style="font-size:0.82rem; font-weight:600; border:none; background:none; color:var(--color-text-primary); padding:0; cursor:pointer;">
-                ${roomTypeOptions}
-            </select>
-            <div style="display:flex; align-items:center; gap:0.4rem;">
+            <input type="text" class="room-name-input" value="${escHtml(roomName)}"
+                placeholder="Tên phòng (VD: Phòng khách, Phòng ngủ 1, WC...)">
+            <div style="display:flex; align-items:center; gap:0.4rem; flex-shrink:0;">
                 <span class="room-tag">#${id}</span>
                 <button class="btn-icon-sm danger" onclick="removeRoom(${id})" title="Xóa phòng">
                     <span class="material-symbols-rounded" style="font-size:14px;">close</span>
@@ -188,28 +204,54 @@ function addRoomCard(roomData = null) {
         <div class="room-grid">
             <div class="room-field">
                 <label>Sàn</label>
-                <select class="floor-mat-select">
+                <select class="floor-mat-select" onchange="toggleOtherInput(this)">
                     <option value="">-- Chọn --</option>
                     ${floorOptions}
+                    <option value="__other__">✏️ Khác...</option>
                 </select>
+                <input type="text" class="other-input floor-mat-custom"
+                    placeholder="Nhập vật liệu sàn..."
+                    ${floorMat && !FLOOR_MATERIALS.includes(floorMat) ? `style="display:block;" value="${escHtml(floorMat)}"` : ''}>
             </div>
             <div class="room-field">
                 <label>Màu tường</label>
-                <select class="wall-color-select">
+                <select class="wall-color-select" onchange="toggleOtherInput(this)">
                     <option value="">-- Chọn --</option>
                     ${wallOptions}
+                    <option value="__other__">✏️ Khác...</option>
                 </select>
+                <input type="text" class="other-input wall-color-custom"
+                    placeholder="Nhập màu tường..."
+                    ${wallColor && !WALL_COLORS.includes(wallColor) ? `style="display:block;" value="${escHtml(wallColor)}"` : ''}>
             </div>
         </div>
         <div class="room-objects">
-            <label>Đồ vật trong phòng</label>
-            <input type="text" class="room-objects-input" value="${objects}" placeholder="VD: Sofa, Bàn trà, TV...">
+            <label>Đồ vật trong phòng <span style="font-weight:400; color:var(--color-text-tertiary);">(có thể thêm vật liệu: "Sofa (da nâu)")</span></label>
+            <textarea class="room-objects-input" rows="2"
+                placeholder="VD: Sofa (da nâu), Bàn trà gỗ, TV 65&quot;...">${escHtml(objects)}</textarea>
         </div>
-        ${specials ? `<div style="font-size:0.72rem; color:var(--color-text-tertiary); margin-top:0.4rem;">📌 ${specials}</div>` : ''}
     `;
+
+    // If floor/wall value not in list (custom from AI), select "Khác"
+    if (floorMat && !FLOOR_MATERIALS.includes(floorMat)) {
+        card.querySelector('.floor-mat-select').value = '__other__';
+    }
+    if (wallColor && !WALL_COLORS.includes(wallColor)) {
+        card.querySelector('.wall-color-select').value = '__other__';
+    }
 
     document.getElementById('roomsList').appendChild(card);
     updateRoomCount();
+}
+
+function toggleOtherInput(select) {
+    const isOther = select.value === '__other__';
+    // Find the adjacent .other-input sibling
+    const input = select.nextElementSibling;
+    if (input && input.classList.contains('other-input')) {
+        input.style.display = isOther ? 'block' : 'none';
+        if (isOther) input.focus();
+    }
 }
 
 function removeRoom(id) {
@@ -219,18 +261,36 @@ function removeRoom(id) {
 
 function updateRoomCount() {
     const count = document.querySelectorAll('.room-card').length;
-    document.getElementById('roomCount').textContent = `(${count} phòng)`;
+    document.getElementById('roomCount').textContent = ` (${count} phòng)`;
+    checkCanRender();
 }
 
 function collectRoomsData() {
     const cards = document.querySelectorAll('.room-card');
-    return Array.from(cards).map(card => ({
-        room_type: card.querySelector('.room-type-select')?.value || '',
-        floor_material: card.querySelector('.floor-mat-select')?.value || '',
-        wall_color: card.querySelector('.wall-color-select')?.value || '',
-        objects: (card.querySelector('.room-objects-input')?.value || '')
-            .split(',').map(s => s.trim()).filter(Boolean)
-    }));
+    return Array.from(cards).map(card => {
+        // Floor material
+        const floorSelect = card.querySelector('.floor-mat-select');
+        const floorMat = floorSelect?.value === '__other__'
+            ? (card.querySelector('.floor-mat-custom')?.value?.trim() || '')
+            : (floorSelect?.value || '');
+
+        // Wall color
+        const wallSelect = card.querySelector('.wall-color-select');
+        const wallColor = wallSelect?.value === '__other__'
+            ? (card.querySelector('.wall-color-custom')?.value?.trim() || '')
+            : (wallSelect?.value || '');
+
+        // Objects (textarea, comma-split)
+        const objsRaw = card.querySelector('.room-objects-input')?.value || '';
+        const objects = objsRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+        return {
+            room_type: card.querySelector('.room-name-input')?.value?.trim() || '',
+            floor_material: floorMat,
+            wall_color: wallColor,
+            objects
+        };
+    });
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
@@ -241,10 +301,16 @@ async function renderFloorplan() {
         return;
     }
 
+    // Resolve effective style
+    let effectiveStyle = selectedStyle;
+    if (selectedStyle === '__other__') {
+        effectiveStyle = document.getElementById('styleCustomInput').value.trim() || 'modern';
+    }
+
     const rooms = collectRoomsData();
     const currentAnalysis = {
-        apartment_type: document.getElementById('aptType').value || 'Residential',
-        overall_size: document.getElementById('aptSize').value || '',
+        apartment_type: document.getElementById('aptType').value.trim() || 'Residential',
+        overall_size: document.getElementById('aptSize').value.trim() || '',
         rooms
     };
 
@@ -255,7 +321,7 @@ async function renderFloorplan() {
         const payload = {
             image_base64: floorplanB64,
             analysis_data: currentAnalysis,
-            style: selectedStyle,
+            style: effectiveStyle,
             color_scheme: document.getElementById('colorScheme').value.trim(),
             aspect_ratio: selectedRatio
         };
@@ -271,18 +337,44 @@ async function renderFloorplan() {
         if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
 
         const resultSrc = `data:image/png;base64,${data.generated_image_base64}`;
+        currentResultSrc = resultSrc;
+
         document.getElementById('outputImage').src = resultSrc;
         document.getElementById('outputPlaceholder').style.display = 'none';
         document.getElementById('outputContainer').style.display = 'block';
 
         document.getElementById('downloadBtn').onclick = () => downloadImage(resultSrc);
-        showStatus('Render hoàn thành!', 'success');
+        showStatus('Render hoàn thành! Click ảnh để xem full.', 'success');
 
     } catch (err) {
         showStatus('Lỗi: ' + err.message, 'error');
     } finally {
         setLoading(false);
     }
+}
+
+// ── Modal (full-size image) ────────────────────────────────────────────────────
+
+function openOutputModal() {
+    if (!currentResultSrc) return;
+    document.getElementById('fpModalImg').src = currentResultSrc;
+    document.getElementById('fpImgModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeOutputModal() {
+    document.getElementById('fpImgModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function handleModalClick(e) {
+    // Close when clicking backdrop (not the image or buttons)
+    if (e.target === document.getElementById('fpImgModal')) closeOutputModal();
+}
+
+function downloadModalImage(e) {
+    e.stopPropagation();
+    if (currentResultSrc) downloadImage(currentResultSrc);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -317,4 +409,12 @@ function downloadImage(src) {
     a.href = src;
     a.download = `floorplan_render_${Date.now()}.png`;
     a.click();
+}
+
+function escHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 }

@@ -10,46 +10,243 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     <style>
+        /* ── Room cards ─────────────────────────────────────── */
         .room-card {
             background: var(--color-bg-subtle);
             border: 1.5px solid var(--color-border);
             border-radius: var(--radius-lg);
-            padding: 0.875rem;
+            padding: 1rem 1.125rem;
             margin-bottom: 0.75rem;
         }
         .room-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 0.625rem;
+            margin-bottom: 0.75rem;
         }
-        .room-tag {
-            font-size: 0.78rem;
+        .room-name-input {
+            font-size: 0.875rem;
             font-weight: 600;
-            padding: 0.2rem 0.6rem;
+            color: var(--color-text-primary);
+            border: none;
+            border-bottom: 1.5px solid transparent;
+            background: transparent;
+            padding: 0.1rem 0.25rem;
+            flex: 1;
+            min-width: 0;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .room-name-input:focus { border-bottom-color: var(--color-primary); }
+        .room-tag {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
             border-radius: var(--radius-full);
             background: var(--color-primary-light);
             color: var(--color-primary);
+            white-space: nowrap;
+            margin-left: 0.5rem;
         }
-        .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-        .room-field label { font-size: 0.72rem; font-weight: 500; color: var(--color-text-secondary); display: block; margin-bottom: 0.2rem; }
-        .room-field input, .room-field select { width: 100%; padding: 0.35rem 0.5rem; font-size: 0.8rem; border: 1.5px solid var(--color-border); border-radius: var(--radius-sm); background: white; }
-        .room-objects { margin-top: 0.5rem; }
-        .room-objects label { font-size: 0.72rem; font-weight: 500; color: var(--color-text-secondary); }
-        .room-objects input { width: 100%; padding: 0.35rem 0.5rem; font-size: 0.8rem; border: 1.5px solid var(--color-border); border-radius: var(--radius-sm); background: white; margin-top: 0.2rem; }
-        .style-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
-        .style-option { padding: 0.5rem; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); text-align: center; cursor: pointer; font-size: 0.75rem; font-weight: 500; transition: all var(--transition-fast); }
+        .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; margin-bottom: 0.625rem; }
+        .room-field label {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .room-field select,
+        .room-field input[type="text"] {
+            width: 100%;
+            padding: 0.375rem 0.5rem;
+            font-size: 0.8rem;
+            border: 1.5px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background: white;
+            box-sizing: border-box;
+        }
+        .room-field input[type="text"].other-input {
+            margin-top: 0.3rem;
+            display: none;
+        }
+        .room-objects { margin-top: 0; }
+        .room-objects label {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .room-objects textarea {
+            width: 100%;
+            padding: 0.375rem 0.5rem;
+            font-size: 0.8rem;
+            border: 1.5px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background: white;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.45;
+            box-sizing: border-box;
+        }
+
+        /* ── Style grid ─────────────────────────────────────── */
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.4rem;
+            margin-bottom: 0.5rem;
+        }
+        .style-option {
+            padding: 0.5rem 0.25rem;
+            border: 1.5px solid var(--color-border);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
         .style-option:hover { border-color: var(--color-primary); color: var(--color-primary); }
         .style-option.active { background: var(--gradient-primary); color: white; border-color: transparent; }
+
+        /* ── Aspect ratio ───────────────────────────────────── */
         .aspect-options { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-        .aspect-btn { padding: 0.35rem 0.75rem; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all var(--transition-fast); background: white; }
+        .aspect-btn {
+            padding: 0.35rem 0.75rem;
+            border: 1.5px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background: white;
+            white-space: nowrap;
+        }
         .aspect-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
         .aspect-btn.active { background: var(--gradient-primary); color: white; border-color: transparent; }
-        .fp-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.65rem; border-radius: var(--radius-full); background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; margin-bottom: 0.75rem; }
-        .analyze-bar { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
+        .aspect-hint {
+            font-size: 0.73rem;
+            color: var(--color-text-tertiary);
+            margin-top: 0.4rem;
+            line-height: 1.4;
+        }
+
+        /* ── Badges & bars ──────────────────────────────────── */
+        .fp-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.65rem;
+            border-radius: var(--radius-full);
+            background: #f0f9ff;
+            color: #0284c7;
+            border: 1px solid #bae6fd;
+            margin-bottom: 1rem;
+        }
+        .analyze-bar { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.875rem; }
+
+        /* ── Output thumbnail ───────────────────────────────── */
+        .output-thumb-wrapper {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            cursor: zoom-in;
+            border: 1.5px solid var(--color-border);
+            background: var(--color-bg-subtle);
+        }
+        .output-thumb-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+            transition: filter 0.2s;
+        }
+        .output-thumb-wrapper:hover img { filter: brightness(0.88); }
+        .output-thumb-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            pointer-events: none;
+        }
+        .output-thumb-overlay .material-symbols-rounded { font-size: 32px; }
+        .output-thumb-wrapper:hover .output-thumb-overlay { opacity: 1; }
+
+        /* ── Full-image modal ───────────────────────────────── */
+        .fp-img-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(0,0,0,0.88);
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .fp-img-modal.active { display: flex; }
+        .fp-img-modal img {
+            max-width: 92vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+        }
+        .fp-modal-close {
+            position: fixed;
+            top: 1rem;
+            right: 1.25rem;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9001;
+            transition: background 0.2s;
+        }
+        .fp-modal-close:hover { background: rgba(255,255,255,0.3); }
+        .fp-modal-actions {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.75rem;
+            z-index: 9001;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Full-image Modal -->
+    <div id="fpImgModal" class="fp-img-modal" onclick="handleModalClick(event)">
+        <button class="fp-modal-close" onclick="closeOutputModal()">
+            <span class="material-symbols-rounded">close</span>
+        </button>
+        <img id="fpModalImg" src="" alt="Floor plan render full">
+        <div class="fp-modal-actions">
+            <button class="btn-secondary" onclick="downloadModalImage(event)" style="font-size:0.875rem;">
+                <span class="material-symbols-rounded">download</span>
+                Tải về
+            </button>
+        </div>
+    </div>
 
     <header class="app-header">
         <div class="header-content">
@@ -107,16 +304,16 @@
                     <span class="material-symbols-rounded icon-sm">close</span>
                 </button>
             </div>
-            <div id="analyzeStatus" style="display:none; font-size:0.8rem; color:var(--color-text-secondary); margin-top:0.5rem; text-align:center;"></div>
+            <div id="analyzeStatus" style="display:none; font-size:0.8rem; color:var(--color-text-secondary); margin-top:0.5rem; text-align:center; line-height:1.4;"></div>
 
             <!-- Reference image (optional) -->
-            <details class="form-section" style="margin-top:1rem;">
+            <details class="form-section" style="margin-top:1.25rem;">
                 <summary>
                     <span class="material-symbols-rounded">chevron_right</span>
                     Ảnh tham khảo Style (Optional)
                 </summary>
                 <div class="section-content">
-                    <p style="color:var(--color-text-secondary); font-size:0.75rem; margin-bottom:0.75rem;">
+                    <p style="color:var(--color-text-secondary); font-size:0.75rem; margin-bottom:0.75rem; line-height:1.5;">
                         Upload ảnh mặt bằng đã render hoặc ảnh nội thất để tham khảo phong cách màu sắc, vật liệu.
                     </p>
                     <div class="image-uploader" style="min-height:100px; aspect-ratio:auto;">
@@ -145,9 +342,9 @@
             <div class="form-section">
                 <div class="form-group">
                     <label class="form-label">Loại căn hộ / công trình</label>
-                    <input type="text" id="aptType" class="form-input" placeholder="VD: Căn hộ 2 phòng ngủ, Nhà phố tầng 1, Biệt thự...">
+                    <input type="text" id="aptType" class="form-input" placeholder="VD: Căn hộ 2 phòng ngủ, Nhà phố tầng 1...">
                 </div>
-                <div class="form-group" style="margin-top:0.5rem;">
+                <div class="form-group" style="margin-top:0.625rem;">
                     <label class="form-label">Diện tích ước tính</label>
                     <input type="text" id="aptSize" class="form-input" placeholder="VD: 80m², 120m²...">
                 </div>
@@ -155,7 +352,7 @@
 
             <!-- Style selection -->
             <div class="form-section">
-                <div class="form-section-header" style="margin-bottom:0.5rem;">
+                <div class="form-section-header" style="margin-bottom:0.625rem;">
                     <span class="material-symbols-rounded">palette</span>
                     <div style="font-weight:600; font-size:0.9rem;">Phong cách</div>
                 </div>
@@ -166,7 +363,11 @@
                     <div class="style-option" data-style="scandinavian">Scandinavian</div>
                     <div class="style-option" data-style="neoclassical">Tân Cổ Điển</div>
                     <div class="style-option" data-style="japanese">Nhật Bản</div>
+                    <div class="style-option" data-style="__other__" style="grid-column:1/-1;">✏️ Khác (tự nhập)</div>
                 </div>
+                <input type="text" id="styleCustomInput" class="form-input"
+                    placeholder="VD: Wabi-sabi, Coastal, Bohemian, Art Deco..."
+                    style="display:none; margin-top:0.5rem;">
             </div>
 
             <!-- Color scheme -->
@@ -178,19 +379,22 @@
                 </div>
             </div>
 
-            <!-- Rooms list (filled by AI or manually) -->
+            <!-- Rooms list -->
             <div class="form-section">
-                <div class="form-section-header" style="margin-bottom:0.5rem; justify-content:space-between;">
+                <div class="form-section-header" style="margin-bottom:0.625rem; justify-content:space-between;">
                     <div style="display:flex; align-items:center; gap:0.5rem;">
                         <span class="material-symbols-rounded">meeting_room</span>
-                        <div style="font-weight:600; font-size:0.9rem;">Danh sách phòng <span id="roomCount" style="color:var(--color-text-tertiary); font-size:0.8rem; font-weight:400;">(0 phòng)</span></div>
+                        <div style="font-weight:600; font-size:0.9rem;">
+                            Danh sách phòng
+                            <span id="roomCount" style="color:var(--color-text-tertiary); font-size:0.8rem; font-weight:400;"> (0 phòng)</span>
+                        </div>
                     </div>
-                    <button id="addRoomBtn" class="btn-outline" style="font-size:0.75rem; padding:0.3rem 0.6rem;">
+                    <button id="addRoomBtn" class="btn-outline" style="font-size:0.75rem; padding:0.3rem 0.65rem;">
                         <span class="material-symbols-rounded" style="font-size:14px;">add</span> Thêm
                     </button>
                 </div>
                 <div id="roomsList">
-                    <div style="text-align:center; padding:1.5rem; color:var(--color-text-tertiary); font-size:0.85rem; border: 1.5px dashed var(--color-border); border-radius: var(--radius-lg);">
+                    <div style="text-align:center; padding:1.5rem 1rem; color:var(--color-text-tertiary); font-size:0.85rem; border:1.5px dashed var(--color-border); border-radius:var(--radius-lg); line-height:1.6;">
                         <span class="material-symbols-rounded" style="font-size:32px; display:block; margin-bottom:0.5rem;">psychology</span>
                         Nhấn "Phân tích AI" để tự động nhận diện phòng,<br>hoặc thêm thủ công bằng nút "Thêm".
                     </div>
@@ -199,17 +403,21 @@
 
             <!-- Aspect ratio -->
             <div class="form-section">
-                <div style="font-size:0.85rem; font-weight:600; color:var(--color-text-label); margin-bottom:0.5rem;">Tỷ lệ ảnh</div>
+                <div style="font-size:0.85rem; font-weight:600; color:var(--color-text-label); margin-bottom:0.625rem;">Tỷ lệ ảnh</div>
                 <div class="aspect-options">
-                    <div class="aspect-btn active" data-ratio="1:1">1:1 ■</div>
+                    <div class="aspect-btn active" data-ratio="auto">Gốc ◎</div>
+                    <div class="aspect-btn" data-ratio="1:1">1:1 ■</div>
                     <div class="aspect-btn" data-ratio="4:3">4:3 ▬</div>
                     <div class="aspect-btn" data-ratio="16:9">16:9 ▬</div>
                     <div class="aspect-btn" data-ratio="3:4">3:4 ▮</div>
                 </div>
+                <div id="aspectHint" class="aspect-hint" style="display:none;">
+                    ⚠️ Khi tỷ lệ khác với ảnh gốc, Gemini sẽ thêm viền trắng để bảo toàn tỷ lệ phòng.
+                </div>
             </div>
 
             <!-- Render button -->
-            <button id="renderBtn" class="btn-primary" disabled style="width:100%; padding:0.875rem; margin-top:0.5rem;">
+            <button id="renderBtn" class="btn-primary" disabled style="width:100%; padding:0.9rem; margin-top:0.5rem;">
                 <span class="material-symbols-rounded">auto_awesome</span>
                 Render Mặt Bằng
             </button>
@@ -226,17 +434,26 @@
             <div id="outputPlaceholder" class="output-placeholder">
                 <span class="material-symbols-rounded">floor</span>
                 <p>Kết quả sẽ hiện ở đây</p>
-                <p style="font-size:0.8rem;">Góc nhìn top-down • Giữ nguyên tỷ lệ</p>
+                <p style="font-size:0.8rem; margin-top:0.25rem;">Góc nhìn top-down • Giữ nguyên tỷ lệ</p>
             </div>
 
             <div id="outputContainer" style="display:none;">
-                <img id="outputImage" class="output-image" src="" alt="Floor plan render">
-                <div class="output-actions" style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <!-- Thumbnail — click to open full-size modal -->
+                <div class="output-thumb-wrapper" onclick="openOutputModal()">
+                    <img id="outputImage" src="" alt="Floor plan render">
+                    <div class="output-thumb-overlay">
+                        <span class="material-symbols-rounded">zoom_in</span>
+                        Xem ảnh đầy đủ
+                    </div>
+                </div>
+
+                <div class="output-actions" style="margin-top:0.875rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
                     <button id="downloadBtn" class="btn-secondary" style="flex:1;">
                         <span class="material-symbols-rounded">download</span>
                         Tải Ảnh
                     </button>
-                    <a href="render-history.html" class="btn-secondary" style="flex:1; text-decoration:none; text-align:center; display:inline-flex; align-items:center; justify-content:center; gap:0.4rem; font-size:0.875rem;">
+                    <a href="render-history.html" class="btn-secondary"
+                        style="flex:1; text-decoration:none; text-align:center; display:inline-flex; align-items:center; justify-content:center; gap:0.4rem; font-size:0.875rem;">
                         <span class="material-symbols-rounded">history</span>
                         Lịch sử
                     </a>
@@ -248,16 +465,18 @@
             </div>
 
             <!-- Floor plan tips -->
-            <div style="background:var(--color-success-light); border-radius:var(--radius-lg); padding:1rem; margin-top:1.5rem; border: 1px solid rgba(16,185,129,0.2);">
+            <div style="background:var(--color-success-light); border-radius:var(--radius-lg); padding:1rem 1.125rem; margin-top:1.5rem; border:1px solid rgba(16,185,129,0.2);">
                 <div style="font-weight:600; font-size:0.82rem; color:var(--color-success); margin-bottom:0.5rem;">
                     Nguyên tắc Floor Plan Render
                 </div>
-                <ul style="font-size:0.75rem; color:#065f46; padding-left:1.2rem; margin:0; line-height:1.7;">
+                <ul style="font-size:0.75rem; color:#065f46; padding-left:1.2rem; margin:0; line-height:1.75;">
                     <li>Góc nhìn top-down 90° được bảo toàn tuyệt đối</li>
                     <li>Tỷ lệ phòng, tường được giữ nguyên</li>
                     <li>Số lượng và vị trí đồ vật không thay đổi</li>
                     <li>Vật liệu được render từ góc nhìn từ trên xuống</li>
-                    <li>Ánh sáng mô phỏng từ trên (overhead lighting)</li>
+                    <li>Có thể thêm mô tả vật liệu vào ô đồ vật:<br>
+                        <em style="color:#047857;">"Sofa (da nâu), Bàn ăn (gỗ công nghiệp trắng)"</em>
+                    </li>
                 </ul>
             </div>
         </aside>
