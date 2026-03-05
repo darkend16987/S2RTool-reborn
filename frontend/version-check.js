@@ -4,7 +4,7 @@
  */
 
 const VERSION_CONFIG = {
-    currentVersion: '4.0.0',
+    currentVersion: '5.0.0',
     repoOwner: 'darkend16987',
     repoName: 'S2RTool-reborn',
     checkInterval: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
@@ -84,6 +84,9 @@ async function checkForUpdates(showStatus = false) {
                         <span class="material-symbols-rounded" style="vertical-align: middle;">check_circle</span>
                         Bạn đang sử dụng phiên bản mới nhất (v${VERSION_CONFIG.currentVersion})
                     </div>
+                    <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-secondary);">
+                        🔄 Watchtower tự động cập nhật khi có bản mới.
+                    </div>
                 `;
             }
             return { hasUpdate: false, version: VERSION_CONFIG.currentVersion };
@@ -141,8 +144,11 @@ function showUpdateAvailable(version, url, notes, statusEl) {
                         </p>
                         <a href="${url}" target="_blank" class="btn btn-primary" style="margin-top: 0.5rem;">
                             <span class="material-symbols-rounded">download</span>
-                            Tải về ngay
+                            Xem chi tiết
                         </a>
+                        <p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--color-text-secondary);">
+                            💡 Nếu Watchtower đang chạy, bản cập nhật sẽ được áp dụng tự động.
+                        </p>
                     </div>
                 </div>
             </div>
