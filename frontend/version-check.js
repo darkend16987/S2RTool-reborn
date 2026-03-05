@@ -8,7 +8,7 @@ const VERSION_CONFIG = {
     repoOwner: 'darkend16987',
     repoName: 'S2RTool-reborn',
     checkInterval: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-    cacheKey: 'S2RTool_lastVersionCheck'
+    cacheKey: 'S2RTool_lastVersionCheck_v5', // Bumped cache key to force refresh on update
 };
 
 /**
@@ -257,7 +257,7 @@ function initVersionCheck() {
                 if (compareVersions(data.latestVersion, VERSION_CONFIG.currentVersion) > 0) {
                     showUpdateBanner(data.latestVersion, data.releaseUrl);
                 }
-            } catch {}
+            } catch { }
         }
         return;
     }
