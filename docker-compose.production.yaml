@@ -9,7 +9,7 @@ services:
   backend:
     # Use pre-built image from registry
     # Replace 'yourusername' with your Docker Hub username or registry URL
-    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-darkend16987}/s2rtool-backend:${VERSION:-latest}
+    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-kael16987}/s2rtool-backend:${VERSION:-latest}
 
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
 
     healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5001/health')"]
+      test: [ "CMD", "python", "-c", "import requests; requests.get('http://localhost:5001/health')" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -62,7 +62,7 @@ services:
   # Frontend service (Nginx)
   frontend:
     # Use pre-built image from registry
-    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-darkend16987}/s2rtool-frontend:${VERSION:-latest}
+    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-kael16987}/s2rtool-frontend:${VERSION:-latest}
 
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
@@ -84,7 +84,7 @@ services:
     restart: unless-stopped
 
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80" ]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -17,7 +17,7 @@
 services:
   # Backend service (Flask API)
   backend:
-    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-darkend16987}/s2rtool-backend:${VERSION:-latest}
+    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-kael16987}/s2rtool-backend:${VERSION:-latest}
     container_name: s2rtool-backend
 
     labels:
@@ -52,7 +52,7 @@ services:
 
   # Frontend service (Nginx)
   frontend:
-    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-darkend16987}/s2rtool-frontend:${VERSION:-latest}
+    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-kael16987}/s2rtool-frontend:${VERSION:-latest}
     container_name: s2rtool-frontend
 
     labels:

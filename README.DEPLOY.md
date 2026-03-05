@@ -98,7 +98,7 @@ Dev push code → GitHub Actions auto-build → Docker Hub → Watchtower auto-p
 
 1. **Dev** push code lên nhánh `main` trên GitHub
 2. **GitHub Actions** tự động kích hoạt, build Docker images
-3. **Docker Hub** nhận images mới (`darkend16987/s2rtool-backend:latest`, `darkend16987/s2rtool-frontend:latest`)
+3. **Docker Hub** nhận images mới (`kael16987/s2rtool-backend:latest`, `kael16987/s2rtool-frontend:latest`)
 4. **Watchtower** trên mỗi máy client kiểm tra mỗi 5 phút, tự pull image mới và restart containers
 
 ### Bước 1: Setup GitHub Secrets (Chỉ cần 1 lần)
@@ -107,7 +107,7 @@ Vào GitHub Repository → **Settings** → **Secrets and Variables** → **Acti
 
 | Secret Name | Value | Lấy ở đâu |
 |---|---|---|
-| `DOCKERHUB_USERNAME` | `darkend16987` | Docker Hub username |
+| `DOCKERHUB_USERNAME` | `kael16987` | Docker Hub username |
 | `DOCKERHUB_TOKEN` | `dckr_pat_xxxxxx` | [Docker Hub → Settings → Security → New Access Token](https://hub.docker.com/settings/security) |
 
 ### Bước 2: Push Code (Trigger CI/CD)
