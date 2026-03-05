@@ -1,0 +1,148 @@
+# ========================================
+# S2RTool CI/CD Pipeline
+# ========================================
+# Automatically builds Docker images and pushes to Docker Hub
+# when code is pushed to the main branch or a version tag is created.
+#
+# Required GitHub Secrets:
+#   - DOCKERHUB_USERNAME: Your Docker Hub username
+#   - DOCKERHUB_TOKEN: Your Docker Hub Access Token
+# ========================================
+
+name: CI/CD - Build & Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - '.agent/**'
+      - '.claude/**'
+      - 'installer/**'
+      - 'PLAN-*.md'
+      - 'PLANNING_MODE_DESIGN.md'
+      - 'HOW-IT-WORKS.md'
+
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Custom version tag (e.g., v4.1.0). Leave empty for auto-tagging.'
+        required: false
+        type: string
+
+# Prevent concurrent builds on the same branch
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BACKEND_IMAGE: s2rtool-backend
+  FRONTEND_IMAGE: s2rtool-frontend
+
+jobs:
+  # ========================================
+  # Job 1: Build and Push Docker Images
+  # ========================================
+  build-and-push:
+    name: Build & Push Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      # --- Checkout Source Code ---
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # --- Setup Docker Buildx (for multi-platform & caching) ---
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # --- Login to Docker Hub ---
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # --- Generate Docker Tags & Labels ---
+      - name: Extract metadata for Backend
+        id: meta-backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.BACKEND_IMAGE }}
+          tags: |
+            # Tag 'latest' for every push to main
+            type=raw,value=latest,enable={{is_default_branch}}
+            # Tag with version from git tag (e.g., v4.1.0 -> 4.1.0)
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            # Tag with short git SHA for traceability
+            type=sha,prefix=sha-
+            # Tag with custom version from manual trigger
+            type=raw,value=${{ github.event.inputs.version_tag }},enable=${{ github.event.inputs.version_tag != '' }}
+
+      - name: Extract metadata for Frontend
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.FRONTEND_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=sha-
+            type=raw,value=${{ github.event.inputs.version_tag }},enable=${{ github.event.inputs.version_tag != '' }}
+
+      # --- Build & Push Backend Image ---
+      - name: Build and Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # --- Build & Push Frontend Image ---
+      - name: Build and Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # --- Print Summary ---
+      - name: Print build summary
+        run: |
+          echo "## 🚀 Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Backend Image" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta-backend.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Frontend Image" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta-frontend.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🎉 Images are now available on Docker Hub!" >> $GITHUB_STEP_SUMMARY
+          echo "Watchtower on client machines will automatically pull and update within the configured interval." >> $GITHUB_STEP_SUMMARY

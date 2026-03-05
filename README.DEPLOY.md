@@ -81,6 +81,102 @@ Có **2 phương pháp deployment** chính:
 - ✅ **Phù hợp:** Môi trường offline hoặc cần customize
 - 📦 **Package size:** ~50-100 MB (full source code)
 
+### Phương Pháp 3: Cloud OTA Update ⭐ (Mới - Khuyến nghị cao nhất)
+- ✅ **Ưu điểm:** Tự động cập nhật, không cần thao tác thủ công
+- ✅ **Phù hợp:** Khi có internet, muốn zero-touch deployment
+- 🔄 **Cơ chế:** GitHub Actions tự build → Docker Hub → Watchtower auto-pull
+
+---
+
+## 🔄 Phương Pháp 3: Cloud OTA Update (Tự Động Cập Nhật)
+
+### Tổng Quan Luồng OTA
+
+```
+Dev push code → GitHub Actions auto-build → Docker Hub → Watchtower auto-pull → App updated!
+```
+
+1. **Dev** push code lên nhánh `main` trên GitHub
+2. **GitHub Actions** tự động kích hoạt, build Docker images
+3. **Docker Hub** nhận images mới (`darkend16987/s2rtool-backend:latest`, `darkend16987/s2rtool-frontend:latest`)
+4. **Watchtower** trên mỗi máy client kiểm tra mỗi 5 phút, tự pull image mới và restart containers
+
+### Bước 1: Setup GitHub Secrets (Chỉ cần 1 lần)
+
+Vào GitHub Repository → **Settings** → **Secrets and Variables** → **Actions** → **New repository secret**:
+
+| Secret Name | Value | Lấy ở đâu |
+|---|---|---|
+| `DOCKERHUB_USERNAME` | `darkend16987` | Docker Hub username |
+| `DOCKERHUB_TOKEN` | `dckr_pat_xxxxxx` | [Docker Hub → Settings → Security → New Access Token](https://hub.docker.com/settings/security) |
+
+### Bước 2: Push Code (Trigger CI/CD)
+
+```bash
+# Push code mới lên main
+git add .
+git commit -m "feat: new feature"
+git push origin main
+
+# Hoặc tạo version tag
+git tag v4.1.0
+git push origin v4.1.0
+```
+
+GitHub Actions sẽ tự động:
+- ✅ Build Docker images
+- ✅ Push lên Docker Hub với tags: `latest`, `sha-abc1234`
+- ✅ Nếu push tag `v4.1.0` → thêm tag `4.1.0` và `4.1`
+
+Kiểm tra tại: `https://github.com/darkend16987/S2RTool-reborn/actions`
+
+### Bước 3: Deploy Máy Client (Chỉ cần 1 lần)
+
+**Cách nhanh nhất:**
+
+```bash
+# 1. Cài Docker (nếu chưa có)
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER && newgrp docker
+
+# 2. Tạo folder cho app
+mkdir ~/s2rtool && cd ~/s2rtool
+
+# 3. Tải file docker-compose.client.yaml và .env.template
+# (copy từ repo hoặc download)
+
+# 4. Tạo .env
+cp .env.template .env
+nano .env  # Thêm GEMINI_API_KEY
+
+# 5. Chạy!
+docker-compose -f docker-compose.client.yaml up -d
+```
+
+**Trên Windows:**
+- Copy `docker-compose.client.yaml` (hoặc `docker-compose.production.yaml`) và `.env` vào folder
+- Double-click `start.bat`
+
+Sau khi deploy, **Watchtower sẽ tự động cập nhật app** mỗi khi dev push code mới!
+
+### Quản Lý OTA
+
+```bash
+# Xem trạng thái auto-update
+docker logs s2rtool-watchtower
+
+# Cập nhật thủ công ngay (không đợi Watchtower)
+docker-compose -f docker-compose.client.yaml pull
+docker-compose -f docker-compose.client.yaml up -d
+
+# Thay đổi tần suất kiểm tra (trong .env)
+WATCHTOWER_INTERVAL=60  # Kiểm tra mỗi 1 phút
+
+# Tắt auto-update (bỏ Watchtower)
+docker stop s2rtool-watchtower
+docker rm s2rtool-watchtower
+```
+
 ---
 
 ## 🔧 Chuẩn Bị Trên Máy Gốc (Source Machine)

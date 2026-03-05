@@ -170,16 +170,22 @@ setup_env_file() {
 deploy_application() {
     print_header "Deploying S2RTool"
 
-    # Pull or build images
-    print_info "Pulling/building Docker images..."
-    $COMPOSE_CMD -f docker-compose.production.yaml pull || true
-    $COMPOSE_CMD -f docker-compose.production.yaml build
+    # Pull images from registry
+    print_info "Pulling Docker images from registry..."
+    if $COMPOSE_CMD -f docker-compose.production.yaml pull; then
+        print_success "Images pulled successfully"
+    else
+        print_warning "Failed to pull some images from registry"
+        print_info "Falling back to local build..."
+        $COMPOSE_CMD -f docker-compose.production.yaml build
+    fi
 
-    # Start services
+    # Start services (including Watchtower for auto-updates)
     print_info "Starting services..."
     $COMPOSE_CMD -f docker-compose.production.yaml up -d
 
     print_success "Services started successfully"
+    print_info "Watchtower is running - containers will auto-update when new images are available"
 }
 
 # ========================================
@@ -240,7 +246,13 @@ show_access_info() {
     echo "  View logs:        $COMPOSE_CMD -f docker-compose.production.yaml logs -f"
     echo "  Stop services:    $COMPOSE_CMD -f docker-compose.production.yaml down"
     echo "  Restart services: $COMPOSE_CMD -f docker-compose.production.yaml restart"
-    echo "  Update services:  $COMPOSE_CMD -f docker-compose.production.yaml pull && $COMPOSE_CMD -f docker-compose.production.yaml up -d"
+    echo "  Manual update:    $COMPOSE_CMD -f docker-compose.production.yaml pull && $COMPOSE_CMD -f docker-compose.production.yaml up -d"
+    echo "  Watchtower logs:  docker logs s2rtool-watchtower"
+    echo ""
+    echo -e "${GREEN}Auto-Update (OTA):${NC}"
+    echo "  Watchtower is running and will automatically check for new images."
+    echo "  When the dev pushes new code, your app will update automatically."
+    echo "  Check interval: every 5 minutes (configurable in .env)"
     echo ""
 }
 

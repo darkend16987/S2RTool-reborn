@@ -9,7 +9,10 @@ services:
   backend:
     # Use pre-built image from registry
     # Replace 'yourusername' with your Docker Hub username or registry URL
-    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-yourusername}/s2rtool-backend:${VERSION:-latest}
+    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-darkend16987}/s2rtool-backend:${VERSION:-latest}
+
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
     # Fallback to local build if image not available
     build:
@@ -59,7 +62,10 @@ services:
   # Frontend service (Nginx)
   frontend:
     # Use pre-built image from registry
-    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-yourusername}/s2rtool-frontend:${VERSION:-latest}
+    image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-darkend16987}/s2rtool-frontend:${VERSION:-latest}
+
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
     # Fallback to local build if image not available
     build:
@@ -96,6 +102,42 @@ services:
         reservations:
           cpus: '0.1'
           memory: 64M
+
+  # ========================================
+  # Watchtower - Auto-update containers (OTA)
+  # ========================================
+  # Watchtower monitors Docker Hub for new image versions.
+  # When a new image is detected, it automatically:
+  #   1. Pulls the new image
+  #   2. Gracefully stops the old container
+  #   3. Starts a new container with the updated image
+  #
+  # Default: checks every 5 minutes (300 seconds)
+  # Configure via WATCHTOWER_INTERVAL in .env
+  #
+  # To disable auto-update: comment out or remove this service
+  # ========================================
+  watchtower:
+    image: containrrr/watchtower
+    container_name: s2rtool-watchtower
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    environment:
+      # Remove old images after update
+      - WATCHTOWER_CLEANUP=true
+      # Only update containers with the watchtower label
+      - WATCHTOWER_LABEL_ENABLE=true
+      # Check interval in seconds (default: 300 = 5 minutes)
+      - WATCHTOWER_POLL_INTERVAL=${WATCHTOWER_INTERVAL:-300}
+      # Log level
+      - WATCHTOWER_LOG_LEVEL=info
+
+    restart: unless-stopped
+
+    networks:
+      - s2rtool-network
 
 networks:
   s2rtool-network:
