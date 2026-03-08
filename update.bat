@@ -46,8 +46,6 @@ echo.
 echo [2/3] Pulling latest images from Docker Hub...
 if exist "docker-compose.production.yaml" (
     docker-compose -f docker-compose.production.yaml pull
-) else if exist "docker-compose.client.yaml" (
-    docker-compose -f docker-compose.client.yaml pull
 ) else (
     docker-compose pull
 )

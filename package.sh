@@ -172,8 +172,8 @@ create_package() {
     chmod +x "$TEMP_DIR/deploy.sh"
 
     # Documentation
-    if [ -f "README.DEPLOY.md" ]; then
-        cp README.DEPLOY.md "$TEMP_DIR/"
+    if [ -f "README.md" ]; then
+        cp README.md "$TEMP_DIR/"
     fi
 
     print_success "Copied deployment files"
@@ -193,7 +193,7 @@ create_package() {
         # Copy additional files
         [ -f "README.md" ] && cp README.md "$TEMP_DIR/"
         [ -f "HOW-IT-WORKS.md" ] && cp HOW-IT-WORKS.md "$TEMP_DIR/"
-        [ -f "DOCKER_README.md" ] && cp DOCKER_README.md "$TEMP_DIR/"
+        [ -f "DOCKER-INSTALLATION-GUIDE.md" ] && cp DOCKER-INSTALLATION-GUIDE.md "$TEMP_DIR/"
 
         print_success "Source code included"
     else
@@ -233,7 +233,7 @@ Requirements:
 
 Support:
 --------
-- Documentation: See README.DEPLOY.md
+- Documentation: See README.md
 - Issues: https://github.com/yourusername/S2RTool/issues
 
 EOF

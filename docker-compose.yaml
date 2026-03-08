@@ -1,51 +1,75 @@
+# ========================================
+# S2RTool Development Docker Compose
+# ========================================
+# Builds from local source with hot-reload.
+# Use this for development only.
+#
+# Usage:
+#   docker-compose up -d --build
+#   docker-compose logs -f
+# ========================================
+
 services:
-  # Backend service (Flask API)
+  # Backend (Flask API) - builds from source
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: s2rtool-backend
+
     ports:
-      - "5001:5001"
+      - "${BACKEND_PORT:-5001}:5001"
+
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - PORT=5001
       - HOST=0.0.0.0
+      - PYTHONUNBUFFERED=1
+
     env_file:
       - .env
+
     volumes:
-      # Mount backend code for development (optional - comment out for production)
+      # Mount source code for hot-reload during development
       - ./backend:/app
-      # Persist reference images
       - backend-references:/app/references
-      # Persist render history (local only, gitignored)
       - render-history:/app/render_history
+
     restart: unless-stopped
+
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5001/health')"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+
     networks:
       - s2rtool-network
 
-  # Frontend service (Nginx)
+  # Frontend (Nginx) - builds from source
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: s2rtool-frontend
+
     ports:
-      - "3001:80"
+      - "${FRONTEND_PORT:-3001}:80"
+
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+
     restart: unless-stopped
+
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 10s
+
     networks:
       - s2rtool-network
 

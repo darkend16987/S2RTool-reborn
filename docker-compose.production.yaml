@@ -1,25 +1,29 @@
-# Production Docker Compose Configuration for S2RTool
-# This file is optimized for deployment on target machines
+# ========================================
+# S2RTool Production Docker Compose
+# ========================================
+# Pre-built images from Docker Hub + Watchtower auto-update.
 #
-# Usage:
+# Quick Start:
+#   1. Copy this file + .env to target machine
+#   2. Edit .env: set GEMINI_API_KEY
+#   3. Run: docker-compose -f docker-compose.production.yaml up -d
+#
+# Auto-Update: Watchtower checks Docker Hub every 5 minutes.
+#   Push to main → GitHub Actions builds images → Watchtower updates automatically.
+#
+# Manual Update:
+#   docker-compose -f docker-compose.production.yaml pull
 #   docker-compose -f docker-compose.production.yaml up -d
+# ========================================
 
 services:
-  # Backend service (Flask API)
+  # Backend (Flask API)
   backend:
-    # Use pre-built image from registry
-    # Replace 'yourusername' with your Docker Hub username or registry URL
     image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-kael16987}/s2rtool-backend:${VERSION:-latest}
+    container_name: s2rtool-backend
 
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-
-    # Fallback to local build if image not available
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-
-    container_name: s2rtool-backend
 
     ports:
       - "${BACKEND_PORT:-5001}:5001"
@@ -34,13 +38,13 @@ services:
       - .env
 
     volumes:
-      # Only persist reference images (NO code mounting for production)
       - backend-references:/app/references
+      - render-history:/app/render_history
 
     restart: unless-stopped
 
     healthcheck:
-      test: [ "CMD", "python", "-c", "import requests; requests.get('http://localhost:5001/health')" ]
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5001/health')"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -49,7 +53,6 @@ services:
     networks:
       - s2rtool-network
 
-    # Resource limits (optional but recommended for production)
     deploy:
       resources:
         limits:
@@ -59,20 +62,13 @@ services:
           cpus: '0.5'
           memory: 512M
 
-  # Frontend service (Nginx)
+  # Frontend (Nginx)
   frontend:
-    # Use pre-built image from registry
     image: ${DOCKER_REGISTRY:-docker.io}/${DOCKER_USERNAME:-kael16987}/s2rtool-frontend:${VERSION:-latest}
+    container_name: s2rtool-frontend
 
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-
-    # Fallback to local build if image not available
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-
-    container_name: s2rtool-frontend
 
     ports:
       - "${FRONTEND_PORT:-3001}:80"
@@ -84,7 +80,7 @@ services:
     restart: unless-stopped
 
     healthcheck:
-      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80" ]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -93,7 +89,6 @@ services:
     networks:
       - s2rtool-network
 
-    # Resource limits
     deploy:
       resources:
         limits:
@@ -103,20 +98,10 @@ services:
           cpus: '0.1'
           memory: 64M
 
-  # ========================================
-  # Watchtower - Auto-update containers (OTA)
-  # ========================================
-  # Watchtower monitors Docker Hub for new image versions.
-  # When a new image is detected, it automatically:
-  #   1. Pulls the new image
-  #   2. Gracefully stops the old container
-  #   3. Starts a new container with the updated image
-  #
-  # Default: checks every 5 minutes (300 seconds)
-  # Configure via WATCHTOWER_INTERVAL in .env
-  #
-  # To disable auto-update: comment out or remove this service
-  # ========================================
+  # Watchtower - OTA Auto-Update
+  # Monitors Docker Hub for new images, automatically pulls & restarts.
+  # Only updates containers with watchtower label (backend + frontend).
+  # To disable: comment out this service or set WATCHTOWER_ENABLED=false
   watchtower:
     image: containrrr/watchtower
     container_name: s2rtool-watchtower
@@ -125,13 +110,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
     environment:
-      # Remove old images after update
       - WATCHTOWER_CLEANUP=true
-      # Only update containers with the watchtower label
       - WATCHTOWER_LABEL_ENABLE=true
-      # Check interval in seconds (default: 300 = 5 minutes)
       - WATCHTOWER_POLL_INTERVAL=${WATCHTOWER_INTERVAL:-300}
-      # Log level
       - WATCHTOWER_LOG_LEVEL=info
 
     restart: unless-stopped
@@ -145,4 +126,6 @@ networks:
 
 volumes:
   backend-references:
+    driver: local
+  render-history:
     driver: local

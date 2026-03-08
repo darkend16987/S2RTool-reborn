@@ -23,9 +23,7 @@ on:
       - '.agent/**'
       - '.claude/**'
       - 'installer/**'
-      - 'PLAN-*.md'
-      - 'PLANNING_MODE_DESIGN.md'
-      - 'HOW-IT-WORKS.md'
+      - 'landing-page/**'
 
   # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
