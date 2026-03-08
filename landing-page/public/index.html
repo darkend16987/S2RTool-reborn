@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S2R Tool - Download & Installation</title>
+    <meta name="description" content="S2R Tool - Sketch to Render. Download and install the AI-powered architectural visualization tool.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- ============================================ -->
+    <!-- AUTH GATE - Shown when not logged in         -->
+    <!-- ============================================ -->
+    <div id="auth-gate" class="auth-gate">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <span class="material-symbols-rounded">architecture</span>
+                <h1>S2R Tool</h1>
+            </div>
+            <p class="auth-subtitle">Sketch to Render - AI Architectural Visualization</p>
+            <div class="auth-divider"></div>
+            <p class="auth-description">
+                Trang download dành riêng cho thành viên được cấp quyền.<br>
+                Vui lòng đăng nhập bằng Gmail đã được phê duyệt.
+            </p>
+            <button id="btn-google-signin" class="btn-google" onclick="handleGoogleSignIn()">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Đăng nhập với Google
+            </button>
+            <div id="auth-error" class="auth-error" style="display:none;"></div>
+            <p class="auth-footer-note">Chỉ Gmail được whitelist mới có thể truy cập</p>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- LOADING STATE                                -->
+    <!-- ============================================ -->
+    <div id="auth-loading" class="auth-loading" style="display:none;">
+        <div class="loading-spinner"></div>
+        <p>Đang xác thực...</p>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MAIN CONTENT - Shown after auth              -->
+    <!-- ============================================ -->
+    <div id="main-content" class="main-content" style="display:none;">
+
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <span class="material-symbols-rounded">architecture</span>
+                <span class="top-bar-title">S2R Tool</span>
+            </div>
+            <div class="top-bar-right">
+                <span id="user-email" class="user-email"></span>
+                <button class="btn-logout" onclick="handleSignOut()">
+                    <span class="material-symbols-rounded">logout</span>
+                    Đăng xuất
+                </button>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-bg"></div>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="material-symbols-rounded">verified</span>
+                    <span>Authorized Access</span>
+                </div>
+                <h1 class="hero-title">S2R Tool</h1>
+                <p class="hero-tagline">Chuyển đổi sketch thành render photorealistic với AI</p>
+                <div class="hero-version">
+                    <span class="version-badge" id="current-version">v5.0.0</span>
+                    <span class="version-date" id="release-date">Released: March 5, 2026</span>
+                </div>
+                <div class="hero-actions">
+                    <a href="#installation" class="btn-primary btn-large">
+                        <span class="material-symbols-rounded">download</span>
+                        Hướng dẫn cài đặt
+                    </a>
+                    <a href="https://github.com/darkend16987/S2RTool-reborn" target="_blank" rel="noopener" class="btn-outline btn-large">
+                        <span class="material-symbols-rounded">code</span>
+                        GitHub Repository
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Overview -->
+        <section class="section" id="features">
+            <div class="container">
+                <h2 class="section-title">
+                    <span class="material-symbols-rounded">auto_awesome</span>
+                    Tính năng chính
+                </h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:#eef2ff; color:#6366f1;">
+                            <span class="material-symbols-rounded">apartment</span>
+                        </div>
+                        <h3>Building Render</h3>
+                        <p>Render công trình đơn lẻ với chi tiết cao, đa góc nhìn, inpainting</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:#fef2ff; color:#a855f7;">
+                            <span class="material-symbols-rounded">living</span>
+                        </div>
+                        <h3>Interior Render</h3>
+                        <p>Render nội thất chính xác về vị trí đồ vật, chất liệu, ánh sáng</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:#f0fdf4; color:#16a34a;">
+                            <span class="material-symbols-rounded">location_city</span>
+                        </div>
+                        <h3>Planning Render</h3>
+                        <p>Render quy hoạch tổng thể, nhiều lô đất, góc nhìn aerial</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:#fef2f2; color:#dc2626;">
+                            <span class="material-symbols-rounded">find_replace</span>
+                        </div>
+                        <h3>Object Swap</h3>
+                        <p>Thay thế đồ vật trong ảnh với AI — vẽ mask, upload reference</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:#f0f9ff; color:#0284c7;">
+                            <span class="material-symbols-rounded">floor</span>
+                        </div>
+                        <h3>Floor Plan Render</h3>
+                        <p>Đổ màu và vật liệu lên mặt bằng 2D, giữ nguyên top-down view</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background:#fffbeb; color:#f59e0b;">
+                            <span class="material-symbols-rounded">landscape</span>
+                        </div>
+                        <h3>Planning Detail</h3>
+                        <p>Render quy hoạch chi tiết từ sketch có sẵn công trình</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Requirements Section -->
+        <section class="section section-alt" id="requirements">
+            <div class="container">
+                <h2 class="section-title">
+                    <span class="material-symbols-rounded">checklist</span>
+                    Yêu cầu hệ thống
+                </h2>
+                <div class="requirements-grid">
+                    <div class="requirement-card">
+                        <div class="requirement-icon">
+                            <svg viewBox="0 0 24 24" width="40" height="40">
+                                <path fill="#2496ED" d="M13.983 11.078h2.119a.186.186 0 0 0 .186-.185V9.006a.186.186 0 0 0-.186-.186h-2.119a.186.186 0 0 0-.187.186v1.887c0 .103.084.185.187.185m-2.954-5.43h2.118a.186.186 0 0 0 .187-.185V3.574a.186.186 0 0 0-.187-.185h-2.118a.186.186 0 0 0-.187.185v1.888c0 .102.084.185.187.185m0 2.716h2.118a.187.187 0 0 0 .187-.186V6.29a.187.187 0 0 0-.187-.186h-2.118a.187.187 0 0 0-.187.186v1.887c0 .103.084.186.187.186m-2.93 0h2.12a.186.186 0 0 0 .186-.186V6.29a.186.186 0 0 0-.186-.186h-2.12a.186.186 0 0 0-.184.186v1.887c0 .103.083.186.185.186m-2.964 0h2.119a.186.186 0 0 0 .185-.186V6.29a.186.186 0 0 0-.185-.186H5.136a.186.186 0 0 0-.186.186v1.887c0 .103.084.186.186.186m5.893 2.715h2.118a.186.186 0 0 0 .186-.185V9.006a.186.186 0 0 0-.186-.186h-2.118a.187.187 0 0 0-.187.186v1.887c0 .103.084.185.187.185m-2.93 0h2.12a.185.185 0 0 0 .184-.185V9.006a.185.185 0 0 0-.184-.186h-2.12a.185.185 0 0 0-.184.186v1.887c0 .103.083.185.185.185m-2.964 0h2.119a.186.186 0 0 0 .185-.185V9.006a.186.186 0 0 0-.185-.186H5.136a.186.186 0 0 0-.186.186v1.887c0 .103.084.185.186.185m-2.92 0h2.12a.185.185 0 0 0 .184-.185V9.006a.185.185 0 0 0-.184-.186h-2.12a.185.185 0 0 0-.184.186v1.887c0 .103.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 0 0-.75.748 11.376 11.376 0 0 0 .692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 0 0 3.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288Z"/>
+                            </svg>
+                        </div>
+                        <h3>Docker Desktop</h3>
+                        <p>Container runtime để chạy S2R Tool</p>
+                        <div class="requirement-details">
+                            <span class="req-badge req-required">Bắt buộc</span>
+                            <span class="req-version">Version 20.10+</span>
+                        </div>
+                        <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener" class="btn-download-small">
+                            <span class="material-symbols-rounded">open_in_new</span>
+                            Tải Docker Desktop
+                        </a>
+                    </div>
+
+                    <div class="requirement-card">
+                        <div class="requirement-icon">
+                            <svg viewBox="0 0 24 24" width="40" height="40">
+                                <path fill="#8E75B2" d="m22.005 4.654-4.452 16.896a1.1 1.1 0 0 1-1.058.822h-.124a1.1 1.1 0 0 1-.975-.59l-2.643-5.168a.49.49 0 0 1 .084-.567l5.86-6.27a.307.307 0 0 0-.084-.49.3.3 0 0 0-.168-.04.33.33 0 0 0-.228.098l-7.153 6.252a.492.492 0 0 1-.54.067L5.62 13.264a1.11 1.11 0 0 1-.63-.922 1.08 1.08 0 0 1 .497-1.006L20.534 3.8a1.13 1.13 0 0 1 1.183.043 1.09 1.09 0 0 1 .288.81"/>
+                            </svg>
+                        </div>
+                        <h3>Gemini API Key</h3>
+                        <p>API key từ Google AI Studio (miễn phí)</p>
+                        <div class="requirement-details">
+                            <span class="req-badge req-required">Bắt buộc</span>
+                            <span class="req-version">Free tier đủ dùng</span>
+                        </div>
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="btn-download-small">
+                            <span class="material-symbols-rounded">open_in_new</span>
+                            Lấy API Key
+                        </a>
+                    </div>
+
+                    <div class="requirement-card">
+                        <div class="requirement-icon">
+                            <span class="material-symbols-rounded" style="font-size:40px; color:#6366f1;">memory</span>
+                        </div>
+                        <h3>Phần cứng</h3>
+                        <p>Yêu cầu tối thiểu để chạy mượt</p>
+                        <div class="requirement-details">
+                            <span class="req-badge req-optional">Khuyến nghị</span>
+                        </div>
+                        <ul class="hw-specs">
+                            <li><strong>RAM:</strong> 4 GB trở lên</li>
+                            <li><strong>CPU:</strong> 2 cores trở lên</li>
+                            <li><strong>Disk:</strong> 2 GB free</li>
+                            <li><strong>OS:</strong> Windows 10+, macOS, Linux</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Steps -->
+        <section class="section" id="installation">
+            <div class="container">
+                <h2 class="section-title">
+                    <span class="material-symbols-rounded">terminal</span>
+                    Hướng dẫn cài đặt
+                </h2>
+                <p class="section-description">Cài đặt S2R Tool chỉ trong 5 phút với Docker Compose</p>
+
+                <div class="steps-container">
+                    <!-- Step 1 -->
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Cài đặt Docker Desktop</h3>
+                            <p>Tải và cài Docker Desktop cho hệ điều hành của bạn. Sau khi cài, khởi động Docker Desktop và đảm bảo nó đang chạy (icon Docker xanh ở system tray).</p>
+                            <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener" class="btn-link">
+                                <span class="material-symbols-rounded">open_in_new</span>
+                                docker.com/products/docker-desktop
+                            </a>
+                            <div class="step-verify">
+                                <span class="material-symbols-rounded">check_circle</span>
+                                <span>Xác nhận: Mở terminal, gõ <code>docker --version</code> — thấy version là OK</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Lấy Gemini API Key</h3>
+                            <p>Truy cập Google AI Studio, đăng nhập bằng tài khoản Google, và tạo API Key mới. Copy key này lại — sẽ dùng ở bước 4.</p>
+                            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="btn-link">
+                                <span class="material-symbols-rounded">open_in_new</span>
+                                aistudio.google.com/app/apikey
+                            </a>
+                            <div class="step-tip">
+                                <span class="material-symbols-rounded">lightbulb</span>
+                                <span>Free tier cho phép 60 requests/phút — đủ cho sử dụng cá nhân</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Tải deployment package</h3>
+                            <p>Tải bản release mới nhất từ GitHub. Package bao gồm <code>docker-compose.yaml</code>, <code>deploy.sh</code>, và các file cấu hình cần thiết.</p>
+                            <div class="download-buttons">
+                                <a id="download-release-link" href="https://github.com/darkend16987/S2RTool-reborn/releases/latest" target="_blank" rel="noopener" class="btn-primary">
+                                    <span class="material-symbols-rounded">download</span>
+                                    Tải từ GitHub Releases
+                                </a>
+                            </div>
+                            <div class="code-block">
+                                <div class="code-header">
+                                    <span>Hoặc clone bằng Git</span>
+                                    <button class="btn-copy" onclick="copyCode(this)">
+                                        <span class="material-symbols-rounded">content_copy</span>
+                                    </button>
+                                </div>
+                                <pre><code>git clone https://github.com/darkend16987/S2RTool-reborn.git
+cd S2RTool-reborn</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Cấu hình environment</h3>
+                            <p>Tạo file <code>.env</code> trong thư mục project và điền Gemini API Key.</p>
+                            <div class="code-block">
+                                <div class="code-header">
+                                    <span>.env</span>
+                                    <button class="btn-copy" onclick="copyCode(this)">
+                                        <span class="material-symbols-rounded">content_copy</span>
+                                    </button>
+                                </div>
+                                <pre><code># === BẮT BUỘC ===
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# === TÙY CHỌN ===
+BACKEND_PORT=5001
+FRONTEND_PORT=3001
+
+# Docker Registry (không cần thay đổi)
+DOCKER_REGISTRY=docker.io
+DOCKER_USERNAME=kael16987
+VERSION=latest
+
+# Auto-update interval (seconds)
+WATCHTOWER_INTERVAL=300</code></pre>
+                            </div>
+                            <div class="step-tip">
+                                <span class="material-symbols-rounded">lightbulb</span>
+                                <span>Thay <code>your_gemini_api_key_here</code> bằng API key đã lấy ở bước 2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="step-card">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h3>Khởi chạy S2R Tool</h3>
+                            <p>Chạy lệnh bên dưới để pull Docker images và khởi động toàn bộ hệ thống (backend + frontend + auto-updater).</p>
+
+                            <div class="tab-group">
+                                <button class="tab-btn active" onclick="switchTab(this, 'deploy-script')">Deploy Script (Khuyến nghị)</button>
+                                <button class="tab-btn" onclick="switchTab(this, 'manual-compose')">Manual Docker Compose</button>
+                            </div>
+
+                            <div id="deploy-script" class="tab-content active">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span>Linux / macOS</span>
+                                        <button class="btn-copy" onclick="copyCode(this)">
+                                            <span class="material-symbols-rounded">content_copy</span>
+                                        </button>
+                                    </div>
+                                    <pre><code>chmod +x deploy.sh
+./deploy.sh</code></pre>
+                                </div>
+                                <p class="step-note">Deploy script sẽ tự động hỏi API key, cấu hình port, và khởi chạy.</p>
+                            </div>
+
+                            <div id="manual-compose" class="tab-content">
+                                <div class="code-block">
+                                    <div class="code-header">
+                                        <span>Docker Compose</span>
+                                        <button class="btn-copy" onclick="copyCode(this)">
+                                            <span class="material-symbols-rounded">content_copy</span>
+                                        </button>
+                                    </div>
+                                    <pre><code># Pull images mới nhất
+docker-compose -f docker-compose.production.yaml pull
+
+# Khởi chạy (background mode)
+docker-compose -f docker-compose.production.yaml up -d</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 6 -->
+                    <div class="step-card step-success">
+                        <div class="step-number step-number-success">
+                            <span class="material-symbols-rounded">check</span>
+                        </div>
+                        <div class="step-content">
+                            <h3>Truy cập S2R Tool</h3>
+                            <p>Mở trình duyệt và truy cập:</p>
+                            <div class="access-url">
+                                <code>http://localhost:3001</code>
+                                <button class="btn-copy-inline" onclick="copyText('http://localhost:3001')">
+                                    <span class="material-symbols-rounded">content_copy</span>
+                                </button>
+                            </div>
+                            <div class="step-verify">
+                                <span class="material-symbols-rounded">check_circle</span>
+                                <span>Nếu thấy trang chủ S2R Tool với các mode cards — cài đặt thành công!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Update Guide -->
+        <section class="section section-alt" id="update">
+            <div class="container">
+                <h2 class="section-title">
+                    <span class="material-symbols-rounded">system_update_alt</span>
+                    Hướng dẫn cập nhật
+                </h2>
+                <p class="section-description">Cho người dùng đang chạy phiên bản cũ</p>
+
+                <div class="update-methods">
+                    <!-- Auto Update -->
+                    <div class="update-card update-auto">
+                        <div class="update-header">
+                            <span class="material-symbols-rounded">autorenew</span>
+                            <h3>Tự động (Watchtower)</h3>
+                            <span class="update-badge update-badge-auto">Khuyến nghị</span>
+                        </div>
+                        <p>Nếu bạn dùng <code>docker-compose.production.yaml</code>, Watchtower đã được tích hợp sẵn. Nó tự động kiểm tra Docker Hub mỗi 5 phút và cập nhật khi có phiên bản mới.</p>
+                        <div class="update-status">
+                            <span class="material-symbols-rounded">info</span>
+                            <span>Không cần làm gì — update diễn ra hoàn toàn tự động</span>
+                        </div>
+                    </div>
+
+                    <!-- Manual Update -->
+                    <div class="update-card">
+                        <div class="update-header">
+                            <span class="material-symbols-rounded">terminal</span>
+                            <h3>Thủ công (Manual)</h3>
+                        </div>
+                        <p>Nếu không dùng Watchtower hoặc muốn update ngay lập tức:</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>Terminal</span>
+                                <button class="btn-copy" onclick="copyCode(this)">
+                                    <span class="material-symbols-rounded">content_copy</span>
+                                </button>
+                            </div>
+                            <pre><code># Di chuyển vào thư mục project
+cd S2RTool-reborn
+
+# Pull images mới nhất từ Docker Hub
+docker-compose -f docker-compose.production.yaml pull
+
+# Restart với images mới
+docker-compose -f docker-compose.production.yaml up -d
+
+# Kiểm tra logs
+docker-compose -f docker-compose.production.yaml logs -f</code></pre>
+                        </div>
+                        <div class="step-tip">
+                            <span class="material-symbols-rounded">lightbulb</span>
+                            <span>Dữ liệu (references, settings) được lưu trong Docker volumes — không bị mất khi update</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- What's New -->
+        <section class="section" id="changelog">
+            <div class="container">
+                <h2 class="section-title">
+                    <span class="material-symbols-rounded">new_releases</span>
+                    Có gì mới
+                </h2>
+                <div class="changelog-list" id="changelog-list">
+                    <div class="changelog-item">
+                        <div class="changelog-version">
+                            <span class="version-badge">v5.0.0</span>
+                            <span class="changelog-date">March 5, 2026</span>
+                        </div>
+                        <h3>CI/CD Pipeline + OTA Auto-Update</h3>
+                        <ul>
+                            <li>GitHub Actions CI/CD tự động build & push Docker images</li>
+                            <li>Watchtower OTA auto-update cho production deployments</li>
+                            <li>Version check thông minh qua GitHub Releases API</li>
+                            <li>Banner thông báo update trong app</li>
+                        </ul>
+                    </div>
+                </div>
+                <a href="https://github.com/darkend16987/S2RTool-reborn/releases" target="_blank" rel="noopener" class="btn-outline" style="margin-top:1.5rem;">
+                    <span class="material-symbols-rounded">open_in_new</span>
+                    Xem tất cả releases trên GitHub
+                </a>
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section class="section section-alt" id="troubleshooting">
+            <div class="container">
+                <h2 class="section-title">
+                    <span class="material-symbols-rounded">build</span>
+                    Xử lý sự cố
+                </h2>
+                <div class="faq-list">
+                    <details class="faq-item">
+                        <summary>
+                            <span class="material-symbols-rounded">error</span>
+                            Docker Desktop không khởi động
+                        </summary>
+                        <div class="faq-answer">
+                            <p><strong>Windows:</strong> Đảm bảo đã bật WSL 2 và Virtualization trong BIOS.</p>
+                            <p><strong>macOS:</strong> Đảm bảo đã cấp quyền trong System Preferences → Security & Privacy.</p>
+                            <div class="code-block">
+                                <div class="code-header"><span>Kiểm tra Docker</span></div>
+                                <pre><code>docker info
+docker-compose version</code></pre>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>
+                            <span class="material-symbols-rounded">error</span>
+                            Port 3001 đã bị chiếm
+                        </summary>
+                        <div class="faq-answer">
+                            <p>Thay đổi port trong file <code>.env</code>:</p>
+                            <div class="code-block">
+                                <div class="code-header"><span>.env</span></div>
+                                <pre><code>FRONTEND_PORT=3002
+BACKEND_PORT=5002</code></pre>
+                            </div>
+                            <p>Sau đó restart: <code>docker-compose -f docker-compose.production.yaml up -d</code></p>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>
+                            <span class="material-symbols-rounded">error</span>
+                            API Key không hoạt động / lỗi 403
+                        </summary>
+                        <div class="faq-answer">
+                            <p>Kiểm tra:</p>
+                            <ul>
+                                <li>API Key có đúng không (không có khoảng trắng thừa)</li>
+                                <li>Tài khoản Google đã enable Gemini API chưa</li>
+                                <li>Đã vượt quota chưa (kiểm tra ở Google AI Studio)</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>
+                            <span class="material-symbols-rounded">error</span>
+                            Render chậm hoặc timeout
+                        </summary>
+                        <div class="faq-answer">
+                            <p>Gemini API có thể chậm trong giờ cao điểm. App có timeout 300 giây cho mỗi render request. Nếu timeout thường xuyên:</p>
+                            <ul>
+                                <li>Thử lại sau vài phút</li>
+                                <li>Giảm kích thước ảnh input</li>
+                                <li>Kiểm tra kết nối internet</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <span class="material-symbols-rounded">architecture</span>
+                        <span>S2R Tool</span>
+                    </div>
+                    <p>Powered by Gemini AI | Architectural Visualization</p>
+                    <p class="footer-copy">&copy; 2025-2026 S2R Tool. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

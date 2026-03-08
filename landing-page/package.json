@@ -1,0 +1,16 @@
+{
+    "name": "s2rtool-landing-page",
+    "version": "1.0.0",
+    "private": true,
+    "description": "S2R Tool - Landing page with Firebase Auth for authorized download access",
+    "scripts": {
+        "deploy": "firebase deploy",
+        "deploy:hosting": "firebase deploy --only hosting",
+        "deploy:rules": "firebase deploy --only firestore:rules",
+        "users:list": "node manage-users.js list",
+        "users:add": "node manage-users.js add"
+    },
+    "dependencies": {
+        "firebase-admin": "^12.0.0"
+    }
+}

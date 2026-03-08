@@ -1,0 +1,20 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // allowed_users collection:
+    // - Only authenticated users can read their own document (to check whitelist)
+    // - Only admin (via Firebase Console or Admin SDK) can write
+    match /allowed_users/{email} {
+      allow read: if request.auth != null
+                  && request.auth.token.email == email;
+      allow write: if false; // Admin SDK only
+    }
+
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
