@@ -218,4 +218,11 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed development guide.
 
 ---
 
+## Support
+
+- **Email:** hoangnam.mng@gmail.com
+- **Issues:** [GitHub Issues](https://github.com/darkend16987/S2RTool-reborn/issues)
+
+---
+
 Version 5.0.0 | Powered by Google Gemini AI
