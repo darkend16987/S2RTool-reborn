@@ -9,6 +9,9 @@ const VERSION_CONFIG = {
     repoName: 'S2RTool-reborn',
     checkInterval: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
     cacheKey: 'S2RTool_lastVersionCheck_v5', // Bumped cache key to force refresh on update
+    // Landing page URL for installation guide and download
+    // Update this after deploying the Firebase landing page
+    landingPageUrl: '', // e.g., 'https://your-project.web.app'
 };
 
 /**
@@ -189,6 +192,19 @@ function showUpdateBanner(version, url) {
         font-size: 0.875rem;
     `;
 
+    const guideLink = VERSION_CONFIG.landingPageUrl
+        ? `<a href="${VERSION_CONFIG.landingPageUrl}#update" target="_blank" style="
+            background: transparent;
+            color: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255,255,255,0.4);
+        ">Hướng dẫn</a>`
+        : '';
+
     banner.innerHTML = `
         <span class="material-symbols-rounded" style="font-size: 20px;">upgrade</span>
         <span>Phiên bản mới <strong>v${version}</strong> đã có sẵn!</span>
@@ -201,6 +217,7 @@ function showUpdateBanner(version, url) {
             font-weight: 600;
             font-size: 0.8rem;
         ">Cập nhật</a>
+        ${guideLink}
         <button id="dismissUpdateBanner" style="
             background: transparent;
             border: none;

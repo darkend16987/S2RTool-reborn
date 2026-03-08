@@ -1082,14 +1082,14 @@ docker-compose up -d
 
 ---
 
-## 📚 Further Reading
+## Further Reading
 
-- [Docker Setup Guide](DOCKER_README.md) - Deployment & troubleshooting
-- [Planning Mode Design](PLANNING_MODE_DESIGN.md) - Planning mode architecture
+- [Docker Installation Guide](DOCKER-INSTALLATION-GUIDE.md) - Docker Desktop setup
+- [Development Guide](DEVELOPMENT.md) - Development workflow
 - [Gemini API Docs](https://ai.google.dev/docs) - Official Gemini documentation
 
 ---
 
-**Last Updated:** 2025-01-23
-**Version:** 4.0
+**Last Updated:** 2026-03-08
+**Version:** 5.0.0
 **Powered by:** Google Gemini AI (2.5 & 3.0)

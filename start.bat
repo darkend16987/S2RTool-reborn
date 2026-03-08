@@ -69,13 +69,10 @@ REM Start containers
 REM ================================================================
 echo [2/3] Starting S2RTool containers...
 
-REM Use production config if available, then client config, otherwise development
+REM Use production config if available, otherwise development
 if exist "docker-compose.production.yaml" (
     docker-compose -f docker-compose.production.yaml pull --ignore-pull-failures 2>nul
     docker-compose -f docker-compose.production.yaml up -d
-) else if exist "docker-compose.client.yaml" (
-    docker-compose -f docker-compose.client.yaml pull --ignore-pull-failures 2>nul
-    docker-compose -f docker-compose.client.yaml up -d
 ) else (
     docker-compose up -d
 )
