@@ -3,7 +3,7 @@
  * Approach 1.2: source image + drawn mask + reference object photo
  */
 
-const API_BASE = 'http://localhost:5001/api';
+const API_BASE = '/api';
 
 // State
 let sourceImageB64 = null;

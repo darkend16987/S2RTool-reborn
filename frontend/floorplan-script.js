@@ -3,7 +3,7 @@
  * Upload floor plan → AI analysis → user edits → render with top-down view
  */
 
-const API_BASE = 'http://localhost:5001/api';
+const API_BASE = '/api';
 
 let floorplanB64 = null;
 let referenceB64 = null;
